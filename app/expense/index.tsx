@@ -3,7 +3,8 @@ import { Link, useRouter } from "expo-router";
 import { Text, View } from "@/components/Themed";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-
+import { ReportStatusBgColor, ReportStatusTextColor } from "@/utils/UtilData";
+import { SelectList } from "react-native-dropdown-select-list";
 type ExpenseReport = {
   title: string;
   id: string;
@@ -12,6 +13,13 @@ type ExpenseReport = {
   state: "submitted" | "approved" | "paid";
   amount: number;
 };
+
+const DATE_OPTIONS = [
+  { label: "Last 3 months", value: "last_3_months" },
+  { label: "Last 6 months", value: "last_6_months" },
+  { label: "This year", value: "this_year" },
+  { label: "Last year", value: "last_year" },
+];
 
 const EXPENSE_DATA: ExpenseReport[] = [
   {
@@ -71,8 +79,18 @@ const ExpenseItem = ({
         </Text>
       </View>
     </View>
-    <View style={[styles.statusBadge, styles[`status${expense.state}`]]}>
-      <Text style={[styles.statusText, styles[`${expense.state}Text`]]}>
+    <View
+      style={[
+        styles.statusBadge,
+        { backgroundColor: ReportStatusBgColor(expense.state) },
+      ]}
+    >
+      <Text
+        style={[
+          styles.statusText,
+          { color: ReportStatusTextColor(expense.state) },
+        ]}
+      >
         {expense.state.charAt(0).toUpperCase() + expense.state.slice(1)}
       </Text>
     </View>
@@ -81,6 +99,18 @@ const ExpenseItem = ({
 
 export default function ExpenseScreen() {
   const router = useRouter();
+  const [selected, setSelected] = useState("");
+  const [selectedReportType, setSelectedReportType] = useState("");
+  const data = [
+    { key: "1", value: "Mobiles", disabled: true },
+    { key: "2", value: "Appliances" },
+    { key: "3", value: "Cameras" },
+    { key: "4", value: "Computers", disabled: true },
+    { key: "5", value: "Vegetables" },
+    { key: "6", value: "Diary Products" },
+    { key: "7", value: "Drinks" },
+  ];
+  const [selectedDateRange, setSelectedDateRange] = useState(DATE_OPTIONS[0]);
   const [isDateRangeDrawerVisible, setIsDateRangeDrawerVisible] =
     useState(false);
   const [isNewReportDrawerVisible, setIsNewReportDrawerVisible] =
@@ -146,20 +176,22 @@ export default function ExpenseScreen() {
           onPress={() => setIsDateRangeDrawerVisible(false)}
         >
           <View style={styles.drawer}>
+            <View style={styles.drawerTopDivderContainer}>
+              <View style={styles.drawerTopDivder}></View>
+            </View>
             <Text style={styles.drawerTitle}>Select Date Range</Text>
-            <Pressable style={styles.dateOption}>
-              <Text>Last 3 months</Text>
-            </Pressable>
-            <Pressable style={[styles.dateOption, styles.selectedOption]}>
-              <Text>Last 6 months</Text>
-              <Ionicons name="checkmark" size={20} color="#0284C7" />
-            </Pressable>
-            <Pressable style={styles.dateOption}>
-              <Text>This year</Text>
-            </Pressable>
-            <Pressable style={styles.dateOption}>
-              <Text>Last year</Text>
-            </Pressable>
+            {DATE_OPTIONS.map((option) => (
+              <Pressable
+                key={option.value}
+                style={[
+                  styles.dateOption,
+                  selectedDateRange === option && styles.selectedOption,
+                ]}
+                onPress={() => setSelectedDateRange(option)}
+              >
+                <Text>{option.label}</Text>
+              </Pressable>
+            ))}
           </View>
         </Pressable>
       </Modal>
@@ -171,20 +203,23 @@ export default function ExpenseScreen() {
       >
         <Pressable
           style={styles.modalOverlay}
-          onPress={() => setIsNewReportDrawerVisible(false)}
+          // onPress={() => setIsNewReportDrawerVisible(false)}
         >
           <View style={styles.newReportDrawer}>
+            <View style={styles.drawerTopDivderContainer}>
+              <View style={styles.drawerTopDivder}></View>
+            </View>
             <Text style={styles.drawerTitle}>New Report</Text>
 
             <Text style={styles.inputLabel}>Purpose</Text>
             <TextInput style={styles.input} placeholder="example" />
 
             <Text style={styles.inputLabel}>Report Type</Text>
-            <Pressable style={styles.selectInput}>
-              <Text style={styles.placeholderText}>Select Report Type</Text>
-              <Ionicons name="chevron-down" size={20} color="#64748B" />
-            </Pressable>
-
+            <SelectList
+              setSelected={(val: any) => setSelected(val)}
+              data={data}
+              save="value"
+            />
             <Text style={styles.inputLabel}>Date</Text>
             <Pressable style={styles.selectInput}>
               <Text>Nov 5, 2024</Text>
@@ -261,6 +296,11 @@ const styles = StyleSheet.create({
   filterButton: {
     flexDirection: "row",
     alignItems: "center",
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderColor: "#E2E8F0",
+    borderRadius: 50,
     gap: 4,
   },
   filterText: {
@@ -274,8 +314,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 16,
-    backgroundColor: "#F8FAFC",
     borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3, // This is for Android shadow
   },
   expenseTitle: {
     fontSize: 16,
@@ -297,7 +344,7 @@ const styles = StyleSheet.create({
   statusBadge: {
     paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 16,
+    borderRadius: 4,
     height: 24,
   },
   statusSubmitted: {
@@ -341,24 +388,42 @@ const styles = StyleSheet.create({
   },
   drawer: {
     backgroundColor: "white",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
     gap: 16,
   },
   drawerTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "600",
     marginBottom: 8,
+  },
+  drawerTopDivderContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 16,
+    paddingHorizontal: 16,
+  },
+  drawerTopDivder: {
+    height: 6,
+    width: 32,
+    backgroundColor: "#DDDDDD",
+    borderRadius: 4,
   },
   dateOption: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    fontSize: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
   },
   selectedOption: {
-    backgroundColor: "#F0F9FF",
+    backgroundColor: "#17317F1A",
+    borderColor: "#17317F",
   },
   tabBar: {
     flexDirection: "row",
@@ -395,9 +460,8 @@ const styles = StyleSheet.create({
   },
   newReportDrawer: {
     backgroundColor: "white",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
     gap: 12,
   },
   inputLabel: {
