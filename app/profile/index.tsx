@@ -1,9 +1,17 @@
 import { StyleSheet, Pressable, Image } from "react-native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { Text, View } from "@/components/Themed";
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from "@/context/AuthContext";
 
 export default function ProfileScreen() {
+  
+  const { signOut } = useAuth();
+  const handleLogout = async () => {
+    // Add your logout logic here, for example:
+    await signOut();
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>My Profile</Text>
@@ -52,7 +60,7 @@ export default function ProfileScreen() {
         <Link href="/auth" style={styles.forgotPassword}>
           Forgot password?
         </Link>
-        <Pressable>
+        <Pressable onPress={handleLogout}>
           <Text style={styles.logout}>Logout</Text>
         </Pressable>
       </View>

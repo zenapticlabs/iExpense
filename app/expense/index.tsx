@@ -160,10 +160,12 @@ export default function ExpenseScreen() {
             <Ionicons name="add" size={24} color="white" />
           </Pressable>
         </View>
-        <View style={styles.tabItem}>
-          <Ionicons name="person-outline" size={24} color="#64748B" />
-          <Text style={styles.tabText}>My Profile</Text>
-        </View>
+        <Link href="/profile" asChild style={styles.tabItem}>
+          <View>
+            <Ionicons name="person-outline" size={24} color="#64748B" />
+            <Text style={styles.tabText}>My Profile</Text>
+          </View>
+        </Link>
       </View>
       <Modal
         visible={isDateRangeDrawerVisible}

@@ -1,9 +1,19 @@
-import { Image, StyleSheet, TextInput, Switch, Pressable } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  TextInput,
+  Switch,
+  Pressable,
+  Alert,
+} from "react-native";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "@/components/Themed";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AuthScreen() {
+  const { signIn } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -13,6 +23,24 @@ export default function AuthScreen() {
     brand: require("@/assets/images/brand.png"),
   };
 
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await signIn(email, password);
+    } catch (error) {
+      Alert.alert(
+        "Authentication Error",
+        "Invalid email or password. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.contentContainer}>
@@ -67,7 +95,7 @@ export default function AuthScreen() {
       </View>
 
       <View style={styles.bottomContainer}>
-        <Pressable style={styles.loginButton}>
+        <Pressable style={styles.loginButton} onPress={handleSignIn}>
           <Text style={styles.buttonText}>Login</Text>
         </Pressable>
 
