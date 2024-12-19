@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { ReportStatusBgColor, ReportStatusTextColor } from "@/utils/UtilData";
 import { SelectList } from "react-native-dropdown-select-list";
-type ExpenseReport = {
+type IReport = {
   title: string;
   id: string;
   submission: string | null;
@@ -21,7 +21,7 @@ const DATE_OPTIONS = [
   { label: "Last year", value: "last_year" },
 ];
 
-const EXPENSE_DATA: ExpenseReport[] = [
+const REPORT_DATA: IReport[] = [
   {
     title: "International Travel",
     id: "#1001",
@@ -56,48 +56,48 @@ const EXPENSE_DATA: ExpenseReport[] = [
   },
 ];
 
-const ExpenseItem = ({
-  expense,
+const ReportItem = ({
+  report,
   onPress,
 }: {
-  expense: ExpenseReport;
+  report: IReport;
   onPress: () => void;
 }) => (
-  <Pressable onPress={onPress} style={styles.expenseItem}>
+  <Pressable onPress={onPress} style={styles.reportItem}>
     <View>
       <View style={styles.titleRow}>
-        <Text style={styles.expenseTitle}>{expense.title}</Text>
-        <Text style={styles.expenseId}>{expense.id}</Text>
+        <Text style={styles.reportTitle}>{report.title}</Text>
+        <Text style={styles.reportId}>{report.id}</Text>
       </View>
-      <Text style={styles.expenseAmount}>${expense.amount.toFixed(2)}</Text>
-      <View style={styles.expenseDetails}>
+      <Text style={styles.reportAmount}>${report.amount.toFixed(2)}</Text>
+      <View style={styles.reportDetails}>
         <Text style={styles.detailText}>
-          Submission: {expense.submission || "N/A"}
+          Submission: {report.submission || "N/A"}
         </Text>
         <Text style={styles.detailText}>
-          Approval: {expense.approval || "N/A"}
+          Approval: {report.approval || "N/A"}
         </Text>
       </View>
     </View>
     <View
       style={[
         styles.statusBadge,
-        { backgroundColor: ReportStatusBgColor(expense.state) },
+        { backgroundColor: ReportStatusBgColor(report.state) },
       ]}
     >
       <Text
         style={[
           styles.statusText,
-          { color: ReportStatusTextColor(expense.state) },
+          { color: ReportStatusTextColor(report.state) },
         ]}
       >
-        {expense.state.charAt(0).toUpperCase() + expense.state.slice(1)}
+        {report.state.charAt(0).toUpperCase() + report.state.slice(1)}
       </Text>
     </View>
   </Pressable>
 );
 
-export default function ExpenseScreen() {
+export default function ReportsScreen() {
   const router = useRouter();
   const [selected, setSelected] = useState("");
   const [selectedReportType, setSelectedReportType] = useState("");
@@ -138,12 +138,12 @@ export default function ExpenseScreen() {
         </Pressable>
       </View>
 
-      <View style={styles.expenseList}>
-        {EXPENSE_DATA.map((expense, index) => (
-          <ExpenseItem
-            key={`${expense.id}-${index}`}
-            expense={expense}
-            onPress={() => router.push("/expense/details")}
+      <View style={styles.reportList}>
+        {REPORT_DATA.map((report, index) => (
+          <ReportItem
+            key={`${report.id}-${index}`}
+            report={report}
+            onPress={() => router.push("/reports/details")}
           />
         ))}
       </View>
@@ -309,10 +309,10 @@ const styles = StyleSheet.create({
     color: "#64748B",
     fontSize: 14,
   },
-  expenseList: {
+  reportList: {
     gap: 16,
   },
-  expenseItem: {
+  reportItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 16,
@@ -326,17 +326,17 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3, // This is for Android shadow
   },
-  expenseTitle: {
+  reportTitle: {
     fontSize: 16,
     fontWeight: "500",
     marginBottom: 4,
   },
-  expenseAmount: {
+  reportAmount: {
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 8,
   },
-  expenseDetails: {
+  reportDetails: {
     gap: 2,
   },
   detailText: {
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
   },
-  expenseId: {
+  reportId: {
     fontSize: 12,
     color: "#64748B",
   },

@@ -39,7 +39,7 @@ function useProtectedRoute(user: User) {
     if (!user && !inAuthGroup) {
       router.replace("/auth");
     } else if (user && inAuthGroup) {
-      router.replace("/expense");
+      router.replace("/reports");
     }
   }, [user, segments, navigationState?.key]);
 }
