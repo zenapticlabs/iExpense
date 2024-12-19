@@ -21,8 +21,9 @@ export default function AuthScreen() {
           style={styles.image}
           resizeMode="contain"
         />
-        <Text style={styles.title}>Sign In</Text>
-        
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Sign In</Text>
+        </View>
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Email</Text>
           <TextInput
@@ -32,7 +33,7 @@ export default function AuthScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
           />
-          
+
           <Text style={styles.label}>Password</Text>
           <TextInput
             style={styles.input}
@@ -40,7 +41,7 @@ export default function AuthScreen() {
             onChangeText={setPassword}
             secureTextEntry
           />
-          
+
           <Link href="/auth" style={styles.forgotPassword}>
             Forgot password?
           </Link>
@@ -72,7 +73,7 @@ export default function AuthScreen() {
 
         <View style={styles.signupContainer}>
           <Text style={styles.signupText}>Don't have an account? </Text>
-          <Link href="/auth/signup" style={styles.signupLink}>
+          <Link href="/auth" style={styles.signupLink}>
             Sign up
           </Link>
         </View>
@@ -84,12 +85,12 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingHorizontal: 20,
   },
   contentContainer: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 60,
   },
   image: {
@@ -97,71 +98,74 @@ const styles = StyleSheet.create({
     height: 80,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '600',
+    fontSize: 28,
+    fontWeight: "600",
     marginTop: 20,
     marginBottom: 30,
-    color: '#000',
+    color: "#000",
   },
   inputContainer: {
-    width: '100%',
+    width: "100%",
+  },
+  titleContainer: {
+    width: "100%",
   },
   label: {
-    fontSize: 14,
-    color: '#000',
+    fontSize: 15,
+    color: "#000",
     marginBottom: 8,
   },
   input: {
-    width: '100%',
+    width: "100%",
     height: 44,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: "#E2E8F0",
     borderRadius: 8,
     paddingHorizontal: 12,
     marginBottom: 16,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   forgotPassword: {
-    alignSelf: 'flex-end',
-    color: '#1E3A8A',
+    alignSelf: "flex-end",
+    color: "#1E3A8A",
     fontSize: 14,
     marginBottom: 16,
   },
   toggleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 16,
   },
   toggleLabel: {
     marginLeft: 8,
-    fontSize: 14,
-    color: '#000',
+    fontSize: 15,
+    color: "#000",
   },
   bottomContainer: {
     paddingBottom: 40,
   },
   loginButton: {
-    backgroundColor: '#1E3A8A',
+    backgroundColor: "#1E3A8A",
     padding: 16,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 16,
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   signupContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
   },
   signupText: {
-    color: '#64748B',
+    color: "#64748B",
     fontSize: 14,
   },
   signupLink: {
-    color: '#1E3A8A',
+    color: "#1E3A8A",
     fontSize: 14,
   },
 });

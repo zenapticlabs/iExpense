@@ -2,6 +2,7 @@ import { Image, StyleSheet } from "react-native";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
+import { Link } from "expo-router";
 
 export default function AuthScreen() {
   const images = {
@@ -17,11 +18,13 @@ export default function AuthScreen() {
         />
         <Text style={styles.title}>PAI Capture Expense</Text>
       </View>
-      
+
       <View style={styles.buttonContainer}>
+        <Link href="/auth/signin" asChild>
         <View style={styles.loginButton}>
           <Text style={styles.buttonText}>Login</Text>
         </View>
+        </Link>
       </View>
     </View>
   );
@@ -30,12 +33,12 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   contentContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   image: {
     width: 138,
@@ -45,21 +48,21 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 700,
     marginTop: 16,
-    color: '#000',
+    color: "#000",
   },
   buttonContainer: {
     paddingHorizontal: 20,
     paddingBottom: 40,
   },
   loginButton: {
-    backgroundColor: '#1E3A8A', // Dark blue color
+    backgroundColor: "#1E3A8A", // Dark blue color
     padding: 16,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
