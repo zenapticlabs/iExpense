@@ -5,14 +5,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { ReportStatusBgColor, ReportStatusTextColor } from "@/utils/UtilData";
 import { SelectList } from "react-native-dropdown-select-list";
-type IReport = {
-  title: string;
-  id: string;
-  submission: string | null;
-  approval: string | null;
-  state: "submitted" | "approved" | "paid";
-  amount: number;
-};
+import { IReport } from "@/constants/types";
+import { mockReports } from "@/constants/mockData";
 
 const DATE_OPTIONS = [
   { label: "Last 3 months", value: "last_3_months" },
@@ -21,80 +15,41 @@ const DATE_OPTIONS = [
   { label: "Last year", value: "last_year" },
 ];
 
-const REPORT_DATA: IReport[] = [
-  {
-    title: "International Travel",
-    id: "#1001",
-    submission: "Nov 5, 2024",
-    approval: null,
-    state: "submitted",
-    amount: 120.0,
-  },
-  {
-    title: "Meals",
-    id: "#1001",
-    submission: null,
-    approval: null,
-    state: "approved",
-    amount: 120.0,
-  },
-  {
-    title: "Automobile",
-    id: "#1001",
-    submission: null,
-    approval: null,
-    state: "paid",
-    amount: 120.0,
-  },
-  {
-    title: "Airfare",
-    id: "#1001",
-    submission: "Nov 5, 2024",
-    approval: null,
-    state: "submitted",
-    amount: 120.0,
-  },
-];
-
-const ReportItem = ({
-  report,
-  onPress,
-}: {
-  report: IReport;
-  onPress: () => void;
-}) => (
-  <Pressable onPress={onPress} style={styles.reportItem}>
-    <View>
-      <View style={styles.titleRow}>
-        <Text style={styles.reportTitle}>{report.title}</Text>
-        <Text style={styles.reportId}>{report.id}</Text>
+const ReportItem = ({ report }: { report: IReport }) => (
+  <Link href={`/reports/details?id=${report.id}`} asChild>
+    <Pressable style={styles.reportItem}>
+      <View>
+        <View style={styles.titleRow}>
+          <Text style={styles.reportTitle}>{report.title}</Text>
+          <Text style={styles.reportId}>{report.id}</Text>
+        </View>
+        <Text style={styles.reportAmount}>${report.amount.toFixed(2)}</Text>
+        <View style={styles.reportDetails}>
+          <Text style={styles.detailText}>
+            Submission: {report.submission || "N/A"}
+          </Text>
+          <Text style={styles.detailText}>
+            Approval: {report.approval || "N/A"}
+          </Text>
+        </View>
       </View>
-      <Text style={styles.reportAmount}>${report.amount.toFixed(2)}</Text>
-      <View style={styles.reportDetails}>
-        <Text style={styles.detailText}>
-          Submission: {report.submission || "N/A"}
-        </Text>
-        <Text style={styles.detailText}>
-          Approval: {report.approval || "N/A"}
-        </Text>
-      </View>
-    </View>
-    <View
-      style={[
-        styles.statusBadge,
-        { backgroundColor: ReportStatusBgColor(report.state) },
-      ]}
-    >
-      <Text
+      <View
         style={[
-          styles.statusText,
-          { color: ReportStatusTextColor(report.state) },
+          styles.statusBadge,
+          { backgroundColor: ReportStatusBgColor(report.state) },
         ]}
       >
-        {report.state.charAt(0).toUpperCase() + report.state.slice(1)}
-      </Text>
-    </View>
-  </Pressable>
+        <Text
+          style={[
+            styles.statusText,
+            { color: ReportStatusTextColor(report.state) },
+          ]}
+        >
+          {report.state.charAt(0).toUpperCase() + report.state.slice(1)}
+        </Text>
+      </View>
+    </Pressable>
+  </Link>
 );
 
 export default function ReportsScreen() {
@@ -139,12 +94,8 @@ export default function ReportsScreen() {
       </View>
 
       <View style={styles.reportList}>
-        {REPORT_DATA.map((report, index) => (
-          <ReportItem
-            key={`${report.id}-${index}`}
-            report={report}
-            onPress={() => router.push("/reports/details")}
-          />
+        {mockReports.map((report, index) => (
+          <ReportItem key={`${report.id}-${index}`} report={report} />
         ))}
       </View>
       <View style={styles.tabBar}>
