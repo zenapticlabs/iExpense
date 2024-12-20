@@ -7,11 +7,13 @@ import {
   TouchableOpacity,
   Pressable,
   Modal,
-  Image,
 } from "react-native";
-import { router, Stack } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
+import { IExpense } from "@/constants/types";
+import { mockReports } from "@/constants/mockData";
+import Stepper from "@/components/Stepper";
 
 const EXPENSE_TYPES = [
   "Airfare",
@@ -23,19 +25,14 @@ const EXPENSE_TYPES = [
   "Company Sponsor - CDFO",
 ];
 
-interface Expense {
-  title: string;
-  amount: string;
-  date: string;
-}
-
 export default function ExpenseDetails() {
-  const state = "Submitted"
+  const { id } = useLocalSearchParams();
+  const report = mockReports.find((report) => report.id === id);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedExpenseType, setSelectedExpenseType] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
+  const [selectedExpense, setSelectedExpense] = useState<IExpense | null>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isReportDeleteModalVisible, setIsReportDeleteModalVisible] =
     useState(false);
@@ -80,7 +77,7 @@ export default function ExpenseDetails() {
     setSelectedExpense(null);
   };
 
-  const handleExpensePress = (expense: Expense) => {
+  const handleExpensePress = (expense: IExpense) => {
     setSelectedExpense(expense);
   };
 
@@ -100,7 +97,7 @@ export default function ExpenseDetails() {
 
   const handleSubmit = () => {
     setIsSubmitModalVisible(false);
-    console.log('Report submitted');
+    console.log("Report submitted");
   };
 
   const renderStep1 = () => (
@@ -256,44 +253,47 @@ export default function ExpenseDetails() {
       <View style={styles.header}>
         <View style={styles.titleContainer}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>Airline Fees</Text>
-            <Text style={styles.id}>#1001</Text>
+            <Text style={styles.title}>{report?.title}</Text>
+            <Text style={styles.id}>#{report?.id}</Text>
           </View>
           <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>Submitted</Text>
+            <Text style={styles.statusText}>{report?.state}</Text>
           </View>
         </View>
-        <Text style={styles.amount}>$120.00</Text>
-        <Text style={styles.date}>Submission: Nov 5, 2024</Text>
-        <Text style={styles.approval}>Approval: N/A</Text>
+        <Text style={styles.amount}>${report?.amount.toFixed(2)}</Text>
+        <Text style={styles.date}>Submission: {report?.submission}</Text>
+        <Text style={styles.approval}>Approval: {report?.approval}</Text>
 
-        <View style={styles.stepper}>
+        {/* <View style={styles.stepper}>
           <View style={styles.stepperItem}>
             <View style={[styles.stepNumber, styles.activeStep]}>
-              <Text style={[styles.stepNumberText, styles.activeStepText]}>1</Text>
+              <Text style={[styles.stepNumberText, styles.activeStepText]}>
+                1
+              </Text>
             </View>
             <Text style={styles.stepLabel}>Submitted</Text>
             <Text style={styles.stepDate}>Nov 5</Text>
           </View>
-          
+
           <View style={styles.stepperLine} />
-          
+
           <View style={styles.stepperItem}>
             <View style={styles.stepNumber}>
               <Text style={styles.stepNumberText}>2</Text>
             </View>
             <Text style={styles.stepLabel}>Approved</Text>
           </View>
-          
+
           <View style={styles.stepperLine} />
-          
+
           <View style={styles.stepperItem}>
             <View style={styles.stepNumber}>
               <Text style={styles.stepNumberText}>3</Text>
             </View>
             <Text style={styles.stepLabel}>Paid</Text>
           </View>
-        </View>
+        </View> */}
+        <Stepper currentState={report?.state} date={report?.submission} />
       </View>
 
       <TouchableOpacity style={styles.submitButton}>
@@ -572,7 +572,9 @@ export default function ExpenseDetails() {
             </Text>
 
             <View style={styles.deleteModalDetails}>
-              <Text style={styles.deleteModalText}>International Travel #1001</Text>
+              <Text style={styles.deleteModalText}>
+                International Travel #1001
+              </Text>
               <Text style={styles.deleteModalText}>$120.00</Text>
               <Text style={styles.deleteModalText}>Nov 5, 2024</Text>
             </View>
@@ -585,7 +587,10 @@ export default function ExpenseDetails() {
                 <Text style={styles.deleteModalCancelText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.deleteModalConfirmButton, { backgroundColor: '#1E3A8A' }]}
+                style={[
+                  styles.deleteModalConfirmButton,
+                  { backgroundColor: "#1E3A8A" },
+                ]}
                 onPress={handleSubmit}
               >
                 <Text style={styles.deleteModalConfirmText}>Yes, submit</Text>
@@ -1007,61 +1012,61 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   statusBadge: {
-    backgroundColor: '#F3F4E6',
+    backgroundColor: "#F3F4E6",
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 16,
   },
   statusText: {
-    color: '#666666',
+    color: "#666666",
     fontSize: 14,
   },
   stepper: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
     marginTop: 24,
     paddingHorizontal: 0,
   },
   stepperItem: {
-    alignItems: 'center',
+    alignItems: "center",
     width: 80,
   },
   stepNumber: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#E5E7EB',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#E5E7EB",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 8,
   },
   activeStep: {
-    backgroundColor: '#1E40AF',
+    backgroundColor: "#1E40AF",
   },
   stepNumberText: {
-    color: '#6B7280',
+    color: "#6B7280",
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   activeStepText: {
-    color: 'white',
+    color: "white",
   },
   stepLabel: {
     fontSize: 14,
-    color: '#374151',
+    color: "#374151",
     marginBottom: 4,
-    textAlign: 'center',
+    textAlign: "center",
   },
   stepDate: {
     fontSize: 12,
-    color: '#6B7280',
-    textAlign: 'center',
+    color: "#6B7280",
+    textAlign: "center",
   },
   stepperLine: {
-    width: '20%',
+    width: "20%",
     height: 1,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: "#E5E7EB",
     marginTop: 12,
   },
 });
