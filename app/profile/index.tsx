@@ -25,7 +25,7 @@ export default function ProfileScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Contact details</Text>
         <View style={styles.contactItem}>
-          <Ionicons name="mail-outline" size={20} color="#64748B" />
+          <Ionicons name="calendar-clear-outline" size={20} color="#64748B" />
           <Text style={styles.contactText}>example@gmail.com</Text>
         </View>
         <View style={styles.contactItem}>
@@ -38,7 +38,7 @@ export default function ProfileScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Saved credit card</Text>
         <Pressable style={styles.addCardButton}>
-          <Ionicons name="add" size={24} color="#1E3A8A" />
+          <Ionicons name="add" size={24} color="#5B5B5B" />
           <Text style={styles.addCardText}>Add credit card</Text>
         </Pressable>
       </View>
@@ -52,6 +52,10 @@ export default function ProfileScreen() {
               source={require('@/assets/images/us-flag.png')} 
               style={styles.flag}
             /> */}
+            <Image
+                source={require('../../assets/images/usa.png')} 
+                style={styles.flag}     
+            />
             <Text style={styles.currencyText}>USD $</Text>
           </View>
           <Ionicons name="chevron-down" size={20} color="#64748B" />
@@ -98,6 +102,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 32,
     marginBottom: 24,
+    fontFamily: "SFProDisplay"
   },
   section: {
     marginVertical: 20,
@@ -108,15 +113,19 @@ const styles = StyleSheet.create({
     color: "#1e1e1e",
     fontWeight: "700",
     marginBottom: 12,
+    fontFamily: "SFProDisplay"
   },
   name: {
     fontSize: 15,
     fontWeight: "500",
+    color:'#1e1e1e',
+    fontFamily: "SFProDisplay"
   },
   department: {
     fontSize: 15,
-    color: "#64748B",
+    color: "#888888",
     marginTop: 12,
+    fontFamily: "SFProDisplay"
   },
   contactItem: {
     flexDirection: "row",
@@ -126,28 +135,35 @@ const styles = StyleSheet.create({
   contactText: {
     marginLeft: 12,
     fontSize: 14,
+    color:'#1e1e1e',
+    fontFamily: "SFProDisplay"
+  },
+  marginNone: {
+    margin:0,
   },
   addCardButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: "#DDDDDD",
     borderRadius: 8,
     padding: 12,
+    height:48,
   },
   addCardText: {
     marginLeft: 8,
     color: "#1e1e1e",
     fontWeight: "700",
     fontSize: 17,
+    fontFamily: "SFProDisplay"
   },
   currencySelector: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: "#DDDDDD",
     borderRadius: 8,
     padding: 12,
   },
@@ -156,12 +172,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   flag: {
-    width: 24,
-    height: 16,
+    width: 20,
+    height: 13,
     marginRight: 8,
   },
   currencyText: {
     fontSize: 14,
+    color:'#1E1E1E',
+    fontFamily: "SFProDisplay"
   },
   footer: {
     flex: 1,
@@ -169,16 +187,18 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   forgotPassword: {
-    color: "#64748B",
+    color: "#5B5B5B",
     marginBottom: 16,
     textDecorationLine: "underline",
     fontSize: 17,
+    fontFamily: "SFProDisplay"
   },
   logout: {
-    color: "#EF4444",
+    color: "#E12020",
     textDecorationLine: "underline",
     marginTop: 16,
     fontSize: 17,
+    fontFamily: "SFProDisplay"
   },
   tabBar: {
     flexDirection: "row",
@@ -209,6 +229,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#64748B",
     marginTop: 4,
+    fontFamily: "SFProDisplay"
   },
   activeTab: {
     color: "#1E3A8A",

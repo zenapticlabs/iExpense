@@ -376,7 +376,7 @@ export default function ExpenseDetails() {
           onRequestClose={()=> setUploadFileModalVisible(!isUploadFileModalVisible)}>
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text style={styles.modalTitle}>Uploaded receipt</Text>
+              <Text style={styles.modalUploadTitle}>Uploaded receipt</Text>
               <View style={styles.uploadContent}></View>
               <View style={styles.btnsContainer}>
               <Pressable
@@ -660,7 +660,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  modalTitle:{
+  modalUploadTitle:{
    fontSize: 22,
     fontWeight: 700,
     color: '#1e1e1e',
