@@ -2,14 +2,14 @@ import { StyleSheet, Pressable, Image } from "react-native";
 import { Link, router } from "expo-router";
 import { Text, View } from "@/components/Themed";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth } from "@/context/AuthContext";
+// import { useAuth } from "@/context/AuthContext";
 import Divider from "@/components/Divider";
 
 export default function ProfileScreen() {
-  const { signOut } = useAuth();
+  // const { signOut } = useAuth();
   const handleLogout = async () => {
     // Add your logout logic here, for example:
-    await signOut();
+    // await signOut();
   };
 
   return (
