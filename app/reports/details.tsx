@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Pressable,
   Modal,
+  Image
 } from "react-native";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -107,7 +108,7 @@ export default function ExpenseDetails() {
       <Text style={styles.label}>Select expense type</Text>
 
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color="#666" />
+        <Ionicons name="search" size={24} color="#666666" />
         <TextInput
           style={styles.searchInput}
           placeholder="Search"
@@ -130,7 +131,7 @@ export default function ExpenseDetails() {
           >
             <Text style={styles.expenseTypeText}>{type}</Text>
             {selectedExpenseType === type && (
-              <Ionicons name="checkmark" size={24} color="#1E3A8A" />
+              <Ionicons name="checkmark" size={24} color="#17317F" />
             )}
           </TouchableOpacity>
         ))}
@@ -157,24 +158,29 @@ export default function ExpenseDetails() {
   const renderStep2 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.modalTitle}>Create New Expense</Text>
-      <Text style={styles.label}>Expense type</Text>
+      <Text style={styles.createExpenselabel}>Expense type</Text>
       <View style={styles.selectedTypeContainer}>
-        <Text>{selectedExpenseType}</Text>
+        <Text style={styles.selectedTypeContainerText}>{selectedExpenseType}</Text>
       </View>
 
-      <Text style={styles.label}>Date</Text>
+      <Text style={styles.createExpenselabel}>Date</Text>
       <TouchableOpacity style={styles.inputContainer}>
-        <Text>Nov 5, 2024</Text>
-        <Ionicons name="calendar-outline" size={20} color="#666" />
+        <Text style={styles.inputValue}>Nov 5, 2024</Text>
+        <Ionicons name="calendar-clear-outline" size={24} color="#888888" />
       </TouchableOpacity>
-
-      <Text style={styles.label}>Receipt amount</Text>
+    <View style={styles.amountContainer}>
+    
+      <Text style={styles.createExpenselabel}>Receipt amount</Text>
       <View style={styles.currencyInputContainer}>
         <View style={styles.currencyPrefix}>
           {/* <Image
             source={require("../../assets/us-flag.png")}
             style={styles.flagIcon}
           /> */}
+            <Image
+               source={require('../../assets/images/usa.png')} 
+               style={styles.flag}     
+             />
           <Text style={styles.currencyText}>USD $</Text>
         </View>
         <TextInput
@@ -184,13 +190,17 @@ export default function ExpenseDetails() {
         />
       </View>
 
-      <Text style={styles.label}>Converted report amount</Text>
+      <Text style={styles.createExpenselabel}>Converted report amount</Text>
       <View style={styles.currencyInputContainer}>
         <View style={styles.currencyPrefix}>
           {/* <Image
             source={require("../../assets/us-flag.png")}
             style={styles.flagIcon}
           /> */}
+          <Image
+               source={require('../../assets/images/usa.png')} 
+               style={styles.flag}     
+             />
           <Text style={styles.currencyText}>USD $</Text>
         </View>
         <TextInput
@@ -199,18 +209,20 @@ export default function ExpenseDetails() {
           keyboardType="decimal-pad"
         />
       </View>
-
-      <Text style={styles.label}>Justification</Text>
+      </View>
+      <Text style={styles.createExpenselabel}>Justification</Text>
       <TextInput
         style={styles.justificationInput}
         placeholder="Enter justification"
-        multiline={true}
+        multiline={false}
         numberOfLines={3}
       />
 
-      <Text style={styles.label}>Attached receipt</Text>
+      <Text style={styles.createExpenselabel}>Attached receipt</Text>
       <TouchableOpacity style={styles.uploadContainer}>
-        <Ionicons name="cloud-upload-outline" size={24} color="#666" />
+        <Ionicons name="document-outline"
+                        size={28}
+                        color="#888888" />
         <Text style={styles.uploadText}>Upload file</Text>
       </TouchableOpacity>
 
@@ -232,19 +244,19 @@ export default function ExpenseDetails() {
           headerLeft: () => (
             <View style={styles.headerLeft}>
               <TouchableOpacity onPress={() => router.back()}>
-                <Ionicons name="arrow-back" size={36} color="#000" />
+                <Ionicons name="arrow-back" size={32} color="#1E1E1E" />
               </TouchableOpacity>
             </View>
           ),
           headerRight: () => (
             <View style={styles.headerRight}>
               <TouchableOpacity onPress={() => setIsModalVisible(true)}>
-                <Ionicons name="add" size={36} color="#000" />
+                <Ionicons name="add" size={32} color="#17317F" />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setIsReportDeleteModalVisible(true)}
               >
-                <Ionicons name="trash-outline" size={36} color="#000" />
+                <Ionicons name="trash-outline" size={32} color="#888888" />
               </TouchableOpacity>
             </View>
           ),
@@ -327,7 +339,7 @@ export default function ExpenseDetails() {
               <Text style={styles.expenseItemAmount}>${expense.amount}</Text>
               <Text style={styles.expenseItemDate}>{expense.date}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={24} color="#666" />
+            <Ionicons name="chevron-forward" size={24} color="#1E1E1E" />
           </TouchableOpacity>
         ))}
       </View>
@@ -369,33 +381,7 @@ export default function ExpenseDetails() {
         </Pressable>
       </Modal>
 
-      <Modal
-          animationType="slide"
-          transparent={true}
-          visible={isUploadFileModalVisible}
-          onRequestClose={()=> setUploadFileModalVisible(!isUploadFileModalVisible)}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalUploadTitle}>Uploaded receipt</Text>
-              <View style={styles.uploadContent}></View>
-              <View style={styles.btnsContainer}>
-              <Pressable
-                style={[styles.button, styles.buttonUpload]}
-                // onPress={() => setModalVisible(!modalVisible)}
-                >
-                <Text style={styles.textStyle , styles.uploadBtnText}>Upload receipt</Text>
-              </Pressable>
-
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setUploadFileModalVisible(false)}
-                >
-                <Text style={styles.textStyle}>Cancel</Text>
-              </Pressable>
-              </View>
-            </View>
-          </View>
-        </Modal>
+ 
 
       <Modal
         animationType="slide"
@@ -416,19 +402,19 @@ export default function ExpenseDetails() {
                   <>
                     <Text style={styles.label}>Expense type</Text>
                     <View style={styles.selectedTypeContainer}>
-                      <Text>{selectedExpense.title}</Text>
+                      <Text style={styles.expenceTypeValue}>{selectedExpense.title}</Text>
                     </View>
 
                     <Text style={styles.label}>Date</Text>
                     <TouchableOpacity style={styles.inputContainer}>
-                      <Text>{selectedExpense.date}</Text>
+                      <Text style={styles.inputValue}>{selectedExpense.date}</Text>
                       <Ionicons
-                        name="calendar-outline"
-                        size={20}
-                        color="#666"
+                        name="calendar-clear-outline"
+                        size={24}
+                        color="#5B5B5B"
                       />
                     </TouchableOpacity>
-
+                    <View style={styles.amountContainer}>
                     <Text style={styles.label}>Receipt amount</Text>
                     <View style={styles.currencyInputContainer}>
                       <View style={styles.currencyPrefix}>
@@ -436,6 +422,10 @@ export default function ExpenseDetails() {
                       source={require("../../assets/us-flag.png")}
                       style={styles.flagIcon}
                     /> */}
+                    <Image
+                      source={require('../../assets/images/usa.png')} 
+                      style={styles.flag}     
+                    />
                         <Text style={styles.currencyText}>USD $</Text>
                       </View>
                       <TextInput
@@ -452,6 +442,10 @@ export default function ExpenseDetails() {
                       source={require("../../assets/us-flag.png")}
                       style={styles.flagIcon}
                     /> */}
+                    <Image
+                        source={require('../../assets/images/usa.png')} 
+                        style={styles.flag}     
+                      />
                         <Text style={styles.currencyText}>USD $</Text>
                       </View>
                       <TextInput
@@ -460,21 +454,21 @@ export default function ExpenseDetails() {
                         keyboardType="decimal-pad"
                       />
                     </View>
-
+                    </View>
                     <Text style={styles.label}>Justification</Text>
                     <TextInput
                       style={styles.justificationInput}
                       placeholder="Enter justification"
-                      multiline={true}
+                      multiline={false}
                       numberOfLines={3}
                     />
 
                     <Text style={styles.label}>Attached receipt</Text>
                     <TouchableOpacity style={styles.uploadContainer} onPress={()=> setUploadFileModalVisible(true)}>
                       <Ionicons
-                        name="cloud-upload-outline"
-                        size={24}
-                        color="#666"
+                        name="document-outline"
+                        size={28}
+                        color="#888888"
                       />
                       <Text style={styles.uploadText}>Upload file</Text>
                     </TouchableOpacity>
@@ -484,7 +478,7 @@ export default function ExpenseDetails() {
                         style={styles.deleteButton}
                         onPress={handleDeletePress}
                       >
-                        <Ionicons name="trash-outline" size={24} color="red" />
+                        <Ionicons name="trash-outline" size={28} color="red" />
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.saveButton}
@@ -517,13 +511,13 @@ export default function ExpenseDetails() {
             </Text>
 
             <View style={styles.deleteModalDetails}>
-              <Text style={styles.deleteModalText}>
+              <Text style={styles.deleteModalTextTitle}>
                 {selectedExpense?.title}
               </Text>
-              <Text style={styles.deleteModalText}>
+              <Text style={styles.deleteModalTextAmount}>
                 ${selectedExpense?.amount}
               </Text>
-              <Text style={styles.deleteModalText}>
+              <Text style={styles.deleteModalTextDate}>
                 {selectedExpense?.date}
               </Text>
             </View>
@@ -562,9 +556,9 @@ export default function ExpenseDetails() {
             </Text>
 
             <View style={styles.deleteModalDetails}>
-              <Text style={styles.deleteModalText}>Airline Fees</Text>
-              <Text style={styles.deleteModalText}>$120.00</Text>
-              <Text style={styles.deleteModalText}>Nov 5, 2024</Text>
+              <Text style={styles.deleteModalTextTitle}>Airline Fees</Text>
+              <Text style={styles.deleteModalTextAmount}>$120.00</Text>
+              <Text style={styles.deleteModalTextDate}>Nov 5, 2024</Text>
             </View>
 
             <View style={styles.deleteModalButtons}>
@@ -601,11 +595,11 @@ export default function ExpenseDetails() {
             </Text>
 
             <View style={styles.deleteModalDetails}>
-              <Text style={styles.deleteModalText}>
+              <Text style={styles.deleteModalTextTitle}>
                 International Travel #1001
               </Text>
-              <Text style={styles.deleteModalText}>$120.00</Text>
-              <Text style={styles.deleteModalText}>Nov 5, 2024</Text>
+              <Text style={styles.deleteModalTextAmount}>$120.00</Text>
+              <Text style={styles.deleteModalTextDate}>Nov 5, 2024</Text>
             </View>
 
             <View style={styles.deleteModalButtons}>
@@ -628,6 +622,33 @@ export default function ExpenseDetails() {
           </View>
         </Pressable>
       </Modal>
+
+      <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isUploadFileModalVisible}
+          onRequestClose={()=> setUploadFileModalVisible(!isUploadFileModalVisible)}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalUploadTitle}>Uploaded receipt</Text>
+              <View style={styles.uploadContent}></View>
+              <View style={styles.btnsContainer}>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setUploadFileModalVisible(false)}
+                >
+                <Text style={styles.textStyle}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, styles.buttonUpload]}
+                // onPress={() => setModalVisible(!modalVisible)}
+                >
+                <Text style={styles.textStyle , styles.uploadBtnText}>Upload receipt</Text>
+              </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
     </View>
   );
 }
@@ -666,6 +687,8 @@ const styles = StyleSheet.create({
     color: '#1e1e1e',
     lineHeight: 26,
     width: '100%',
+    fontFamily: "SFProDisplay",
+    marginBottom:12,
   },
   uploadContent :{
     height: 262,
@@ -681,8 +704,9 @@ const styles = StyleSheet.create({
     width:'100%',
     height:88,
     alignItems:'center',
+    borderTopWidth:1,
+    borderColor:'#DDDDDD',
   },
-
   button: {
     borderRadius: 8,
     padding: 10,
@@ -695,21 +719,26 @@ const styles = StyleSheet.create({
   },
   
   buttonUpload: {
-    backgroundColor: '#F5F5F5',
-    color:'#000',
+    backgroundColor: '#17317F',
+    color:'white',
   }, 
 
   uploadBtnText:{
-    color:'#000',
+    color:'#fff',
+    textAlign: 'center',
+    fontSize:17,
+    fontFamily: "SFProDisplay",
   },
   buttonClose: {
-    backgroundColor: '#17317F',
-    color:'white',
+    backgroundColor: '#F5F5F5',
+    color:'#000',
   },
   textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: '#1e1e1e',
+    fontWeight: 600,
     textAlign: 'center',
+    fontSize:17,
+    fontFamily: "SFProDisplay",
   },
   container: {
     flex: 1,
@@ -734,35 +763,56 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "600",
+    fontSize: 22,
+    fontWeight: 700,
+    fontFamily: "SFProDisplay",
+    color:'#1E1E1E',
+    lineHeight:28
   },
   id: {
-    color: "#666",
+    fontSize: 15,
+    fontWeight: 400,
+    fontFamily: "SFProDisplay",
+    color:'#5B5B5B',
+    lineHeight:20
   },
   amount: {
-    fontSize: 20,
-    fontWeight: "600",
+    fontSize: 17,
+    fontWeight: 400,
     marginTop: 8,
+    fontFamily: "SFProDisplay",
+    color:'#1E1E1E',
   },
   date: {
-    color: "#666",
+    color: "#5B5B5B",
+    fontSize: 15,
+    fontWeight: 400,
     marginTop: 4,
+    fontFamily: "SFProDisplay",
+    lineHeight:20
   },
   approval: {
-    color: "#666",
+    color: "#5B5B5B",
+    fontSize: 15,
+    fontWeight: 400,
     marginTop: 2,
+    fontFamily: "SFProDisplay",
+    lineHeight:20
   },
   submitButton: {
-    backgroundColor: "#1a237e",
+    backgroundColor: "#17317F",
     margin: 16,
     padding: 16,
     borderRadius: 8,
     alignItems: "center",
+    height:48,
+    justifyContent:'center'
   },
   submitButtonText: {
     color: "white",
     fontWeight: "600",
+    fontSize: 17,
+    fontFamily: "SFProDisplay",
   },
   // expenseSection: {
   //   padding: 16,
@@ -848,27 +898,42 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalTitle: {
-    fontSize: 24,
-    fontWeight: "600",
+    fontSize: 22,
+    fontWeight: "700",
     marginBottom: 20,
+    lineHeight:28,
+    color:'#1E1E1E',
+    fontFamily: "SFProDisplay",
   },
   label: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 8,
+    fontSize: 20,
+    fontWeight:400,
+    color: "#1e1e1e",
+    marginBottom: 12,
+    fontFamily: "SFProDisplay",
+  },
+  createExpenselabel:{
+    fontSize: 15,
+    fontWeight:400,
+    color: "#1e1e1e",
+    marginBottom: 12,
+    fontFamily: "SFProDisplay",
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#f5f5f5",
-    padding: 10,
+    padding: 16,
     borderRadius: 8,
     marginBottom: 16,
+    height:48,
   },
   searchInput: {
     flex: 1,
     marginLeft: 8,
-    fontSize: 16,
+    fontSize: 15,
+    color:'#888888',
+    fontFamily: "SFProDisplay",
   },
   expenseTypeList: {
     flex: 1,
@@ -878,19 +943,31 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
+    marginBottom:12,
+    borderRadius:8,
+    height:56,
   },
   selectedExpenseType: {
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "#17317F1A",
+    borderColor:'#17317F',
   },
   expenseTypeText: {
-    fontSize: 16,
+    fontSize: 15,
+    fontFamily: "SFProDisplay",
+    color:'#1e1e1e',
+    fontWeight:400
   },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 20,
+    borderTopWidth:1,
+    borderColor:'#DDDDDD',
+    padding:16,
+    marginInline:-20,
+    paddingBottom:0
   },
   cancelButton: {
     padding: 16,
@@ -898,7 +975,9 @@ const styles = StyleSheet.create({
     marginRight: 8,
     borderRadius: 8,
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#F5F5F5",
+    justifyContent:'center',
+    height:56,
   },
   nextButton: {
     padding: 16,
@@ -906,80 +985,146 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     borderRadius: 8,
     alignItems: "center",
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#17317F",
+    justifyContent:'center',
+    height:56,
   },
   disabledButton: {
     backgroundColor: "#A0AEC0",
   },
   cancelButtonText: {
-    color: "#666",
+    color: "#1E1E1E",
     fontWeight: "600",
+    fontSize:17,
+    fontFamily: "SFProDisplay",
   },
   nextButtonText: {
     color: "white",
     fontWeight: "600",
+    fontSize:17,
+    fontFamily: "SFProDisplay",
   },
   selectedTypeContainer: {
     padding: 16,
     backgroundColor: "#f5f5f5",
     borderRadius: 8,
     marginBottom: 16,
+    height:48,
+    borderWidth:1,
+    borderColor:'#DDDDDD'
+  },
+  expenceTypeValue :{
+    color:'#5B5B5B',
+    fontSize:15,
+    fontWeight:400,
+    fontFamily: "SFProDisplay",
+  },
+  selectedTypeContainerText:{
+    color:'#5B5B5B',
+    fontSize:15,
+    fontWeight:400,
+    fontFamily: "SFProDisplay",
   },
   inputContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#f5f5f5",
     borderRadius: 8,
     marginBottom: 16,
+    borderWidth:1,
+    borderColor:'#DDDDDD'
+  },
+  inputValue:{
+    fontSize:15,
+    fontWeight:400,
+    fontFamily: "SFProDisplay",
+  },
+  amountContainer:{
+    flex:1,
+    borderWidth: 1,
+    borderRadius:8,
+    borderColor: '#dddddd',
+    backgroundColor: '#fff',
+    width:'100%',
+    padding:16,
+    marginBottom:16,
   },
   currencyInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#fff",
     borderRadius: 8,
     marginBottom: 16,
+    gap:10
   },
   currencyPrefix: {
     flexDirection: "row",
     alignItems: "center",
     paddingLeft: 16,
     paddingRight: 8,
+    borderColor:'#DDDDDD',
+    borderWidth:1,
+    height:48,
+    backgroundColor :'#ffffff',
+    borderRadius: 8,
+    width:140,
   },
-  flagIcon: {
+  flag: {
     width: 20,
-    height: 15,
+    height: 13,
     marginRight: 8,
   },
   currencyText: {
-    color: "#666",
+    color: "#1E1E1E",
+    fontSize:15,
+    fontWeight:400,
+    fontFamily: "SFProDisplay",
+    lineHeight:20,
   },
   currencyInput: {
     flex: 1,
     padding: 16,
+    borderColor:'#DDDDDD',
+    borderWidth:1,
+    height:48,
+    backgroundColor :'#ffffff',
+    borderRadius: 8,
+    color: "#1E1E1E",
+    fontSize:15,
+    fontWeight:400,
+    fontFamily: "SFProDisplay",
   },
   justificationInput: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#fff",
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
-    height: 100,
+    height: 48,
     textAlignVertical: "top",
+    borderWidth:1,
+    borderColor: '#DDDDDD',
+    color: "#1E1E1E",
+    fontSize:15,
+    fontWeight:400,
+    fontFamily: "SFProDisplay",
   },
   uploadContainer: {
     borderStyle: "dashed",
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#888888",
     borderRadius: 8,
     padding: 24,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
+    height:115,
   },
   uploadText: {
-    color: "#666",
+    color: "#1e1e1e",
     marginTop: 8,
+    fontSize: 15,
+    fontFamily: "SFProDisplay",
   },
   modalOverlay: {
     flex: 1,
@@ -988,12 +1133,14 @@ const styles = StyleSheet.create({
   },
   expenseSection: {
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#f5f5f5",
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "600",
     marginBottom: 16,
+    fontFamily: "SFProDisplay",
+
   },
   expenseItem: {
     flexDirection: "row",
@@ -1004,6 +1151,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
     shadowColor: "#000",
+    borderWidth:1,
+    borderColor:'#DDDDDD',
+    height:116,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -1013,40 +1163,50 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   expenseItemTitle: {
-    fontSize: 16,
-    fontWeight: "500",
-    marginBottom: 4,
-  },
-  expenseItemAmount: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
     marginBottom: 4,
+    fontFamily: "SFProDisplay",
+    color:'#1E1E1E',
+  },
+  expenseItemAmount: {
+    fontSize: 15,
+    fontWeight: 400,
+    marginBottom: 4,
+    fontFamily: "SFProDisplay",
+    color:'#1E1E1E',
   },
   expenseItemDate: {
-    fontSize: 14,
-    color: "#666",
+    fontSize: 15,
+    color: "#5B5B5B",
+    fontWeight:400,
+    fontFamily: "SFProDisplay",
   },
   deleteButton: {
     padding: 16,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "red",
-    width: 56,
+    width: 60,
     height: 56,
+    backgroundColor:'#E120201A'
   },
   saveButton: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: 16,
     padding: 16,
     borderRadius: 8,
     alignItems: "center",
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#17317F",
+    justifyContent:'center',
+    height:56,
   },
   saveButtonText: {
     color: "white",
     fontWeight: "600",
+    fontSize:17,
+    lineHeight:22,
+    fontFamily: "SFProDisplay",
   },
   editModalContainer: {
     padding: 16,
@@ -1065,24 +1225,51 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   deleteModalTitle: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 22,
+    fontWeight: "700",
     marginBottom: 16,
-    textAlign: "center",
+    textAlign: "left",
+    lineHeight:28,
+    color:'#1E1E1E',
+    fontFamily: "SFProDisplay",
   },
   deleteModalDetails: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#fff",
     padding: 16,
     borderRadius: 8,
     marginBottom: 20,
+    borderWidth:1,
+    borderColor:'#DDDDDD',
+    gap:5,
   },
-  deleteModalText: {
-    fontSize: 16,
-    marginBottom: 4,
+  deleteModalTextTitle:{
+    fontSize:17,
+    fontWeight:600,
+    fontFamily: "SFProDisplay",
+    color:'#1E1E1E',
+    lineHeight:22,
+  },
+  deleteModalTextAmount : {
+    fontSize:15,
+    fontWeight:400,
+    fontFamily: "SFProDisplay",
+    color:'#1E1E1E',
+    lineHeight:20,
+  },
+  deleteModalTextDate:{
+    fontSize:15,
+    fontWeight:400,
+    fontFamily: "SFProDisplay",
+    color:'#5B5B5B',
+    lineHeight:20,
   },
   deleteModalButtons: {
     flexDirection: "row",
     gap: 12,
+    height:88,
+    display:'flex',
+    justifyContent:'center',
+    alignItems:'center'
   },
   deleteModalCancelButton: {
     flex: 1,
@@ -1090,21 +1277,32 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#f5f5f5",
     alignItems: "center",
+    height:56,
+    justifyContent:'center',
   },
   deleteModalConfirmButton: {
     flex: 1,
     padding: 16,
     borderRadius: 8,
-    backgroundColor: "#DC2626",
+    backgroundColor: "#E12020",
     alignItems: "center",
+    height:56,
+    justifyContent:'center',
   },
   deleteModalCancelText: {
-    color: "#666",
+    color: "#1E1E1E",
     fontWeight: "600",
+    fontSize:17,
+    lineHeight:22,
+    fontFamily: "SFProDisplay",
   },
   deleteModalConfirmText: {
-    color: "white",
+    color: "#fff",
     fontWeight: "600",
+    fontSize:17,
+    lineHeight:22,
+    fontFamily: "SFProDisplay",
+    letterSpacing:1
   },
   openButton: {
     backgroundColor: "#F3F4F6",
@@ -1119,14 +1317,20 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   statusBadge: {
-    backgroundColor: "#F3F4E6",
+    backgroundColor: "#EAE4C7",
     paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 16,
+    borderRadius: 4,
+    height:26,
+    width:75, 
+    display:'flex',
+    alignItems:'center',
+    justifyContent:'center'
   },
   statusText: {
-    color: "#666666",
-    fontSize: 14,
+    color: "#4F440F",
+    fontSize: 13,
+    fontWeight:400
   },
   stepper: {
     flexDirection: "row",

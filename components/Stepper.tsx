@@ -79,41 +79,48 @@ const styles = StyleSheet.create({
     width: 80,
   },
   stepNumber: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#E5E7EB",
+    width: 32,
+    height: 32,
+    borderRadius: '50%',
+    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 8,
+    borderWidth:1,
+    borderColor:'#DDDDDD'
   },
   activeStep: {
     backgroundColor: "#1a237e",
   },
   stepNumberText: {
-    fontSize: 14,
-    color: "#6B7280",
+    fontSize: 17,
+    color: "#1E1E1E",
+    fontFamily: "SFProDisplay",
   },
   activeStepText: {
     color: "white",
   },
   stepLabel: {
-    fontSize: 14,
-    color: "#374151",
+    fontSize: 13,
+    fontWeight:400,
+    color: "#888888",
+    fontFamily: "SFProDisplay",
   },
   stepDate: {
-    fontSize: 12,
-    color: "#6B7280",
+    fontSize: 13,
+    fontWeight:400,
+    color: "#888888",
+    fontFamily: "SFProDisplay",
   },
   stepperLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "#E5E7EB",
-    marginHorizontal: 8,
+    backgroundColor: "#DDDDDD",
+    marginHorizontal: 0,
     marginTop: 12,
   },
   activeStepperLine: {
-    backgroundColor: "#1a237e",
+    backgroundColor: "#17317F",
   },
 });
 

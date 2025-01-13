@@ -142,7 +142,8 @@ export default function ReportsScreen() {
                 ]}
                 onPress={() => setSelectedDateRange(option)}
               >
-                <Text>{option.label}</Text>
+                <Text style={[
+                  styles.dateOptionLabel]}>{option.label}</Text>
               </Pressable>
             ))}
           </View>
@@ -162,27 +163,28 @@ export default function ReportsScreen() {
             <View style={styles.drawerTopDivderContainer}>
               <View style={styles.drawerTopDivder}></View>
             </View>
-            <Text style={styles.drawerTitle}>New Report</Text>
+            <Text style={styles.reportdrawerTitle}>New Report</Text>
 
             <Text style={styles.inputLabel}>Purpose</Text>
             <TextInput style={styles.input} placeholder="example" />
 
             <Text style={styles.inputLabel}>Report Type</Text>
-            <SelectList
+            <SelectList             
               setSelected={(val: any) => setSelected(val)}
               data={data}
               save="value"
+              style={styles.listSelect}
             />
             <Text style={styles.inputLabel}>Date</Text>
             <Pressable style={styles.selectInput}>
-              <Text>Nov 5, 2024</Text>
-              <Ionicons name="calendar-outline" size={20} color="#64748B" />
+              <Text style={styles.selectInputText}>Nov 5, 2024</Text>
+              <Ionicons name="calendar-outline" size={24} color="#5B5B5B" />
             </Pressable>
 
             <Text style={styles.inputLabel}>Preference</Text>
             <Pressable style={styles.selectInput}>
-              <Text>Cash</Text>
-              <Ionicons name="chevron-down" size={20} color="#64748B" />
+              <Text style={styles.selectInputText}>Cash</Text>
+              <Ionicons name="chevron-down" size={24} color="#5B5B5B" />
             </Pressable>
 
             <Text style={styles.inputLabel}>Default Concurrency</Text>
@@ -192,9 +194,13 @@ export default function ReportsScreen() {
                   source={require("@/assets/images/us-flag.png")} 
                   style={styles.flagIcon} 
                 /> */}
-                <Text>USD $</Text>
+                <Image
+                    source={require('../../assets/images/usa.png')} 
+                    style={styles.flagIcon}     
+                            />
+                <Text style={styles.selectInputText}>USD $</Text>
               </View>
-              <Ionicons name="chevron-down" size={20} color="#64748B" />
+              <Ionicons name="chevron-down" size={24} color="#5B5B5B" />
             </Pressable>
 
             <View style={styles.buttonRow}>
@@ -364,6 +370,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "600",
     marginBottom: 8,
+    fontFamily: "SFProDisplay",
+    color:'#1E1E1E',
+  },
+  reportdrawerTitle:{
+    fontSize:22,
+    fontWeight: 700,
+    fontFamily: "SFProDisplay",
+    color:'#1E1E1E',
+    marginBottom:10,
+    lineHeight:28,
   },
   drawerTopDivderContainer: {
     flexDirection: "row",
@@ -388,10 +404,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#DDDDDD",
+    height:56,
+    fontFamily: "SFProDisplay"
   },
   selectedOption: {
     backgroundColor: "#17317F1A",
     borderColor: "#17317F",
+  },
+  dateOptionLabel: {
+    fontSize: 15,
+    lineHeight: 20,
+    color:'#1E1E1E',
+    fontFamily: "SFProDisplay"
   },
   tabBar: {
     flexDirection: "row",
@@ -433,26 +457,44 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   inputLabel: {
-    fontSize: 14,
-    color: "#1E293B",
+    fontSize: 15,
+    color: "#1E1E1E",
     marginBottom: 4,
+    lineHeight:20,
+    fontFamily: "SFProDisplay",
+    fontWeight:400,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: "#DDDDDD",
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
+    height:48,
+    fontSize:15,
+    fontFamily: "SFProDisplay",
+    color:'#888888'
+  },
+  listSelect:{
+    fontSize:15,
+    fontFamily: "SFProDisplay",
+    color:'#000000'
   },
   selectInput: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: "#DDDDDD",
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
+  },
+  selectInputText:{
+    fontSize:15,
+    fontWeight:400,
+    fontFamily: "SFProDisplay",
+    color:'#1E1E1E'
   },
   placeholderText: {
     color: "#94A3B8",
@@ -463,8 +505,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   flagIcon: {
-    width: 24,
-    height: 16,
+    width: 20,
+    height: 13,
+    marginRight: 8,
   },
   buttonRow: {
     flexDirection: "row",
@@ -476,21 +519,29 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
-    backgroundColor: "#F1F5F9",
+    backgroundColor: "#F5F5F5",
+    height:56,
+    justifyContent:'center'
   },
   saveButton: {
     flex: 1,
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#17317F",
+    height:56,
+    justifyContent:'center'
   },
   cancelButtonText: {
-    color: "#1E293B",
-    fontWeight: "500",
+    color: "#1E1E1E",
+    fontWeight: "600",
+    fontSize:17,
+    fontFamily: "SFProDisplay",
   },
   saveButtonText: {
     color: "white",
-    fontWeight: "500",
+    fontWeight: "600",
+    fontSize:17,
+    fontFamily: "SFProDisplay",
   },
 });
