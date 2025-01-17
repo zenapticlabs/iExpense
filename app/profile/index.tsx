@@ -4,6 +4,7 @@ import { Text, View } from "@/components/Themed";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
 import Divider from "@/components/Divider";
+import CurrencyDropdown from "@/components/CurrencyDropdown";
 
 export default function ProfileScreen() {
   const { signOut } = useAuth();
@@ -46,16 +47,7 @@ export default function ProfileScreen() {
       <Divider />
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Default concurrency</Text>
-        <Pressable style={styles.currencySelector}>
-          <View style={styles.currencyOption}>
-            {/* <Image 
-              source={require('@/assets/images/us-flag.png')} 
-              style={styles.flag}
-            /> */}
-            <Text style={styles.currencyText}>USD $</Text>
-          </View>
-          <Ionicons name="chevron-down" size={20} color="#64748B" />
-        </Pressable>
+        <CurrencyDropdown />
       </View>
 
       <Divider />
