@@ -69,17 +69,17 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.tabBar}>
-        <View style={styles.tabItem}>
-          <Ionicons name="document-text-outline" size={24} color="#64748B" />
-          <Text style={styles.tabText}>Reports</Text>
-        </View>
-        <Link href="/auth" style={styles.tabItem}>
-          <View style={styles.addButton}>
-            <Ionicons name="add" size={24} color="white" />
+        <Link href="/reports" asChild style={styles.tabItem}>
+          <View>
+            <Ionicons name="document-text-outline" size={24} color="#64748B" />
+            <Text style={styles.tabText}>Reports</Text>
           </View>
         </Link>
+        <View style={styles.addButton}>
+          <Ionicons name="add" size={24} color="white" />
+        </View>
         <View style={styles.tabItem}>
-          <Ionicons name="person" size={24} color="#1E3A8A" />
+          <Ionicons name="person" size={24} color="#1e1e1e" />
           <Text style={[styles.tabText, styles.activeTab]}>My Profile</Text>
         </View>
       </View>
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addButton: {
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#1e1e1e",
     width: 48,
     height: 48,
     borderRadius: 24,
