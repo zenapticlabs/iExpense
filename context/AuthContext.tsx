@@ -12,13 +12,14 @@ type User = {
 
 type AuthContextType = {
   user: User;
+  verifyCode: (email: string, code: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   isLoading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
-
+const BASE_URL = "https://expense-management-server.vercel.app/api";
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
@@ -69,35 +70,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const signIn = async (email: string, password: string) => {
+  const verifyCode = async (email: string, code: string) => {
     try {
-      // Replace with your actual API call
-      // const response = await fetch("BASEURL/login", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ email, password }),
-      // });
+      const response = await fetch(`${BASE_URL}/verify`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, code }),
+      });
 
-      // if (!response.ok) {
-      //   throw new Error("Authentication failed");
-      // }
+      if (!response.ok) {
+        throw new Error("Authentication failed");
+      }
+      const { token, user: userData } = await response.json();
 
-      // const { token, user: userData } = await response.json();
-
-      const token = "1234567890";
-      const userData = {
-        id: "1",
-        email: email,
-        name: "Test User",
-      };
       // Store auth data
       await storage.setAuthData(token, userData);
 
       // Update state
       setUser({ ...userData, token });
     } catch (error) {
+      console.error("Verify code error:", error);
+      throw error;
+    }
+  };
+  const signIn = async (email: string, password: string) => {
+    try {
+      // Replace with your actual API call
+      const response = await fetch(`${BASE_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Authentication failed");
+      }
+
+      const { token, user: userData } = await response.json();
+
+      // Store auth data
+      await storage.setAuthData(token, userData);
+
+      // Update state
+      setUser({ ...userData, token });
+    } catch (error) {
+      router.replace("/auth/verify");
+      localStorage.setItem("email", email);
+      localStorage.setItem("password", password);
       console.error("Sign in error:", error);
       throw error;
     }
@@ -118,7 +141,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut, isLoading }}>
+    <AuthContext.Provider
+      value={{ user, signIn, signOut, isLoading, verifyCode }}
+    >
       {children}
     </AuthContext.Provider>
   );
