@@ -2,24 +2,25 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { router, useSegments, useRootNavigationState } from "expo-router";
 import { storage } from "@/utils/storage";
 import LoadingScreen from "@/components/LoadingScreen";
+import { authService } from "@/services/authService";
 
-type User = {
+interface User {
   id: string;
   email: string;
   name: string;
   token?: string;
-} | null;
+}
 
-type AuthContextType = {
-  user: User;
+interface AuthContextType {
+  user: User | null;
   verifyCode: (email: string, code: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   isLoading: boolean;
-};
+}
 
 const AuthContext = createContext<AuthContextType | null>(null);
-const BASE_URL = "https://expense-management-server.vercel.app/api";
+
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
@@ -28,7 +29,7 @@ export function useAuth() {
   return context;
 }
 
-function useProtectedRoute(user: User) {
+function useProtectedRoute(user: User | null) {
   const segments = useSegments();
   const navigationState = useRootNavigationState();
 
@@ -46,7 +47,7 @@ function useProtectedRoute(user: User) {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useProtectedRoute(user);
@@ -55,12 +56,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loadStoredAuth();
   }, []);
 
-  async function loadStoredAuth() {
+  const loadStoredAuth = async () => {
     try {
       const { token, userData } = await storage.getAuthData();
-
       if (token && userData) {
-        // Optional: Validate token with your backend here
         setUser({ ...userData, token });
       }
     } catch (error) {
@@ -68,54 +67,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   const verifyCode = async (email: string, code: string) => {
     try {
-      const response = await fetch(`${BASE_URL}/verify`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, code }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Authentication failed");
-      }
-      const { token, user: userData } = await response.json();
-
-      // Store auth data
+      const { token, user: userData } = await authService.verify(email, code);
       await storage.setAuthData(token, userData);
-
-      // Update state
       setUser({ ...userData, token });
     } catch (error) {
-      console.error("Verify code error:", error);
+      console.error("Verification error:", error);
       throw error;
     }
   };
+
   const signIn = async (email: string, password: string) => {
     try {
-      // Replace with your actual API call
-      const response = await fetch(`${BASE_URL}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Authentication failed");
-      }
-
-      const { token, user: userData } = await response.json();
-
-      // Store auth data
+      const { token, user: userData } = await authService.login(email, password);
       await storage.setAuthData(token, userData);
-
-      // Update state
       setUser({ ...userData, token });
     } catch (error) {
       router.replace("/auth/verify");
@@ -141,9 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider
-      value={{ user, signIn, signOut, isLoading, verifyCode }}
-    >
+    <AuthContext.Provider value={{ user, signIn, signOut, isLoading, verifyCode }}>
       {children}
     </AuthContext.Provider>
   );
