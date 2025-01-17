@@ -100,7 +100,7 @@ export default function ReportsScreen() {
       </View>
       <View style={styles.tabBar}>
         <View style={[styles.tabItem]}>
-          <Ionicons name="document-text" size={24} color="#1E3A8A" />
+          <Ionicons name="document-text" size={24} color="#1e1e1e" />
           <Text style={styles.tabText}>Reports</Text>
         </View>
         <View style={styles.tabItem}>
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addButton: {
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#1e1e1e",
     width: 48,
     height: 48,
     borderRadius: 24,

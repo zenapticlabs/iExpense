@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { Image, StyleSheet, Pressable, TextInput } from "react-native";
+import { Image, StyleSheet, Pressable, TextInput, Alert } from "react-native";
 import { Text, View } from "@/components/Themed";
+import { useAuth } from "@/context/AuthContext";
 
 export default function VerifyScreen() {
   const [code, setCode] = useState(["", "", "", "", ""]);
+  const { verifyCode } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const images = {
     brand: require("@/assets/images/brand.png"),
@@ -15,11 +18,18 @@ export default function VerifyScreen() {
     setCode(newCode);
 
     // Auto-focus next input
-    if (text && index < 5) {
+    if (text && index < 4) {
       const nextInput = document.querySelector(
         `#code-${index + 1}`
       ) as HTMLElement;
       nextInput?.focus();
+    }
+    if (text && index === 4) {
+      const fullCode = newCode.join("");
+      const email = localStorage.getItem("email") as string;
+      if (fullCode.length === 5) {
+        verifyCode(email, fullCode);
+      }
     }
   };
 

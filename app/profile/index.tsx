@@ -4,6 +4,7 @@ import { Text, View } from "@/components/Themed";
 import { Ionicons } from "@expo/vector-icons";
 // import { useAuth } from "@/context/AuthContext";
 import Divider from "@/components/Divider";
+import CurrencyDropdown from "@/components/CurrencyDropdown";
 
 export default function ProfileScreen() {
   // const { signOut } = useAuth();
@@ -46,20 +47,7 @@ export default function ProfileScreen() {
       <Divider />
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Default concurrency</Text>
-        <Pressable style={styles.currencySelector}>
-          <View style={styles.currencyOption}>
-            {/* <Image 
-              source={require('@/assets/images/us-flag.png')} 
-              style={styles.flag}
-            /> */}
-            <Image
-                source={require('../../assets/images/usa.png')} 
-                style={styles.flag}     
-            />
-            <Text style={styles.currencyText}>USD $</Text>
-          </View>
-          <Ionicons name="chevron-down" size={20} color="#64748B" />
-        </Pressable>
+        <CurrencyDropdown />
       </View>
 
       <Divider />
@@ -73,17 +61,17 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.tabBar}>
-        <View style={styles.tabItem}>
-          <Ionicons name="document-text-outline" size={24} color="#64748B" />
-          <Text style={styles.tabText}>Reports</Text>
-        </View>
-        <Link href="/auth" style={styles.tabItem}>
-          <View style={styles.addButton}>
-            <Ionicons name="add" size={24} color="white" />
+        <Link href="/reports" asChild style={styles.tabItem}>
+          <View>
+            <Ionicons name="document-text-outline" size={24} color="#64748B" />
+            <Text style={styles.tabText}>Reports</Text>
           </View>
         </Link>
+        <View style={styles.addButton}>
+          <Ionicons name="add" size={24} color="white" />
+        </View>
         <View style={styles.tabItem}>
-          <Ionicons name="person" size={24} color="#1E3A8A" />
+          <Ionicons name="person" size={24} color="#1e1e1e" />
           <Text style={[styles.tabText, styles.activeTab]}>My Profile</Text>
         </View>
       </View>
@@ -217,7 +205,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addButton: {
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#1e1e1e",
     width: 48,
     height: 48,
     borderRadius: 24,
