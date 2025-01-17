@@ -83,7 +83,7 @@ export default function ReportsScreen() {
       <View style={styles.filterSection}>
         <Text style={styles.title}>Expense Reports</Text>
         <Pressable style={styles.filterButton}>
-          <Ionicons name="calendar-outline" size={20} color="#64748B" />
+          <Ionicons name="calendar-clear-outline" size={20} color="#5B5B5B" />
           <Text
             onPress={() => setIsDateRangeDrawerVisible(true)}
             style={styles.filterText}
@@ -227,14 +227,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 16,
     marginBottom: 24,
+    height:40,
   },
   logo: {
     height: 24,
     width: 48,
   },
   userName: {
-    fontSize: 14,
-    color: "#64748B",
+    fontSize: 15,
+    color: "#1E1E1E",
+    fontFamily: "SFProDisplay"
   },
   filterSection: {
     flexDirection: "row",
@@ -243,8 +245,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "600",
+    color:'#1E1E1E',
+    fontFamily: "SFProDisplay"
   },
   filterButton: {
     flexDirection: "row",
@@ -257,8 +261,9 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   filterText: {
-    color: "#64748B",
-    fontSize: 14,
+    color: "#5B5B5B",
+    fontSize: 13,
+    fontFamily: "SFProDisplay"
   },
   reportList: {
     gap: 16,
@@ -268,6 +273,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 16,
     borderRadius: 8,
+    minHeight:134,
+    boxShadow: '0px 2px 15px 0px rgba(0, 0, 0, 0.07)',
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -278,34 +285,40 @@ const styles = StyleSheet.create({
     elevation: 3, // This is for Android shadow
   },
   reportTitle: {
-    fontSize: 16,
-    fontWeight: "500",
+    fontSize: 17,
+    fontWeight: "600",
     marginBottom: 4,
+    color:'#1e1e1e',
+    fontFamily: "SFProDisplay"
   },
   reportAmount: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
     marginBottom: 8,
+    color:'#1e1e1e',
+    fontFamily: "SFProDisplay"
   },
   reportDetails: {
     gap: 2,
   },
   detailText: {
-    fontSize: 12,
-    color: "#64748B",
+    fontSize: 13,
+    color: "#5B5B5B",
+    fontFamily: "SFProDisplay"
   },
   statusBadge: {
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 4,
-    height: 24,
+    height: 26,
   },
   statusSubmitted: {
-    backgroundColor: "#FEF9C3",
+    backgroundColor: "#EAE4C7",
   },
   statusText: {
     fontSize: 12,
     color: "#854D0E",
+    fontFamily: "SFProDisplay"
   },
   titleRow: {
     flexDirection: "row",
@@ -313,8 +326,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   reportId: {
-    fontSize: 12,
-    color: "#64748B",
+    fontSize: 13,
+    color: "#5B5B5B",
+    marginBottom:4,
+    fontFamily: "SFProDisplay"
   },
   statussubmitted: {
     backgroundColor: "#FEF9C3",
