@@ -17,6 +17,16 @@ export interface IReport {
   updated_at: string;
 }
 
+export interface ICreateReportPayload {
+  expense_type: string;
+  purpose: string;
+  payment_method: string;
+  report_currency: string;
+  report_amount: number;
+  report_date: string;
+  error: boolean;
+}
+
 export interface IExpense {
   title: string;
   amount: string;

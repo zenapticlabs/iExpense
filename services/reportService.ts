@@ -1,17 +1,7 @@
-import { IReport } from "@/constants/types";
+import { ICreateReportPayload, IReport } from "@/constants/types";
 import { authService } from "./authService";
 import axios from "axios";
 const BASE_URL = "https://expense-management-server.vercel.app/api";
-
-interface CreateReportPayload {
-  expense_type: string;
-  purpose: string;
-  payment_method: string;
-  report_currency: string;
-  report_amount: number;
-  report_date: string;
-  error: boolean;
-}
 
 interface UpdateReportPayload {
   expense_type: string;
@@ -40,24 +30,21 @@ export const reportService = {
     return response.data;
   },
 
-  async createReport(
-    payload: CreateReportPayload,
-    accessToken: string
-  ): Promise<Report> {
-    const response = await fetch(`${BASE_URL}/reports`, {
-      method: "POST",
+  async createReport(payload: ICreateReportPayload): Promise<IReport> {
+    const accessToken = await authService.getAccessToken();
+    const response = await axios.post(`${BASE_URL}/reports`, payload, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify(payload),
     });
 
-    if (!response.ok) {
+
+    if (response.status !== 201) {
       throw new Error("Failed to create report");
     }
 
-    return response.json();
+    return response.data;
   },
 
   async deleteReport(reportId: string, accessToken: string): Promise<void> {

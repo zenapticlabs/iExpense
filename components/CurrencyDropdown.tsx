@@ -10,8 +10,7 @@ interface Option {
   icon: React.ReactNode;
 }
 
-const CurrencyDropdown = () => {
-  const [selectedOption, setSelectedOption] = useState<string | null>('usd');
+const CurrencyDropdown = ({ value, onChange }: { value: string; onChange: (value: string) => void }) => {
 
   // Define the data for dropdown options
   const options: Option[] = [
@@ -26,8 +25,10 @@ const CurrencyDropdown = () => {
         data={options}
         labelField="label"
         valueField="value"
-        value={selectedOption}
-        onChange={(item: Option) => setSelectedOption(item.value)}
+        value={value}
+        onChange={(item: Option) => {
+          onChange(item.value);
+        }}
         placeholder="Select currency"
         containerStyle={{ width: '100%' }}
         style={{
@@ -39,7 +40,7 @@ const CurrencyDropdown = () => {
           width: '100%',
         }}
         renderLeftIcon={() => {
-          const selectedItem = options.find(item => item.value === selectedOption);
+          const selectedItem = options.find(item => item.value === value);
           return selectedItem ? (
             <Text style={{ marginRight: 10 }}>{selectedItem.icon}</Text>
           ) : null;
