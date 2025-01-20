@@ -86,10 +86,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await storage.setAuthData(token, userData);
       setUser({ ...userData, token });
     } catch (error) {
-      router.replace("/auth/verify");
       localStorage.setItem("email", email);
       localStorage.setItem("password", password);
-      console.error("Sign in error:", error);
+      if (error === "second_factor_required") {
+        router.replace("/auth/verify");
+      } else {
+        console.log(error);
+      }
       throw error;
     }
   };

@@ -1,3 +1,5 @@
+import axios from "axios";
+
 type AuthResponse = {
   token: string;
   user: {
@@ -14,35 +16,31 @@ class AuthenticationError extends Error {
   }
 }
 
-
 const BASE_URL = "https://expense-management-server.vercel.app/api";
 
 export const authService = {
   async verify(email: string, code: string): Promise<AuthResponse> {
-    const response = await fetch(`${BASE_URL}/verify`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, code }),
-    });
+    const response = await axios.post(`${BASE_URL}/auth/verify-mfa`, { email, code });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new AuthenticationError("Verification failed");
     }
 
-    return response.json();
+    return response.data;
   },
 
   async login(email: string, password: string): Promise<AuthResponse> {
-    const response = await fetch(`${BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!response.ok) {
-      throw new AuthenticationError("Login failed");
+    try {
+      const response = await axios.post(`${BASE_URL}/auth/login`, {
+        email,
+        password,
+      });
+      return response.data;
+    } catch (error: any) {
+      if (error.response.data.code == "second_factor_required") {
+        throw "second_factor_required";
+      }
+      throw new Error("Login failed");
     }
-
-    return response.json();
   },
 };
