@@ -10,10 +10,11 @@ import {
 } from "react-native";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
-import { IExpense } from "@/constants/types";
-import { mockReports } from "@/constants/mockData";
+import { useEffect, useState } from "react";
+import { IExpense, IReport } from "@/constants/types";
+import { reportService } from "@/services/reportService";
 import Stepper from "@/components/Stepper";
+import DeleteReportDrawer from "@/components/report/details/DeleteDrawer";
 
 const EXPENSE_TYPES = [
   "Airfare",
@@ -27,7 +28,7 @@ const EXPENSE_TYPES = [
 
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
-  const report = mockReports.find((report) => report.id === id);
+  const [report, setReport] = useState<IReport | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedExpenseType, setSelectedExpenseType] = useState("");
@@ -37,6 +38,14 @@ export default function ExpenseDetails() {
   const [isReportDeleteModalVisible, setIsReportDeleteModalVisible] =
     useState(false);
   const [isSubmitModalVisible, setIsSubmitModalVisible] = useState(false);
+
+  useEffect(() => {
+    const fetchReport = async () => {
+      const data = await reportService.getReportById(id as string);
+      setReport(data);
+    };
+    fetchReport();
+  }, [id]);
 
   const expenses = [
     {
@@ -90,9 +99,10 @@ export default function ExpenseDetails() {
     handleCloseExpenseDetail();
   };
 
-  const handleReportDelete = () => {
+  const handleReportDelete = async () => {
     setIsReportDeleteModalVisible(false);
-    router.back();
+    await reportService.deleteReport(id as string);
+    router.replace("/reports");
   };
 
   const handleSubmit = () => {
@@ -253,16 +263,20 @@ export default function ExpenseDetails() {
       <View style={styles.header}>
         <View style={styles.titleContainer}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>{report?.title}</Text>
-            <Text style={styles.id}>#{report?.id}</Text>
+            <Text style={styles.title}>{report?.purpose}</Text>
+            <Text style={styles.id}>#{report?.report_number}</Text>
           </View>
           <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>{report?.state}</Text>
+            <Text style={styles.statusText}>{report?.purpose}</Text>
           </View>
         </View>
-        <Text style={styles.amount}>${report?.amount.toFixed(2)}</Text>
-        <Text style={styles.date}>Submission: {report?.submission}</Text>
-        <Text style={styles.approval}>Approval: {report?.approval}</Text>
+        <Text style={styles.amount}>${report?.report_amount}</Text>
+        <Text style={styles.date}>
+          Submission: {report?.report_submit_date}
+        </Text>
+        <Text style={styles.approval}>
+          Approval: {report?.integration_date}
+        </Text>
 
         {/* <View style={styles.stepper}>
           <View style={styles.stepperItem}>
@@ -293,7 +307,10 @@ export default function ExpenseDetails() {
             <Text style={styles.stepLabel}>Paid</Text>
           </View>
         </View> */}
-        <Stepper currentState={report?.state} date={report?.submission} />
+        <Stepper
+          currentState={report?.report_status}
+          date={report?.report_submit_date as string}
+        />
       </View>
 
       <TouchableOpacity style={styles.submitButton}>
@@ -517,44 +534,12 @@ export default function ExpenseDetails() {
         </Pressable>
       </Modal>
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isReportDeleteModalVisible}
-        onRequestClose={() => setIsReportDeleteModalVisible(false)}
-      >
-        <Pressable
-          style={styles.deleteModalOverlay}
-          onPress={() => setIsReportDeleteModalVisible(false)}
-        >
-          <View style={styles.deleteModalContent}>
-            <Text style={styles.deleteModalTitle}>
-              Are you sure you want to delete this expense report?
-            </Text>
-
-            <View style={styles.deleteModalDetails}>
-              <Text style={styles.deleteModalText}>Airline Fees</Text>
-              <Text style={styles.deleteModalText}>$120.00</Text>
-              <Text style={styles.deleteModalText}>Nov 5, 2024</Text>
-            </View>
-
-            <View style={styles.deleteModalButtons}>
-              <TouchableOpacity
-                style={styles.deleteModalCancelButton}
-                onPress={() => setIsReportDeleteModalVisible(false)}
-              >
-                <Text style={styles.deleteModalCancelText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.deleteModalConfirmButton}
-                onPress={handleReportDelete}
-              >
-                <Text style={styles.deleteModalConfirmText}>Yes, delete</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Pressable>
-      </Modal>
+      <DeleteReportDrawer
+        isVisible={isReportDeleteModalVisible}
+        onClose={() => setIsReportDeleteModalVisible(false)}
+        onDelete={handleReportDelete}
+        report={report as IReport}
+      />
 
       <Modal
         animationType="slide"

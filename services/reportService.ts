@@ -39,7 +39,6 @@ export const reportService = {
       },
     });
 
-
     if (response.status !== 201) {
       throw new Error("Failed to create report");
     }
@@ -47,32 +46,37 @@ export const reportService = {
     return response.data;
   },
 
-  async deleteReport(reportId: string, accessToken: string): Promise<void> {
-    const response = await fetch(`${BASE_URL}/reports/${reportId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+  async deleteReport(reportId: string): Promise<void> {
+    try {
+      const accessToken = await authService.getAccessToken();
+      const response = await axios.delete(`${BASE_URL}/reports/${reportId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error("Failed to delete report");
+      if (response.status !== 204) {
+        throw new Error("Failed to delete report");
+      }
+    } catch (error) {
+      console.error("Error deleting report:", error);
+      throw error;
     }
   },
 
-  async getReport(reportId: string, accessToken: string): Promise<Report> {
-    const response = await fetch(`${BASE_URL}/reports/${reportId}`, {
-      method: "GET",
+  async getReportById(reportId: string): Promise<IReport> {
+    const accessToken = await authService.getAccessToken();
+    const response = await axios.get(`${BASE_URL}/reports/${reportId}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error("Failed to fetch report");
     }
 
-    return response.json();
+    return response.data;
   },
 
   async updateReport(

@@ -2,7 +2,7 @@ import { StyleSheet, Pressable, Image, Modal, TextInput, ScrollView } from "reac
 import { Link, useRouter } from "expo-router";
 import { Text, View } from "@/components/Themed";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   ReportStatusBgColor,
   ReportStatusTextColor,
@@ -10,6 +10,7 @@ import {
 import { ICreateReportPayload, IReport } from "@/constants/types";
 import { reportService } from "@/services/reportService";
 import NewReportDrawer from "@/components/report/NewReportDrawer";
+import { useFocusEffect } from "@react-navigation/native";
 
 const DATE_OPTIONS = [
   { label: "Last 3 months", value: "last_3_months" },
@@ -57,6 +58,7 @@ const ReportItem = ({ report }: { report: IReport }) => (
 );
 
 export default function ReportsScreen() {
+  const router = useRouter();
   const [reports, setReports] = useState<IReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDateRange, setSelectedDateRange] = useState(DATE_OPTIONS[0]);
@@ -65,19 +67,23 @@ export default function ReportsScreen() {
   const [isNewReportDrawerVisible, setIsNewReportDrawerVisible] =
     useState(false);
 
-  useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const data = await reportService.getReports();
-        setReports(data);
-      } catch (error) {
-        console.error("Failed to fetch reports:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchReports();
-  }, []);
+  const fetchReports = async () => {
+    try {
+      setLoading(true);
+      const data = await reportService.getReports();
+      setReports(data);
+    } catch (error) {
+      console.error("Failed to fetch reports:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchReports();
+    }, [])
+  );
 
   const handleCreateNewReport = async (report: ICreateReportPayload) => {
     const newReport = await reportService.createReport(report);
