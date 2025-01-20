@@ -2,11 +2,11 @@ import { StyleSheet, Pressable, Image, Modal, TextInput } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { Text, View } from "@/components/Themed";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ReportStatusBgColor, ReportStatusTextColor } from "@/utils/UtilData";
 import { SelectList } from "react-native-dropdown-select-list";
 import { IReport } from "@/constants/types";
-import { mockReports } from "@/constants/mockData";
+import { reportService } from "@/services/reportService";
 
 const DATE_OPTIONS = [
   { label: "Last 3 months", value: "last_3_months" },
@@ -20,32 +20,32 @@ const ReportItem = ({ report }: { report: IReport }) => (
     <Pressable style={styles.reportItem}>
       <View>
         <View style={styles.titleRow}>
-          <Text style={styles.reportTitle}>{report.title}</Text>
-          <Text style={styles.reportId}>{report.id}</Text>
+          <Text style={styles.reportTitle}>{report.purpose}</Text>
+          <Text style={styles.reportId}>{report.report_number}</Text>
         </View>
-        <Text style={styles.reportAmount}>${report.amount.toFixed(2)}</Text>
+        <Text style={styles.reportAmount}>${report.report_amount}</Text>
         <View style={styles.reportDetails}>
           <Text style={styles.detailText}>
-            Submission: {report.submission || "N/A"}
+            Submission: {report.report_submit_date || "N/A"}
           </Text>
           <Text style={styles.detailText}>
-            Approval: {report.approval || "N/A"}
+            Approval: {report.integration_date || "N/A"}
           </Text>
         </View>
       </View>
       <View
         style={[
           styles.statusBadge,
-          { backgroundColor: ReportStatusBgColor(report.state) },
+          { backgroundColor: ReportStatusBgColor(report.report_status) },
         ]}
       >
         <Text
           style={[
             styles.statusText,
-            { color: ReportStatusTextColor(report.state) },
+            { color: ReportStatusTextColor(report.report_status) },
           ]}
         >
-          {report.state.charAt(0).toUpperCase() + report.state.slice(1)}
+          {report.report_status.charAt(0).toUpperCase() + report.report_status.slice(1)}
         </Text>
       </View>
     </Pressable>
@@ -54,9 +54,11 @@ const ReportItem = ({ report }: { report: IReport }) => (
 
 export default function ReportsScreen() {
   const router = useRouter();
+  const [reports, setReports] = useState<IReport[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState("");
   const [selectedReportType, setSelectedReportType] = useState("");
-  const data = [
+  const ReportTypes = [
     { key: "1", value: "Mobiles", disabled: true },
     { key: "2", value: "Appliances" },
     { key: "3", value: "Cameras" },
@@ -70,6 +72,23 @@ export default function ReportsScreen() {
     useState(false);
   const [isNewReportDrawerVisible, setIsNewReportDrawerVisible] =
     useState(false);
+ 
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const data = await reportService.getReports();
+        setReports(data);
+      } catch (error) {
+        console.error('Failed to fetch reports:', error);
+        // You might want to add error handling here
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -94,9 +113,13 @@ export default function ReportsScreen() {
       </View>
 
       <View style={styles.reportList}>
-        {mockReports.map((report, index) => (
-          <ReportItem key={`${report.id}-${index}`} report={report} />
-        ))}
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : (
+          reports.map((report, index) => (
+            <ReportItem key={`${report.id}-${index}`} report={report} />
+          ))
+        )}
       </View>
       <View style={styles.tabBar}>
         <View style={[styles.tabItem]}>
@@ -170,7 +193,7 @@ export default function ReportsScreen() {
             <Text style={styles.inputLabel}>Report Type</Text>
             <SelectList
               setSelected={(val: any) => setSelected(val)}
-              data={data}
+              data={ReportTypes}
               save="value"
             />
             <Text style={styles.inputLabel}>Date</Text>
