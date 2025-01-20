@@ -97,36 +97,41 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginTop: 64,
     marginBottom: 8,
-    color: "#000",
+    color: "#1E1E1E",
+    fontFamily: "SFProDisplay"
   },
   subtitle: {
-    fontSize: 14,
-    color: "#64748B",
-    marginBottom: 32,
+    fontSize: 15,
+    color: "#1E1E1E",
+    marginBottom: 20,
+    marginTop: 10,
+    fontFamily: "SFProDisplay"
   },
   codeContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
     marginBottom: 24,
+    gap: 5,
   },
   codeInput: {
-    width: 45,
-    height: 45,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
+    maxWidth: 63,
+    height: 80,
     borderRadius: 8,
     textAlign: "center",
     fontSize: 20,
     backgroundColor: "#F5F5F5",
   },
   resendText: {
-    fontSize: 14,
-    color: "#64748B",
+    fontSize: 15,
+    color: "#1E1E1E",
+    fontFamily: "SFProDisplay"
   },
   resendLink: {
-    color: "#1E3A8A",
+    fontSize: 15,
+    color: "#17317F",
     textDecorationLine: "underline",
+    fontFamily: "SFProDisplay"
   },
   titleContainer: {
     width: "100%",
