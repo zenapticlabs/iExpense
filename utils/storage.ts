@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STORAGE_KEYS = {
-  AUTH_TOKEN: '@auth_token',
+  ACCESS_TOKEN: '@access_token',
+  REFRESH_TOKEN: '@refresh_token',
   USER_DATA: '@user_data',
 };
 
@@ -34,19 +35,19 @@ export const storage = {
   },
 
   // Auth specific methods
-  setAuthData: async (token: string, userData: any) => {
-    await storage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
-    await storage.setItem(STORAGE_KEYS.USER_DATA, userData);
+  setAuthData: async (access: string, refresh: string) => {
+    await storage.setItem(STORAGE_KEYS.ACCESS_TOKEN, access);
+    await storage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refresh);
   },
 
   clearAuthData: async () => {
-    await storage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
-    await storage.removeItem(STORAGE_KEYS.USER_DATA);
+    await storage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+    await storage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
   },
 
   getAuthData: async () => {
-    const token = await storage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-    const userData = await storage.getItem(STORAGE_KEYS.USER_DATA);
-    return { token, userData };
+    const access = await storage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+    const refresh = await storage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+    return { access, refresh };
   },
 };

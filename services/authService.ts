@@ -1,12 +1,9 @@
+import { storage } from "@/utils/storage";
 import axios from "axios";
 
 type AuthResponse = {
-  token: string;
-  user: {
-    id: string;
-    email: string;
-    name: string;
-  };
+  access: string;
+  refresh: string;
 };
 
 class AuthenticationError extends Error {
@@ -19,6 +16,10 @@ class AuthenticationError extends Error {
 const BASE_URL = "https://expense-management-server.vercel.app/api";
 
 export const authService = {
+  async getAccessToken(): Promise<string> {
+    const { access } = await storage.getAuthData();
+    return access;
+  },
   async verify(email: string, code: string): Promise<AuthResponse> {
     const response = await axios.post(`${BASE_URL}/auth/verify-mfa`, { email, code });
 
@@ -35,6 +36,7 @@ export const authService = {
         email,
         password,
       });
+
       return response.data;
     } catch (error: any) {
       if (error.response.data.code == "second_factor_required") {
