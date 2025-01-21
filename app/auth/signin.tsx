@@ -9,10 +9,10 @@ import {
 import { Link } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "@/components/Themed";
-// import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AuthScreen() {
-  // const { signIn } = useAuth();
+  const { signIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +31,7 @@ export default function AuthScreen() {
 
     try {
       setIsLoading(true);
-      // await signIn(email, password);
+      await signIn(email, password);
     } catch (error) {
       Alert.alert(
         "Authentication Error",
