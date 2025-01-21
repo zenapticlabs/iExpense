@@ -3,7 +3,6 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   Pressable,
   Modal,
@@ -16,24 +15,13 @@ import { IExpense, IReport } from "@/constants/types";
 import { reportService } from "@/services/reportService";
 import Stepper from "@/components/Stepper";
 import DeleteReportDrawer from "@/components/report/details/DeleteDrawer";
+import CreateNewExpenseDrawer from "@/components/report/details/CreateNewExpenseDrawer";
 
-const EXPENSE_TYPES = [
-  "Airfare",
-  "Airline Club Membership Dues",
-  "Airline Fees",
-  "Auto Rental",
-  "Automobile",
-  "Business Meals",
-  "Company Sponsor - CDFO",
-];
 
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
   const [report, setReport] = useState<IReport | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedExpenseType, setSelectedExpenseType] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedExpense, setSelectedExpense] = useState<IExpense | null>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isUploadFileModalVisible, setUploadFileModalVisible] = useState(false);
@@ -41,7 +29,6 @@ export default function ExpenseDetails() {
     useState(false);
   const [isSubmitModalVisible, setIsSubmitModalVisible] = useState(false);
   const [reportItems, setReportItems] = useState<any[]>([]);
-
   useEffect(() => {
     const fetchReportItems = async () => {
       const data = await reportService.getReportItems(id as string);
@@ -58,23 +45,6 @@ export default function ExpenseDetails() {
     };
     fetchReport();
   }, [id]);
-
-  const handleNext = () => {
-    if (selectedExpenseType) {
-      setCurrentStep(2);
-    }
-  };
-
-  const handleBack = () => {
-    setCurrentStep(1);
-  };
-
-  const handleClose = () => {
-    setIsModalVisible(false);
-    setCurrentStep(1);
-    setSelectedExpenseType("");
-    setSearchQuery("");
-  };
 
   const handleCloseExpenseDetail = () => {
     setSelectedExpense(null);
@@ -103,130 +73,6 @@ export default function ExpenseDetails() {
     setIsSubmitModalVisible(false);
     console.log("Report submitted");
   };
-
-  const renderStep1 = () => (
-    <View style={styles.stepContainer}>
-      <Text style={styles.modalTitle}>Create New Expense</Text>
-      <Text style={styles.label}>Select expense type</Text>
-
-      <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color="#666" />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </View>
-
-      <ScrollView style={styles.expenseTypeList}>
-        {EXPENSE_TYPES.filter((type) =>
-          type.toLowerCase().includes(searchQuery.toLowerCase())
-        ).map((type) => (
-          <TouchableOpacity
-            key={type}
-            style={[
-              styles.expenseTypeItem,
-              selectedExpenseType === type && styles.selectedExpenseType,
-            ]}
-            onPress={() => setSelectedExpenseType(type)}
-          >
-            <Text style={styles.expenseTypeText}>{type}</Text>
-            {selectedExpenseType === type && (
-              <Ionicons name="checkmark" size={24} color="#1E3A8A" />
-            )}
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.cancelButton} onPress={handleClose}>
-          <Text style={styles.cancelButtonText}>Cancel</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.nextButton,
-            !selectedExpenseType && styles.disabledButton,
-          ]}
-          onPress={handleNext}
-          disabled={!selectedExpenseType}
-        >
-          <Text style={styles.nextButtonText}>Next</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-
-  const renderStep2 = () => (
-    <View style={styles.stepContainer}>
-      <Text style={styles.modalTitle}>Create New Expense</Text>
-      <Text style={styles.label}>Expense type</Text>
-      <View style={styles.selectedTypeContainer}>
-        <Text>{selectedExpenseType}</Text>
-      </View>
-
-      <Text style={styles.label}>Date</Text>
-      <TouchableOpacity style={styles.inputContainer}>
-        <Text>Nov 5, 2024</Text>
-        <Ionicons name="calendar-outline" size={20} color="#666" />
-      </TouchableOpacity>
-
-      <Text style={styles.label}>Receipt amount</Text>
-      <View style={styles.currencyInputContainer}>
-        <View style={styles.currencyPrefix}>
-          {/* <Image
-            source={require("../../assets/us-flag.png")}
-            style={styles.flagIcon}
-          /> */}
-          <Text style={styles.currencyText}>USD $</Text>
-        </View>
-        <TextInput
-          style={styles.currencyInput}
-          placeholder="0.00"
-          keyboardType="decimal-pad"
-        />
-      </View>
-
-      <Text style={styles.label}>Converted report amount</Text>
-      <View style={styles.currencyInputContainer}>
-        <View style={styles.currencyPrefix}>
-          {/* <Image
-            source={require("../../assets/us-flag.png")}
-            style={styles.flagIcon}
-          /> */}
-          <Text style={styles.currencyText}>USD $</Text>
-        </View>
-        <TextInput
-          style={styles.currencyInput}
-          placeholder="0.00"
-          keyboardType="decimal-pad"
-        />
-      </View>
-
-      <Text style={styles.label}>Justification</Text>
-      <TextInput
-        style={styles.justificationInput}
-        placeholder="Enter justification"
-        multiline={true}
-        numberOfLines={3}
-      />
-
-      <Text style={styles.label}>Attached receipt</Text>
-      <TouchableOpacity style={styles.uploadContainer}>
-        <Ionicons name="cloud-upload-outline" size={24} color="#666" />
-        <Text style={styles.uploadText}>Upload file</Text>
-      </TouchableOpacity>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.cancelButton} onPress={handleBack}>
-          <Text style={styles.cancelButtonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.nextButton} onPress={handleClose}>
-          <Text style={styles.nextButtonText}>Add expense</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
@@ -366,24 +212,12 @@ export default function ExpenseDetails() {
         </View>
       </View>
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={handleClose}
-      >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setIsModalVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              {currentStep === 1 ? renderStep1() : renderStep2()}
-            </View>
-          </View>
-        </Pressable>
-      </Modal>
-
+      <CreateNewExpenseDrawer
+        isVisible={isModalVisible}
+        reportId={id as string}
+        onClose={() => setIsModalVisible(false)}
+        onAddExpense={() => console.log("add expense")}
+      />
       <Modal
         animationType="slide"
         transparent={true}
@@ -623,7 +457,7 @@ export default function ExpenseDetails() {
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -862,7 +696,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   expenseTypeList: {
-    flex: 1,
+    // flex: 1,
+    height: 300,
   },
   expenseTypeItem: {
     flexDirection: "row",
