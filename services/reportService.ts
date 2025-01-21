@@ -99,4 +99,20 @@ export const reportService = {
 
     return response.json();
   },
+
+  async getReportItems(reportId: string): Promise<any> {
+    const accessToken = await authService.getAccessToken();
+    const response = await axios.get(`${BASE_URL}/reports/${reportId}/items`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch report");
+    }
+
+    return response.data;
+  },
+
 };

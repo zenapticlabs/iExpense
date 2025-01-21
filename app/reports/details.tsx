@@ -8,6 +8,7 @@ import {
   Pressable,
   Modal,
 } from "react-native";
+import React from "react";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
@@ -39,6 +40,16 @@ export default function ExpenseDetails() {
   const [isReportDeleteModalVisible, setIsReportDeleteModalVisible] =
     useState(false);
   const [isSubmitModalVisible, setIsSubmitModalVisible] = useState(false);
+  const [reportItems, setReportItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchReportItems = async () => {
+      const data = await reportService.getReportItems(id as string);
+      console.log(data);
+      setReportItems(data);
+    };
+    fetchReportItems();
+  }, [id]);
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -47,24 +58,6 @@ export default function ExpenseDetails() {
     };
     fetchReport();
   }, [id]);
-
-  const expenses = [
-    {
-      title: "International Travel",
-      amount: "120.00",
-      date: "Nov 5, 2024",
-    },
-    {
-      title: "International Travel",
-      amount: "80.00",
-      date: "Nov 5, 2024",
-    },
-    {
-      title: "International Travel",
-      amount: "140.00",
-      date: "Nov 5, 2024",
-    },
-  ];
 
   const handleNext = () => {
     if (selectedExpenseType) {
@@ -318,35 +311,40 @@ export default function ExpenseDetails() {
         <Text style={styles.submitButtonText}>Submit Report</Text>
       </TouchableOpacity>
 
-      {/* <View style={styles.expenseSection}>
-        <Text style={styles.sectionTitle}>Expense Items</Text>
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyIcon}>📝</Text>
-          <Text style={styles.emptyText}>No expenses</Text>
-          <Text style={styles.emptySubtext}>
-            Tap the "+" button and start adding expenses
-          </Text>
-          <TouchableOpacity style={styles.addButton}>
-            <Text style={styles.addButtonText}>Add expense</Text>
-          </TouchableOpacity>
-        </View>
-      </View> */}
       <View style={styles.expenseSection}>
         <Text style={styles.sectionTitle}>Expense Items</Text>
-        {expenses.map((expense) => (
+        {reportItems?.map((reportItem) => (
           <TouchableOpacity
-            key={expense.amount}
+            key={reportItem.id}
             style={styles.expenseItem}
-            onPress={() => handleExpensePress(expense)}
+            onPress={() => handleExpensePress(reportItem)}
           >
             <View>
-              <Text style={styles.expenseItemTitle}>{expense.title}</Text>
-              <Text style={styles.expenseItemAmount}>${expense.amount}</Text>
-              <Text style={styles.expenseItemDate}>{expense.date}</Text>
+              <Text style={styles.expenseItemTitle}>
+                {reportItem.expense_type}
+              </Text>
+              <Text style={styles.expenseItemAmount}>
+                ${reportItem.expense_date}
+              </Text>
+              <Text style={styles.expenseItemDate}>
+                {reportItem.receipt_amount}
+              </Text>
             </View>
             <Ionicons name="chevron-forward" size={24} color="#666" />
           </TouchableOpacity>
         ))}
+        {reportItems?.length === 0 && (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyIcon}>📝</Text>
+            <Text style={styles.emptyText}>No expenses</Text>
+            <Text style={styles.emptySubtext}>
+              Tap the "+" button and start adding expenses
+            </Text>
+            <TouchableOpacity style={styles.addButton}>
+              <Text style={styles.addButtonText}>Add expense</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
       <View style={styles.tabBar}>
         <View style={[styles.tabItem]}>
@@ -387,32 +385,37 @@ export default function ExpenseDetails() {
       </Modal>
 
       <Modal
-          animationType="slide"
-          transparent={true}
-          visible={isUploadFileModalVisible}
-          onRequestClose={()=> setUploadFileModalVisible(!isUploadFileModalVisible)}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalUploadTitle}>Uploaded receipt</Text>
-              <View style={styles.uploadContent}></View>
-              <View style={styles.btnsContainer}>
+        animationType="slide"
+        transparent={true}
+        visible={isUploadFileModalVisible}
+        onRequestClose={() =>
+          setUploadFileModalVisible(!isUploadFileModalVisible)
+        }
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalUploadTitle}>Uploaded receipt</Text>
+            <View style={styles.uploadContent}></View>
+            <View style={styles.btnsContainer}>
               <Pressable
                 style={[styles.button, styles.buttonUpload]}
                 // onPress={() => setModalVisible(!modalVisible)}
-                >
-                <Text style={styles.textStyle , styles.uploadBtnText}>Upload receipt</Text>
+              >
+                <Text style={[styles.textStyle, styles.uploadBtnText]}>
+                  Upload receipt
+                </Text>
               </Pressable>
 
               <Pressable
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setUploadFileModalVisible(false)}
-                >
+              >
                 <Text style={styles.textStyle}>Cancel</Text>
               </Pressable>
-              </View>
             </View>
           </View>
-        </Modal>
+        </View>
+      </Modal>
 
       <Modal
         animationType="slide"
@@ -487,7 +490,10 @@ export default function ExpenseDetails() {
                     />
 
                     <Text style={styles.label}>Attached receipt</Text>
-                    <TouchableOpacity style={styles.uploadContainer} onPress={()=> setUploadFileModalVisible(true)}>
+                    <TouchableOpacity
+                      style={styles.uploadContainer}
+                      onPress={() => setUploadFileModalVisible(true)}
+                    >
                       <Ionicons
                         name="cloud-upload-outline"
                         size={24}
@@ -620,23 +626,23 @@ export default function ExpenseDetails() {
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor:'#00000080',
-    zIndex:99,
-    position:'absolute',
-    height: '100vh',
-    width :'100%'
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#00000080",
+    zIndex: 99,
+    position: "absolute",
+    height: "100%",
+    width: "100%",
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 16,
-    alignItems: 'flex-start',
-    shadowColor: '#000',
-    width:'95%',
-    zIndex:99,
+    alignItems: "flex-start",
+    shadowColor: "#000",
+    width: "95%",
+    zIndex: 99,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -645,56 +651,56 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  modalUploadTitle:{
-   fontSize: 22,
+  modalUploadTitle: {
+    fontSize: 22,
     fontWeight: 700,
-    color: '#1e1e1e',
+    color: "#1e1e1e",
     lineHeight: 26,
-    width: '100%',
+    width: "100%",
   },
-  uploadContent :{
+  uploadContent: {
     height: 262,
-    width:'100%',
-    backgroundColor:'#DDDDDD',
-    borderRadius:8,
+    width: "100%",
+    backgroundColor: "#DDDDDD",
+    borderRadius: 8,
     marginBlock: 10,
-  },  
-  btnsContainer :{
-    display:'flex',
-    justifyContent:'space-between',
-    flexDirection:'row',
-    width:'100%',
-    height:88,
-    alignItems:'center',
+  },
+  btnsContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    width: "100%",
+    height: 88,
+    alignItems: "center",
   },
 
   button: {
     borderRadius: 8,
     padding: 10,
     elevation: 2,
-    display:'flex',
-    justifyContent:'center',
-    alignItems:'center',
-    width:'49%',
-    height:56,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "49%",
+    height: 56,
   },
-  
-  buttonUpload: {
-    backgroundColor: '#F5F5F5',
-    color:'#000',
-  }, 
 
-  uploadBtnText:{
-    color:'#000',
+  buttonUpload: {
+    backgroundColor: "#F5F5F5",
+    color: "#000",
+  },
+
+  uploadBtnText: {
+    color: "#000",
   },
   buttonClose: {
-    backgroundColor: '#17317F',
-    color:'white',
+    backgroundColor: "#17317F",
+    color: "white",
   },
   textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   container: {
     flex: 1,
