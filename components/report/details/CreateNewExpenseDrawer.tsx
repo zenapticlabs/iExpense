@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { ExpenseType } from "@/utils/UtilData";
+import { ExpenseType, WarningMessagesByType } from "@/utils/UtilData";
 import { useState } from "react";
 import { reportService } from "@/services/reportService";
 import ExtraForms from "./ExpenseTypeComponents/ExtraForms";
@@ -113,6 +113,13 @@ export default function CreateNewExpenseDrawer({
   const renderStep2 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.modalTitle}>Create New Expense</Text>
+      {WarningMessagesByType?.[payload?.expense_type] ? ( // Add this block
+        <View style={styles.warningContainer}>
+          <Text style={styles.warningText}>
+            {WarningMessagesByType?.[payload?.expense_type]}
+          </Text>
+        </View>
+      ) : null}
 
       <ScrollView style={styles.expenseTypeList}>
         <Text style={styles.label}>Expense type</Text>
@@ -205,7 +212,7 @@ export default function CreateNewExpenseDrawer({
         style={styles.modalOverlay}
         // onPress={() => setIsModalVisible(false)}
       >
-        <View style={[styles.modalContainer, { height: 500 }]}>
+        <View style={[styles.modalContainer, { height: 700 }]}>
           <View style={styles.modalContent}>
             {currentStep === 1 ? renderStep1() : renderStep2()}
           </View>
@@ -757,5 +764,17 @@ export const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#E5E7EB",
     marginTop: 12,
+  },
+  warningContainer: {
+    backgroundColor: "#FEF2F2",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#FCA5A5",
+  },
+  warningText: {
+    color: "#DC2626",
+    fontSize: 14,
   },
 });

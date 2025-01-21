@@ -68,3 +68,25 @@ export enum ExpenseType {
   travelAgentFee = "Travel Agent Fee",
   marketingDevelopment = "Marketing Development"
 }
+
+const WarningMessages = {
+  approvedRequisition: "Approved Requisition is required for this expense type. Enter Requisition number in Justification Field",
+  preApproval: "Pre-approval required, include approved form with receipts",
+  mustPurchase: "Must include approved Purchase Requisition number",
+  mustETA: "Must include approved ETA number. Enter ETA number in Justification field"
+}
+
+export const WarningMessagesByType: any = {
+  [ExpenseType.airlineClubMembershipDues]: WarningMessages.approvedRequisition,
+  [ExpenseType.automobile]: WarningMessages.preApproval,
+  [ExpenseType.companySponsorVPDF]: WarningMessages.preApproval,
+  [ExpenseType.customerGifts]: WarningMessages.preApproval,
+  [ExpenseType.dataProcessingDisksManual]: WarningMessages.preApproval,
+  [ExpenseType.entertainment]: WarningMessages.approvedRequisition,
+  [ExpenseType.fieldEngineerSupplies]: WarningMessages.approvedRequisition,
+  [ExpenseType.officeSupplies]: WarningMessages.mustPurchase,
+  [ExpenseType.otherMarketingExpenses]: WarningMessages.approvedRequisition,
+  [ExpenseType.seminarsTraining]: WarningMessages.mustETA,
+  [ExpenseType.prepaidExpenseFutureMonths]: WarningMessages.preApproval,
+  [ExpenseType.marketingDevelopment]: WarningMessages.approvedRequisition,
+}
