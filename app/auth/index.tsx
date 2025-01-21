@@ -1,4 +1,4 @@
-import { Image, StyleSheet } from "react-native";
+import { Image, StyleSheet,ImageBackground  } from "react-native";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
@@ -9,36 +9,58 @@ export default function AuthScreen() {
     brand: require("@/assets/images/brand.png"),
   };
   return (
-    <View style={styles.container}>
-      <View style={styles.contentContainer}>
-        <Image
-          source={images.brand}
-          style={styles.image}
-          resizeMode="contain"
-        />
-        <Text style={styles.title}>PAI Capture Expense</Text>
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <Link href="/auth/signin" asChild>
-        <View style={styles.loginButton}>
-          <Text style={styles.buttonText}>Login</Text>
+    <View style={styles.mainContainer}>
+      <ImageBackground
+        source={require('../../assets/images/Pattern.png')}
+        style={styles.background}
+      >
+      <View style={styles.container}>
+        <View style={styles.contentContainer}>
+          <Image
+            source={images.brand}
+            style={styles.image}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>PAI Capture Expense</Text>
         </View>
-        </Link>
+
+        <View style={styles.buttonContainer}>
+          <Link href="/auth/signin" asChild>
+          <View style={styles.loginButton}>
+            <Text style={styles.buttonText}>Login</Text>
+          </View>
+          </Link>
+        </View>
       </View>
+      </ImageBackground>
     </View>
+
   );
 }
 
 const styles = StyleSheet.create({
+  mainContainer:{
+    height:'100vh',
+    width:'100vw',
+    backgroundColor:'#fff',
+  },
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "transparent",
+    width:'100vw'
+  },
+  background: { 
+    width:'100vw',
+    height:'100vh',
+    resizeMode: 'cover', 
+    justifyContent: 'center',
+    alignItems: 'center', 
   },
   contentContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "transparent",
   },
   image: {
     width: 138,
@@ -49,20 +71,24 @@ const styles = StyleSheet.create({
     fontWeight: 700,
     marginTop: 16,
     color: "#000",
+    fontFamily: "SFProDisplay"
   },
   buttonContainer: {
     paddingHorizontal: 20,
     paddingBottom: 40,
+    backgroundColor:'transparent'
   },
   loginButton: {
-    backgroundColor: "#1E3A8A", // Dark blue color
+    backgroundColor: "#17317F", // Dark blue color
     padding: 16,
     borderRadius: 8,
     alignItems: "center",
+    height: 56,
+    fontFamily: "SFProDisplay"
   },
   buttonText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: "600",
   },
 });

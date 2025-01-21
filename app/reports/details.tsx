@@ -35,6 +35,7 @@ export default function ExpenseDetails() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedExpense, setSelectedExpense] = useState<IExpense | null>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [isUploadFileModalVisible, setUploadFileModalVisible] = useState(false);
   const [isReportDeleteModalVisible, setIsReportDeleteModalVisible] =
     useState(false);
   const [isSubmitModalVisible, setIsSubmitModalVisible] = useState(false);
@@ -386,6 +387,34 @@ export default function ExpenseDetails() {
       </Modal>
 
       <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isUploadFileModalVisible}
+          onRequestClose={()=> setUploadFileModalVisible(!isUploadFileModalVisible)}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalUploadTitle}>Uploaded receipt</Text>
+              <View style={styles.uploadContent}></View>
+              <View style={styles.btnsContainer}>
+              <Pressable
+                style={[styles.button, styles.buttonUpload]}
+                // onPress={() => setModalVisible(!modalVisible)}
+                >
+                <Text style={styles.textStyle , styles.uploadBtnText}>Upload receipt</Text>
+              </Pressable>
+
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setUploadFileModalVisible(false)}
+                >
+                <Text style={styles.textStyle}>Cancel</Text>
+              </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+      <Modal
         animationType="slide"
         transparent={true}
         visible={selectedExpense !== null}
@@ -458,7 +487,7 @@ export default function ExpenseDetails() {
                     />
 
                     <Text style={styles.label}>Attached receipt</Text>
-                    <TouchableOpacity style={styles.uploadContainer}>
+                    <TouchableOpacity style={styles.uploadContainer} onPress={()=> setUploadFileModalVisible(true)}>
                       <Ionicons
                         name="cloud-upload-outline"
                         size={24}
@@ -589,6 +618,84 @@ export default function ExpenseDetails() {
 }
 
 const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor:'#00000080',
+    zIndex:99,
+    position:'absolute',
+    height: '100vh',
+    width :'100%'
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 16,
+    alignItems: 'flex-start',
+    shadowColor: '#000',
+    width:'95%',
+    zIndex:99,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalUploadTitle:{
+   fontSize: 22,
+    fontWeight: 700,
+    color: '#1e1e1e',
+    lineHeight: 26,
+    width: '100%',
+  },
+  uploadContent :{
+    height: 262,
+    width:'100%',
+    backgroundColor:'#DDDDDD',
+    borderRadius:8,
+    marginBlock: 10,
+  },  
+  btnsContainer :{
+    display:'flex',
+    justifyContent:'space-between',
+    flexDirection:'row',
+    width:'100%',
+    height:88,
+    alignItems:'center',
+  },
+
+  button: {
+    borderRadius: 8,
+    padding: 10,
+    elevation: 2,
+    display:'flex',
+    justifyContent:'center',
+    alignItems:'center',
+    width:'49%',
+    height:56,
+  },
+  
+  buttonUpload: {
+    backgroundColor: '#F5F5F5',
+    color:'#000',
+  }, 
+
+  uploadBtnText:{
+    color:'#000',
+  },
+  buttonClose: {
+    backgroundColor: '#17317F',
+    color:'white',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: "#fff",

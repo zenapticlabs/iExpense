@@ -78,7 +78,7 @@ export default function AuthScreen() {
             <Switch
               value={rememberMe}
               onValueChange={setRememberMe}
-              trackColor={{ false: "#767577", true: "#1E3A8A" }}
+              trackColor={{ false: "#888888", true: "#1E3A8A" }}
             />
             <Text style={styles.toggleLabel}>Remember me</Text>
           </View>
@@ -87,14 +87,12 @@ export default function AuthScreen() {
             <Switch
               value={biometricLogin}
               onValueChange={setBiometricLogin}
-              trackColor={{ false: "#767577", true: "#1E3A8A" }}
+              trackColor={{ false: "#888888", true: "#1E3A8A" }}
             />
             <Text style={styles.toggleLabel}>Enable biometric login</Text>
           </View>
         </View>
-      </View>
-
-      <View style={styles.bottomContainer}>
+        <View style={styles.bottomContainer}>
         <Pressable style={styles.loginButton} onPress={handleSignIn}>
           <Text style={styles.buttonText}>Login</Text>
         </Pressable>
@@ -106,6 +104,9 @@ export default function AuthScreen() {
           </Link>
         </View>
       </View>
+      </View>
+
+     
     </View>
   );
 }
@@ -130,34 +131,40 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginTop: 20,
     marginBottom: 30,
-    color: "#000",
+    color: "#1E1E1E",
+    fontFamily: "SFProDisplay"
   },
   inputContainer: {
     width: "100%",
   },
   titleContainer: {
     width: "100%",
+    marginTop: 40
   },
   label: {
     fontSize: 15,
     color: "#000",
     marginBottom: 8,
+    fontFamily: "SFProDisplay"
   },
   input: {
     width: "100%",
-    height: 44,
+    height: 48,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: "#DDDDDD",
     borderRadius: 8,
-    paddingHorizontal: 12,
+    padding: 16,
     marginBottom: 16,
     backgroundColor: "white",
   },
   forgotPassword: {
     alignSelf: "flex-end",
-    color: "#1E3A8A",
-    fontSize: 14,
+    color: "#5B5B5B",
+    fontSize: 15,
+    marginTop: -16,
     marginBottom: 16,
+    textDecorationLine:'underline',
+    fontFamily: "SFProDisplay"
   },
   toggleContainer: {
     flexDirection: "row",
@@ -167,33 +174,42 @@ const styles = StyleSheet.create({
   toggleLabel: {
     marginLeft: 8,
     fontSize: 15,
-    color: "#000",
+    color: "#5B5B5B",
+    fontFamily: "SFProDisplay"
   },
   bottomContainer: {
     paddingBottom: 40,
+    width:'100%'
   },
   loginButton: {
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#17317F",
     padding: 16,
     borderRadius: 8,
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 20,
+    marginTop: 30,
+    height: 56
   },
   buttonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "600",
+    fontFamily: "SFProDisplay"
   },
   signupContainer: {
     flexDirection: "row",
     justifyContent: "center",
   },
   signupText: {
-    color: "#64748B",
-    fontSize: 14,
+    color: "#5B5B5B",
+    fontSize: 15,
+    fontFamily: "SFProDisplay"
   },
   signupLink: {
-    color: "#1E3A8A",
+    color: "#17317F",
     fontSize: 14,
+    fontWeight: 600,
+    textDecorationLine:'underline',
+    fontFamily: "SFProDisplay"
   },
 });
