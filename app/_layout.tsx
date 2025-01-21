@@ -44,9 +44,9 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
+    // <AuthProvider>
       <RootLayoutNav />
-    </AuthProvider>
+    // </AuthProvider>
   );
 }
 
