@@ -115,4 +115,26 @@ export const reportService = {
     return response.data;
   },
 
+  async createReportItem(payload: any, reportId: string): Promise<any> {
+    const accessToken = await authService.getAccessToken();
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/reports/${reportId}/items`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      if (response.status !== 201) {
+        throw new Error("Failed to create report item");
+      }
+      return response.data;
+    } catch (error) {
+      console.error("Error creating report item:", error);
+      throw error;
+    }
+  },
 };
