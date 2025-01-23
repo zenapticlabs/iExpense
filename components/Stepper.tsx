@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 
-type StepState = "submitted" | "approved" | "paid";
+type StepState = "submitted" | "approved" | "paid" | "Ppen";
 
 type StepProps = {
   number: number;
@@ -30,10 +30,7 @@ const Step = ({ number, label, date, isActive, isLast }: StepProps) => (
     </View>
     {!isLast && (
       <View
-        style={[
-          styles.stepperLine,
-          isActive && styles.activeStepperLine
-        ]}
+        style={[styles.stepperLine, isActive && styles.activeStepperLine]}
       />
     )}
   </>
@@ -45,6 +42,11 @@ export const Stepper = ({ currentState, date }: StepperProps) => {
     { number: 2, label: "Approved", state: "approved" as StepState },
     { number: 3, label: "Paid", state: "paid" as StepState },
   ];
+
+  console.log(currentState);
+  if (currentState === "Open") {
+    return null;
+  }
 
   const currentStateIndex = steps.findIndex(
     (step) => step.state === currentState
