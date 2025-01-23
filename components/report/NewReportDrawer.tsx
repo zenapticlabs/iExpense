@@ -172,8 +172,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   inputLabel: {
-    fontSize: 14,
-    color: "#1E293B",
+    fontSize: 16,
+    color: "#1E1E1E",
     marginBottom: 4,
   },
   input: {

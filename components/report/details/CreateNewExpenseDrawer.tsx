@@ -10,15 +10,18 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ExpenseType, WarningMessagesByType } from "@/utils/UtilData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { reportService } from "@/services/reportService";
 import ExtraForms from "./ExpenseTypeComponents/ExtraForms";
+import CountryFlag from "react-native-country-flag";
+import CurrencyDropdown from "@/components/CurrencyDropdown";
+import { Styles } from "@/Styles";
 
 interface CreateNewExpenseDrawerProps {
   isVisible: boolean;
   reportId: string;
   onClose: () => void;
-  onAddExpense: () => void;
+  onAddExpense: (reportItem: any) => void;
 }
 
 export default function CreateNewExpenseDrawer({
@@ -29,12 +32,24 @@ export default function CreateNewExpenseDrawer({
 }: CreateNewExpenseDrawerProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [convertedCurrency, setConvertedCurrency] = useState("usd");
+  const [convertedAmount, setConvertedAmount] = useState(0);
   const [payload, setPayload] = useState<any>({
     receipt_currency: "usd",
     filename: "test_filename",
     s3_path: "test_s3_path",
     expense_date: "2025-01-21",
   });
+  useEffect(() => {
+    console.log(
+      payload.receipt_currency,
+      payload.receipt_amount,
+      convertedCurrency
+    );
+    const convertedAmount = 80 * payload.receipt_amount;
+    console.log("convertedAmount", convertedAmount);
+    setConvertedAmount(convertedAmount);
+  }, [payload.receipt_currency, payload.receipt_amount, convertedCurrency]);
   const handleClose = () => {
     setCurrentStep(1);
     setSearchQuery("");
@@ -44,7 +59,8 @@ export default function CreateNewExpenseDrawer({
   const handleAddExpense = async () => {
     try {
       const response = await reportService.createReportItem(payload, reportId);
-      console.log(response);
+      onAddExpense(response);
+      onClose();
     } catch (error) {
       console.error("Error creating report item:", error);
     }
@@ -58,10 +74,15 @@ export default function CreateNewExpenseDrawer({
   const renderStep1 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.modalTitle}>Create New Expense</Text>
-      <Text style={styles.label}>Select expense type</Text>
+      <Text style={styles.selectExpenseTypeLabel}>Select expense type</Text>
 
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color="#666" />
+        <Ionicons
+          name="search"
+          size={20}
+          color="#666"
+          style={styles.searchIcon}
+        />
         <TextInput
           style={styles.searchInput}
           placeholder="Search"
@@ -86,7 +107,7 @@ export default function CreateNewExpenseDrawer({
             >
               <Text style={styles.expenseTypeText}>{type}</Text>
               {payload?.expense_type === type && (
-                <Ionicons name="checkmark" size={24} color="#1E3A8A" />
+                <Ionicons name="checkmark" size={20} color="#1E3A8A" />
               )}
             </TouchableOpacity>
           ))}
@@ -124,7 +145,7 @@ export default function CreateNewExpenseDrawer({
       <ScrollView style={styles.expenseTypeList}>
         <Text style={styles.label}>Expense type</Text>
         <View style={styles.selectedTypeContainer}>
-          <Text>{payload?.expense_type}</Text>
+          <Text style={Styles.font16}>{payload?.expense_type}</Text>
         </View>
         <ExtraForms
           expense_type={payload?.expense_type}
@@ -139,17 +160,17 @@ export default function CreateNewExpenseDrawer({
 
         <Text style={styles.label}>Receipt amount</Text>
         <View style={styles.currencyInputContainer}>
-          <View style={styles.currencyPrefix}>
-            {/* <Image
-            source={require("../../assets/us-flag.png")}
-            style={styles.flagIcon}
-          /> */}
-            <Text style={styles.currencyText}>USD $</Text>
-          </View>
+          <CurrencyDropdown
+            value={payload?.receipt_currency}
+            onChange={(value) =>
+              setPayload({ ...payload, receipt_currency: value })
+            }
+          />
           <TextInput
             style={styles.currencyInput}
             placeholder="0.00"
             keyboardType="decimal-pad"
+            value={payload?.receipt_amount}
             onChangeText={(text) =>
               setPayload({ ...payload, receipt_amount: text })
             }
@@ -158,17 +179,15 @@ export default function CreateNewExpenseDrawer({
 
         <Text style={styles.label}>Converted report amount</Text>
         <View style={styles.currencyInputContainer}>
-          <View style={styles.currencyPrefix}>
-            {/* <Image
-            source={require("../../assets/us-flag.png")}
-            style={styles.flagIcon}
-          /> */}
-            <Text style={styles.currencyText}>USD $</Text>
-          </View>
+          <CurrencyDropdown
+            value={convertedCurrency}
+            onChange={(value) => setConvertedCurrency(value)}
+          />
           <TextInput
             style={styles.currencyInput}
             placeholder="0.00"
             keyboardType="decimal-pad"
+            value={convertedAmount.toString()}
           />
         </View>
 
@@ -440,39 +459,46 @@ export const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     fontWeight: "600",
-    marginBottom: 20,
   },
   label: {
     fontSize: 16,
-    color: "#666",
+    color: "#1E1E1E",
     marginBottom: 8,
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#f5f5f5",
-    padding: 10,
+
     borderRadius: 8,
     marginBottom: 16,
   },
+  searchIcon: {
+    position: "absolute",
+    left: 10,
+  },
   searchInput: {
     flex: 1,
-    marginLeft: 8,
     fontSize: 16,
+    padding: 16,
+    paddingLeft: 40,
   },
   expenseTypeList: {
-    // flex: 1,
+    flex: 1,
   },
   expenseTypeItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
+    marginBottom: 16,
   },
   selectedExpenseType: {
     backgroundColor: "#EEF2FF",
+    borderColor: "#1e3a8a",
   },
   expenseTypeText: {
     fontSize: 16,
@@ -513,7 +539,6 @@ export const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#f5f5f5",
     borderRadius: 8,
-    marginBottom: 16,
   },
   inputContainer: {
     flexDirection: "row",
@@ -776,5 +801,9 @@ export const styles = StyleSheet.create({
   warningText: {
     color: "#DC2626",
     fontSize: 14,
+  },
+  selectExpenseTypeLabel: {
+    fontSize: 20,
+    paddingVertical: 20,
   },
 });

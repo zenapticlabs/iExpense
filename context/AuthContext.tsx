@@ -35,7 +35,7 @@ function useProtectedRoute(user: User | null) {
     if (!navigationState?.key) return;
 
     const inAuthGroup = segments[0] === "auth";
-
+ 
     if (!user && !inAuthGroup) {
       router.replace("/auth");
     } else if (user && inAuthGroup) {

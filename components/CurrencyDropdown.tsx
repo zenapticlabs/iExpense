@@ -30,7 +30,7 @@ const CurrencyDropdown = ({ value, onChange }: { value: string; onChange: (value
           onChange(item.value);
         }}
         placeholder="Select currency"
-        containerStyle={{ width: '100%' }}
+        // containerStyle={{ width: '100%' }}
         style={{
           borderColor: '#ccc',
           borderWidth: 1,

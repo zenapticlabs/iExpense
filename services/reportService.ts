@@ -137,4 +137,46 @@ export const reportService = {
       throw error;
     }
   },
+
+  async updateReportItem(
+    reportId: string,
+    itemId: string,
+    payload: any
+  ): Promise<any> {
+    const accessToken = await authService.getAccessToken();
+    const response = await axios.put(
+      `${BASE_URL}/reports/${reportId}/items/${itemId}`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    return response.data;
+  },
+
+  async deleteReportItem(reportId: string, itemId: string): Promise<void> {
+    try {
+      const accessToken = await authService.getAccessToken();
+      const response = await fetch(
+        `${BASE_URL}/reports/${reportId}/items/${itemId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete report item");
+      }
+    } catch (error) {
+      console.error("Error deleting report item:", error);
+      throw error;
+    }
+  },
 };

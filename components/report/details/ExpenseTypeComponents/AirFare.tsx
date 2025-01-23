@@ -1,6 +1,4 @@
 import { commonService } from "@/services/commonService";
-import { reportService } from "@/services/reportService";
-import { ReportTypes } from "@/utils/UtilData";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TextInput } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
@@ -35,9 +33,8 @@ export default function AirFare({ payload, setPayload }: AirFareProps) {
         data={airlines}
         labelField="label"
         valueField="value"
-        onChange={(item) =>
-          setPayload({ ...payload, airline: item.value })
-        }
+        onChange={(item) => setPayload({ ...payload, airline: item.value })}
+        value={payload?.airline}
         style={styles.dropdown}
         containerStyle={styles.dropdownContainer}
       />
@@ -45,6 +42,7 @@ export default function AirFare({ payload, setPayload }: AirFareProps) {
       <TextInput
         style={styles.input}
         placeholder="Enter origin"
+        value={payload?.origin_destination}
         onChangeText={(text) =>
           setPayload({ ...payload, origin_destination: text })
         }
@@ -55,12 +53,11 @@ export default function AirFare({ payload, setPayload }: AirFareProps) {
 
 export const styles = StyleSheet.create({
   formContainer: {
-    gap: 12,
+    gap: 6,
   },
   inputLabel: {
-    fontSize: 14,
-    color: "#1E293B",
-    marginBottom: 4,
+    fontSize: 16,
+    color: "#1E1E1E",
   },
   dropdown: {
     borderColor: "#ccc",
@@ -68,7 +65,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 12,
-    width: "100%",
+    fontSize: 16,
   },
   dropdownContainer: {
     width: "100%",
@@ -79,5 +76,6 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
+    fontSize: 16,
   },
 });
