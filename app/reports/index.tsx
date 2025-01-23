@@ -1,12 +1,16 @@
-import { StyleSheet, Pressable, Image, Modal, TextInput } from "react-native";
+import { StyleSheet, Pressable, Image, Modal, TextInput, ScrollView } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { Text, View } from "@/components/Themed";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
-import { ReportStatusBgColor, ReportStatusTextColor } from "@/utils/UtilData";
-import { SelectList } from "react-native-dropdown-select-list";
-import { IReport } from "@/constants/types";
-import { mockReports } from "@/constants/mockData";
+import { useState, useEffect, useCallback } from "react";
+import {
+  ReportStatusBgColor,
+  ReportStatusTextColor,
+} from "@/utils/UtilData";
+import { ICreateReportPayload, IReport } from "@/constants/types";
+import { reportService } from "@/services/reportService";
+import NewReportDrawer from "@/components/report/NewReportDrawer";
+import { useFocusEffect } from "@react-navigation/native";
 
 const DATE_OPTIONS = [
   { label: "Last 3 months", value: "last_3_months" },
@@ -20,32 +24,33 @@ const ReportItem = ({ report }: { report: IReport }) => (
     <Pressable style={styles.reportItem}>
       <View>
         <View style={styles.titleRow}>
-          <Text style={styles.reportTitle}>{report.title}</Text>
-          <Text style={styles.reportId}>{report.id}</Text>
+          <Text style={styles.reportTitle}>{report.purpose}</Text>
+          <Text style={styles.reportId}>{report.report_number}</Text>
         </View>
-        <Text style={styles.reportAmount}>${report.amount.toFixed(2)}</Text>
+        <Text style={styles.reportAmount}>${report.report_amount}</Text>
         <View style={styles.reportDetails}>
           <Text style={styles.detailText}>
-            Submission: {report.submission || "N/A"}
+            Submission: {report.report_submit_date || "N/A"}
           </Text>
           <Text style={styles.detailText}>
-            Approval: {report.approval || "N/A"}
+            Approval: {report.integration_date || "N/A"}
           </Text>
         </View>
       </View>
       <View
         style={[
           styles.statusBadge,
-          { backgroundColor: ReportStatusBgColor(report.state) },
+          { backgroundColor: ReportStatusBgColor(report.report_status) },
         ]}
       >
         <Text
           style={[
             styles.statusText,
-            { color: ReportStatusTextColor(report.state) },
+            { color: ReportStatusTextColor(report.report_status) },
           ]}
         >
-          {report.state.charAt(0).toUpperCase() + report.state.slice(1)}
+          {report.report_status.charAt(0).toUpperCase() +
+            report.report_status.slice(1)}
         </Text>
       </View>
     </Pressable>
@@ -54,22 +59,37 @@ const ReportItem = ({ report }: { report: IReport }) => (
 
 export default function ReportsScreen() {
   const router = useRouter();
-  const [selected, setSelected] = useState("");
-  const [selectedReportType, setSelectedReportType] = useState("");
-  const data = [
-    { key: "1", value: "Mobiles", disabled: true },
-    { key: "2", value: "Appliances" },
-    { key: "3", value: "Cameras" },
-    { key: "4", value: "Computers", disabled: true },
-    { key: "5", value: "Vegetables" },
-    { key: "6", value: "Diary Products" },
-    { key: "7", value: "Drinks" },
-  ];
+  const [reports, setReports] = useState<IReport[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedDateRange, setSelectedDateRange] = useState(DATE_OPTIONS[0]);
   const [isDateRangeDrawerVisible, setIsDateRangeDrawerVisible] =
     useState(false);
   const [isNewReportDrawerVisible, setIsNewReportDrawerVisible] =
     useState(false);
+
+  const fetchReports = async () => {
+    try {
+      setLoading(true);
+      const data = await reportService.getReports();
+      setReports(data);
+    } catch (error) {
+      console.error("Failed to fetch reports:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchReports();
+    }, [])
+  );
+
+  const handleCreateNewReport = async (report: ICreateReportPayload) => {
+    const newReport = await reportService.createReport(report);
+    setReports([...reports, newReport]);
+    setIsNewReportDrawerVisible(false);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -93,11 +113,15 @@ export default function ReportsScreen() {
         </Pressable>
       </View>
 
-      <View style={styles.reportList}>
-        {mockReports.map((report, index) => (
-          <ReportItem key={`${report.id}-${index}`} report={report} />
-        ))}
-      </View>
+      <ScrollView style={styles.reportList} showsVerticalScrollIndicator={false}>
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : (
+          reports.map((report, index) => (
+            <ReportItem key={`${report.id}-${index}`} report={report} />
+          ))
+        )}
+      </ScrollView>
       <View style={styles.tabBar}>
         <View style={[styles.tabItem]}>
           <Ionicons name="document-text" size={24} color="#1e1e1e" />
@@ -148,69 +172,11 @@ export default function ReportsScreen() {
           </View>
         </Pressable>
       </Modal>
-      <Modal
-        visible={isNewReportDrawerVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setIsNewReportDrawerVisible(false)}
-      >
-        <Pressable
-          style={styles.modalOverlay}
-          // onPress={() => setIsNewReportDrawerVisible(false)}
-        >
-          <View style={styles.newReportDrawer}>
-            <View style={styles.drawerTopDivderContainer}>
-              <View style={styles.drawerTopDivder}></View>
-            </View>
-            <Text style={styles.drawerTitle}>New Report</Text>
-
-            <Text style={styles.inputLabel}>Purpose</Text>
-            <TextInput style={styles.input} placeholder="example" />
-
-            <Text style={styles.inputLabel}>Report Type</Text>
-            <SelectList
-              setSelected={(val: any) => setSelected(val)}
-              data={data}
-              save="value"
-            />
-            <Text style={styles.inputLabel}>Date</Text>
-            <Pressable style={styles.selectInput}>
-              <Text>Nov 5, 2024</Text>
-              <Ionicons name="calendar-outline" size={20} color="#64748B" />
-            </Pressable>
-
-            <Text style={styles.inputLabel}>Preference</Text>
-            <Pressable style={styles.selectInput}>
-              <Text>Cash</Text>
-              <Ionicons name="chevron-down" size={20} color="#64748B" />
-            </Pressable>
-
-            <Text style={styles.inputLabel}>Default Concurrency</Text>
-            <Pressable style={styles.selectInput}>
-              <View style={styles.currencyOption}>
-                {/* <Image 
-                  source={require("@/assets/images/us-flag.png")} 
-                  style={styles.flagIcon} 
-                /> */}
-                <Text>USD $</Text>
-              </View>
-              <Ionicons name="chevron-down" size={20} color="#64748B" />
-            </Pressable>
-
-            <View style={styles.buttonRow}>
-              <Pressable
-                style={styles.cancelButton}
-                onPress={() => setIsNewReportDrawerVisible(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </Pressable>
-              <Pressable style={styles.saveButton}>
-                <Text style={styles.saveButtonText}>Save</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Pressable>
-      </Modal>
+      <NewReportDrawer
+        isVisible={isNewReportDrawerVisible}
+        onClose={() => setIsNewReportDrawerVisible(false)}
+        onSave={handleCreateNewReport}
+      />
     </View>
   );
 }
@@ -218,6 +184,7 @@ export default function ReportsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    display: "flex",
     backgroundColor: "white",
     paddingHorizontal: 20,
   },
@@ -267,6 +234,7 @@ const styles = StyleSheet.create({
   },
   reportList: {
     gap: 16,
+    flex: 1,
   },
   reportItem: {
     flexDirection: "row",
@@ -401,10 +369,6 @@ const styles = StyleSheet.create({
     borderTopColor: "#E2E8F0",
     paddingVertical: 8,
     backgroundColor: "white",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
   },
   tabItem: {
     alignItems: "center",

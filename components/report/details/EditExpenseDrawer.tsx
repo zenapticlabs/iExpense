@@ -1,287 +1,207 @@
 import {
-  View,
-  Text,
-  TextInput,
   StyleSheet,
-  TouchableOpacity,
   Pressable,
   Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
   ScrollView,
 } from "react-native";
-import React from "react";
-import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { ExpenseType, WarningMessagesByType } from "@/utils/UtilData";
 import { useEffect, useState } from "react";
-import { IExpense, IReport } from "@/constants/types";
 import { reportService } from "@/services/reportService";
-import Stepper from "@/components/Stepper";
-import DeleteReportDrawer from "@/components/report/details/DeleteDrawer";
-import CreateNewExpenseDrawer from "@/components/report/details/CreateNewExpenseDrawer";
-import EditExpenseDrawer from "@/components/report/details/EditExpenseDrawer";
+import ExtraForms from "./ExpenseTypeComponents/ExtraForms";
+import { IExpense } from "@/constants/types";
+import DeleteExpenseItemDrawer from "./DeleteExpenseItemDrawer";
 
-export default function ExpenseDetails() {
-  const { id } = useLocalSearchParams();
-  const [report, setReport] = useState<IReport | null>(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedExpense, setSelectedExpense] = useState<IExpense | null>(null);
+interface EditExpenseDrawerProps {
+  reportId: string;
+  selectedExpense: any;
+  setSelectedExpense: (expense: any) => void;
+  onDeleteExpense: (expenseId: string) => void;
+  onEditExpense: (expense: any) => void;
+}
+
+export default function EditExpenseDrawer({
+  reportId,
+  selectedExpense,
+  setSelectedExpense,
+  onDeleteExpense,
+  onEditExpense,
+}: EditExpenseDrawerProps) {
+  const [newPayload, setNewPayload] = useState<any>();
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [isUploadFileModalVisible, setUploadFileModalVisible] = useState(false);
-  const [isReportDeleteModalVisible, setIsReportDeleteModalVisible] =
-    useState(false);
-  const [isSubmitModalVisible, setIsSubmitModalVisible] = useState(false);
-  const [reportItems, setReportItems] = useState<any[]>([]);
+  const handleDeletePress = () => {
+    setIsDeleteModalVisible(true);
+  };
+  const handleConfirmDelete = async () => {
+    try {
+      await reportService.deleteReportItem(reportId, selectedExpense.id);
+      onDeleteExpense(selectedExpense.id);
+    } catch (error) {
+      console.error("Error deleting report item:", error);
+    }
+    setIsDeleteModalVisible(false);
+    setSelectedExpense(null);
+  };
+  const handleEditExpense = async () => {
+    try {
+      const response = await reportService.updateReportItem(
+        reportId,
+        selectedExpense.id,
+        newPayload
+      );
+      onEditExpense(response);
+      setSelectedExpense(null);
+    } catch (error) {
+      console.error("Error editing report item:", error);
+    }
+  };
   useEffect(() => {
-    const fetchReportItems = async () => {
-      const data = await reportService.getReportItems(id as string);
-      console.log(data);
-      setReportItems(data);
-    };
-    fetchReportItems();
-  }, [id]);
-
-  useEffect(() => {
-    const fetchReport = async () => {
-      const data = await reportService.getReportById(id as string);
-      setReport(data);
-    };
-    fetchReport();
-  }, [id]);
-
-  const handleExpensePress = (expense: IExpense) => {
-    setSelectedExpense(expense);
-  };
-
-  const handleReportDelete = async () => {
-    setIsReportDeleteModalVisible(false);
-    await reportService.deleteReport(id as string);
-    router.replace("/reports");
-  };
-
-  const handleSubmit = () => {
-    setIsSubmitModalVisible(false);
-    console.log("Report submitted");
-  };
-
-  const handleDeleteExpense = (expenseId: string) => {
-    setReportItems(reportItems.filter((item) => item.id !== expenseId));
-  };
-
-  const handleEditExpense = (expense: any) => {
-    setReportItems(
-      reportItems.map((item) => (item.id === expense.id ? expense : item))
-    );
-  };
-
+    setNewPayload(selectedExpense);
+  }, [selectedExpense]);
   return (
-    <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          headerLeft: () => (
-            <View style={styles.headerLeft}>
-              <TouchableOpacity onPress={() => router.back()}>
-                <Ionicons name="arrow-back" size={36} color="#000" />
-              </TouchableOpacity>
-            </View>
-          ),
-          headerRight: () => (
-            <View style={styles.headerRight}>
-              <TouchableOpacity onPress={() => setIsModalVisible(true)}>
-                <Ionicons name="add" size={36} color="#000" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setIsReportDeleteModalVisible(true)}
-              >
-                <Ionicons name="trash-outline" size={36} color="#000" />
-              </TouchableOpacity>
-            </View>
-          ),
-        }}
-      />
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={selectedExpense !== null}
+      onRequestClose={() => setSelectedExpense(null)}
+    >
+      <Pressable
+        style={styles.modalOverlay}
+        // onPress={() => setSelectedExpense(null)}
+      >
+        <View style={[styles.modalContainer, { height: 700 }]}>
+          <View style={styles.modalContent}>
+            <View style={styles.editModalContainer}>
+              <Text style={styles.modalTitle}>Edit Expense</Text>
 
-      <View style={styles.header} className="bg-black">
-        <View style={styles.titleContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>{report?.purpose}</Text>
-            <Text style={styles.id}>#{report?.report_number}</Text>
-          </View>
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>{report?.purpose}</Text>
-          </View>
-        </View>
-        <Text style={styles.amount}>${report?.report_amount}</Text>
-        <Text style={styles.date} className="bg-black">
-          Submission: {report?.report_submit_date}
-        </Text>
-        <Text style={styles.approval}>
-          Approval: {report?.integration_date}
-        </Text>
-        <Stepper
-          currentState={report?.report_status}
-          date={report?.report_submit_date as string}
-        />
-      </View>
+              {newPayload && (
+                <ScrollView>
+                  <Text style={styles.label}>Expense type</Text>
+                  <View style={styles.selectedTypeContainer}>
+                    <Text>{newPayload?.expense_type}</Text>
+                  </View>
+                  <ExtraForms
+                    expense_type={newPayload?.expense_type}
+                    payload={newPayload}
+                    setPayload={setNewPayload}
+                  />
+                  <Text style={styles.label}>Date</Text>
+                  <TouchableOpacity style={styles.inputContainer}>
+                    <Text>{newPayload?.expense_date}</Text>
+                    <Ionicons name="calendar-outline" size={20} color="#666" />
+                  </TouchableOpacity>
 
-      <TouchableOpacity style={styles.submitButton}>
-        <Text style={styles.submitButtonText}>Submit Report</Text>
-      </TouchableOpacity>
+                  <Text style={styles.label}>Receipt amount</Text>
+                  <View style={styles.currencyInputContainer}>
+                    <View style={styles.currencyPrefix}>
+                      {/* <Image
+                  source={require("../../assets/us-flag.png")}
+                  style={styles.flagIcon}
+                /> */}
+                      <Text style={styles.currencyText}>USD $</Text>
+                    </View>
+                    <TextInput
+                      style={styles.currencyInput}
+                      defaultValue={newPayload?.receipt_amount}
+                      keyboardType="decimal-pad"
+                      onChangeText={(text) =>
+                        setNewPayload({
+                          ...newPayload,
+                          receipt_amount: text,
+                        })
+                      }
+                    />
+                  </View>
 
-      <View style={styles.expenseSection}>
-        <Text style={styles.sectionTitle}>Expense Items</Text>
-        <ScrollView>
-          {reportItems?.map((reportItem) => (
-            <TouchableOpacity
-              key={reportItem.id}
-              style={styles.expenseItem}
-              onPress={() => handleExpensePress(reportItem)}
-            >
-              <View>
-                <Text style={styles.expenseItemTitle}>
-                  {reportItem.expense_type}
-                </Text>
-                <Text style={styles.expenseItemAmount}>
-                  ${reportItem.expense_date}
-                </Text>
-                <Text style={styles.expenseItemDate}>
-                  {reportItem.receipt_amount}
-                </Text>
+                  <Text style={styles.label}>Converted report amount</Text>
+                  <View style={styles.currencyInputContainer}>
+                    <View style={styles.currencyPrefix}>
+                      {/* <Image
+                  source={require("../../assets/us-flag.png")}
+                  style={styles.flagIcon}
+                /> */}
+                      <Text style={styles.currencyText}>USD $</Text>
+                    </View>
+                    <TextInput
+                      style={styles.currencyInput}
+                      defaultValue={newPayload?.amount}
+                      keyboardType="decimal-pad"
+                      onChangeText={(text) =>
+                        setNewPayload({
+                          ...newPayload,
+                          amount: text,
+                        })
+                      }
+                    />
+                  </View>
+                  <Text style={styles.label}>Justification</Text>
+                  <TextInput
+                    style={styles.justificationInput}
+                    placeholder="Enter justification"
+                    defaultValue={newPayload?.justification}
+                    onChangeText={(text) =>
+                      setNewPayload({
+                        ...newPayload,
+                        justification: text,
+                      })
+                    }
+                  />
+                  <Text style={styles.label}>Note</Text>
+                  <TextInput
+                    style={styles.justificationInput}
+                    placeholder="Enter note"
+                    defaultValue={newPayload?.note}
+                    onChangeText={(text) =>
+                      setNewPayload({
+                        ...newPayload,
+                        note: text,
+                      })
+                    }
+                  />
+
+                  <Text style={styles.label}>Attached receipt</Text>
+                  <TouchableOpacity
+                    style={styles.uploadContainer}
+                    // onPress={() => setUploadFileModalVisible(true)}
+                  >
+                    <Ionicons
+                      name="cloud-upload-outline"
+                      size={24}
+                      color="#666"
+                    />
+                    <Text style={styles.uploadText}>Upload file</Text>
+                  </TouchableOpacity>
+                </ScrollView>
+              )}
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={handleDeletePress}
+                >
+                  <Ionicons name="trash-outline" size={24} color="red" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={() => handleEditExpense()}
+                >
+                  <Text style={styles.saveButtonText}>Save Changes</Text>
+                </TouchableOpacity>
               </View>
-              <Ionicons name="chevron-forward" size={24} color="#666" />
-            </TouchableOpacity>
-          ))}
-          {reportItems?.length === 0 && (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>📝</Text>
-              <Text style={styles.emptyText}>No expenses</Text>
-              <Text style={styles.emptySubtext}>
-                Tap the "+" button and start adding expenses
-              </Text>
-              <TouchableOpacity style={styles.addButton}>
-                <Text style={styles.addButtonText}>Add expense</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </ScrollView>
-      </View>
-      <View style={styles.tabBar}>
-        <View style={[styles.tabItem]}>
-          <Ionicons name="document-text" size={24} color="#1E3A8A" />
-          <Text style={styles.tabText}>Reports</Text>
-        </View>
-        <View style={styles.tabItem}>
-          <Pressable
-            style={styles.tabAddButton}
-            // onPress={() => setIsNewReportDrawerVisible(true)}
-            onPress={() => console.log(true)}
-          >
-            <Ionicons name="add" size={24} color="white" />
-          </Pressable>
-        </View>
-        <View style={styles.tabItem}>
-          <Ionicons name="person-outline" size={24} color="#64748B" />
-          <Text style={styles.tabText}>My Profile</Text>
-        </View>
-      </View>
-
-      <CreateNewExpenseDrawer
-        isVisible={isModalVisible}
-        reportId={id as string}
-        onClose={() => setIsModalVisible(false)}
-        onAddExpense={(reportItem) =>
-          setReportItems([...reportItems, reportItem])
-        }
-      />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isUploadFileModalVisible}
-        onRequestClose={() =>
-          setUploadFileModalVisible(!isUploadFileModalVisible)
-        }
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalUploadTitle}>Uploaded receipt</Text>
-            <View style={styles.uploadContent}></View>
-            <View style={styles.btnsContainer}>
-              <Pressable
-                style={[styles.button, styles.buttonUpload]}
-                // onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={[styles.textStyle, styles.uploadBtnText]}>
-                  Upload receipt
-                </Text>
-              </Pressable>
-
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setUploadFileModalVisible(false)}
-              >
-                <Text style={styles.textStyle}>Cancel</Text>
-              </Pressable>
             </View>
           </View>
         </View>
-      </Modal>
-
-      <EditExpenseDrawer
-        selectedExpense={selectedExpense}
-        reportId={id as string}
-        setSelectedExpense={setSelectedExpense}
-        onDeleteExpense={handleDeleteExpense}
-        onEditExpense={handleEditExpense}
+      </Pressable>
+      <DeleteExpenseItemDrawer
+        isVisible={isDeleteModalVisible}
+        onClose={() => setIsDeleteModalVisible(false)}
+        onDelete={handleConfirmDelete}
+        reportItem={selectedExpense}
       />
-
-      <DeleteReportDrawer
-        isVisible={isReportDeleteModalVisible}
-        onClose={() => setIsReportDeleteModalVisible(false)}
-        onDelete={handleReportDelete}
-        report={report as IReport}
-      />
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isSubmitModalVisible}
-        onRequestClose={() => setIsSubmitModalVisible(false)}
-      >
-        <Pressable
-          style={styles.deleteModalOverlay}
-          onPress={() => setIsSubmitModalVisible(false)}
-        >
-          <View style={styles.deleteModalContent}>
-            <Text style={styles.deleteModalTitle}>
-              Are you sure you want to submit this report?
-            </Text>
-
-            <View style={styles.deleteModalDetails}>
-              <Text style={styles.deleteModalText}>
-                International Travel #1001
-              </Text>
-              <Text style={styles.deleteModalText}>$120.00</Text>
-              <Text style={styles.deleteModalText}>Nov 5, 2024</Text>
-            </View>
-
-            <View style={styles.deleteModalButtons}>
-              <TouchableOpacity
-                style={styles.deleteModalCancelButton}
-                onPress={() => setIsSubmitModalVisible(false)}
-              >
-                <Text style={styles.deleteModalCancelText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.deleteModalConfirmButton,
-                  { backgroundColor: "#1E3A8A" },
-                ]}
-                onPress={handleSubmit}
-              >
-                <Text style={styles.deleteModalConfirmText}>Yes, submit</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Pressable>
-      </Modal>
-    </View>
+    </Modal>
   );
 }
 
@@ -365,9 +285,8 @@ export const styles = StyleSheet.create({
     textAlign: "center",
   },
   container: {
-    display: "flex",
+    flex: 1,
     backgroundColor: "#fff",
-    height: "100%",
   },
   headerRight: {
     flexDirection: "row",
@@ -464,6 +383,10 @@ export const styles = StyleSheet.create({
     borderTopColor: "#E2E8F0",
     paddingVertical: 8,
     backgroundColor: "white",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   tabItem: {
     alignItems: "center",
@@ -522,7 +445,6 @@ export const styles = StyleSheet.create({
   },
   expenseTypeList: {
     // flex: 1,
-    height: 300,
   },
   expenseTypeItem: {
     flexDirection: "row",
@@ -613,9 +535,8 @@ export const styles = StyleSheet.create({
   justificationInput: {
     backgroundColor: "#f5f5f5",
     borderRadius: 8,
-    padding: 16,
+    padding: 12,
     marginBottom: 16,
-    height: 100,
     textAlignVertical: "top",
   },
   uploadContainer: {
@@ -638,7 +559,6 @@ export const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   expenseSection: {
-    flex: 1,
     padding: 16,
     backgroundColor: "#fff",
   },
@@ -701,6 +621,7 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
   },
   editModalContainer: {
+    flex: 1,
     padding: 16,
     backgroundColor: "white",
   },
@@ -827,5 +748,17 @@ export const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#E5E7EB",
     marginTop: 12,
+  },
+  warningContainer: {
+    backgroundColor: "#FEF2F2",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#FCA5A5",
+  },
+  warningText: {
+    color: "#DC2626",
+    fontSize: 14,
   },
 });

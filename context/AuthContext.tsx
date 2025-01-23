@@ -5,9 +5,7 @@ import LoadingScreen from "@/components/LoadingScreen";
 import { authService } from "@/services/authService";
 
 interface User {
-  id: string;
   email: string;
-  name: string;
   token?: string;
 }
 
@@ -37,7 +35,7 @@ function useProtectedRoute(user: User | null) {
     if (!navigationState?.key) return;
 
     const inAuthGroup = segments[0] === "auth";
-
+ 
     if (!user && !inAuthGroup) {
       router.replace("/auth");
     } else if (user && inAuthGroup) {
@@ -58,9 +56,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loadStoredAuth = async () => {
     try {
-      const { token, userData } = await storage.getAuthData();
-      if (token && userData) {
-        setUser({ ...userData, token });
+      const { access, refresh } = await storage.getAuthData();
+      if (access && refresh) {
+        setUser({
+          email: "test",
+          token: access,
+        });
       }
     } catch (error) {
       console.error("Error loading auth data:", error);
@@ -71,9 +72,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const verifyCode = async (email: string, code: string) => {
     try {
-      const { token, user: userData } = await authService.verify(email, code);
-      await storage.setAuthData(token, userData);
-      setUser({ ...userData, token });
+      const { access, refresh } = await authService.verify(email, code);
+      await storage.setAuthData(access, refresh);
+      setUser({
+        email: email,
+        token: access,
+      });
     } catch (error) {
       console.error("Verification error:", error);
       throw error;
@@ -82,14 +86,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { token, user: userData } = await authService.login(email, password);
-      await storage.setAuthData(token, userData);
-      setUser({ ...userData, token });
+      // const { token, user: userData } = await authService.login(email, password);
+      const { access, refresh } = await authService.login(email, password);
+      await storage.setAuthData(access, refresh);
+      // setUser({ ...userData, token });
+      setUser({
+        email: email,
+        token: access,
+      });
     } catch (error) {
-      router.replace("/auth/verify");
       localStorage.setItem("email", email);
       localStorage.setItem("password", password);
-      console.error("Sign in error:", error);
+      if (error === "second_factor_required") {
+        router.replace("/auth/verify");
+      } else {
+        console.log(error);
+      }
       throw error;
     }
   };
@@ -109,7 +121,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut, isLoading, verifyCode }}>
+    <AuthContext.Provider
+      value={{ user, signIn, signOut, isLoading, verifyCode }}
+    >
       {children}
     </AuthContext.Provider>
   );
