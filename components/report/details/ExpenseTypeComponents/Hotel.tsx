@@ -1,5 +1,6 @@
 import { commonService } from "@/services/commonService";
 import { reportService } from "@/services/reportService";
+import { Styles } from "@/Styles";
 import { ReportTypes } from "@/utils/UtilData";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TextInput } from "react-native";
@@ -40,21 +41,25 @@ export default function Hotel({ payload, setPayload }: HotelProps) {
   }, []);
   return (
     <View style={styles.formContainer}>
-      <Text style={styles.inputLabel}>Hotel Name</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Hotel Name"
-        onChangeText={(text) => setPayload({ ...payload, hotel_name: text })}
-      />
-      <Text style={styles.inputLabel}>City</Text>
-      <Dropdown
-        data={cities}
-        labelField="label"
-        valueField="value"
-        onChange={(item) => setPayload({ ...payload, city: item.value })}
-        style={styles.dropdown}
-        containerStyle={styles.dropdownContainer}
-      />
+      <View>
+        <Text style={Styles.generalInputLabel}>Hotel Name</Text>
+        <TextInput
+          style={Styles.generalInput}
+          placeholder="Enter Hotel Name"
+          onChangeText={(text) => setPayload({ ...payload, hotel_name: text })}
+        />
+      </View>
+      <View>
+        <Text style={Styles.generalInputLabel}>City</Text>
+        <Dropdown
+          data={cities}
+          labelField="label"
+          valueField="value"
+          onChange={(item) => setPayload({ ...payload, city: item.value })}
+          style={Styles.generalInput}
+          containerStyle={styles.dropdownContainer}
+        />
+      </View>
     </View>
   );
 }

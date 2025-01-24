@@ -1,23 +1,24 @@
-import { StyleSheet, Pressable, Image, Modal, TextInput, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  Pressable,
+  Image,
+  Modal,
+  TextInput,
+  ScrollView,
+} from "react-native";
 import { Link, useRouter } from "expo-router";
 import { Text, View } from "@/components/Themed";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useEffect, useCallback } from "react";
-import {
-  ReportStatusBgColor,
-  ReportStatusTextColor,
-} from "@/utils/UtilData";
+import { useState, useCallback } from "react";
+import { ReportStatusBgColor, ReportStatusTextColor } from "@/utils/UtilData";
 import { ICreateReportPayload, IReport } from "@/constants/types";
 import { reportService } from "@/services/reportService";
 import NewReportDrawer from "@/components/report/NewReportDrawer";
 import { useFocusEffect } from "@react-navigation/native";
-
-const DATE_OPTIONS = [
-  { label: "Last 3 months", value: "last_3_months" },
-  { label: "Last 6 months", value: "last_6_months" },
-  { label: "This year", value: "this_year" },
-  { label: "Last year", value: "last_year" },
-];
+import LoadingScreen from "@/components/LoadingScreen";
+import SelectDataRangePicker, {
+  DATE_OPTIONS,
+} from "@/components/report/SelectDataRangePicker";
 
 const ReportItem = ({ report }: { report: IReport }) => (
   <Link href={`/reports/details?id=${report.id}`} asChild>
@@ -58,12 +59,10 @@ const ReportItem = ({ report }: { report: IReport }) => (
 );
 
 export default function ReportsScreen() {
-  const router = useRouter();
   const [reports, setReports] = useState<IReport[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDateRange, setSelectedDateRange] = useState(DATE_OPTIONS[0]);
-  const [isDateRangeDrawerVisible, setIsDateRangeDrawerVisible] =
-    useState(false);
+  const [dateRange, setDataRange] = useState(DATE_OPTIONS[0].value);
+
   const [isNewReportDrawerVisible, setIsNewReportDrawerVisible] =
     useState(false);
 
@@ -90,6 +89,7 @@ export default function ReportsScreen() {
     setReports([...reports, newReport]);
     setIsNewReportDrawerVisible(false);
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -102,26 +102,23 @@ export default function ReportsScreen() {
 
       <View style={styles.filterSection}>
         <Text style={styles.title}>Expense Reports</Text>
-        <Pressable style={styles.filterButton}>
-          <Ionicons name="calendar-clear-outline" size={20} color="#5B5B5B" />
-          <Text
-            onPress={() => setIsDateRangeDrawerVisible(true)}
-            style={styles.filterText}
-          >
-            This month
-          </Text>
-        </Pressable>
+        <SelectDataRangePicker onChange={setDataRange} value={dateRange} />
       </View>
 
-      <ScrollView style={styles.reportList} showsVerticalScrollIndicator={false}>
-        {loading ? (
-          <Text>Loading...</Text>
-        ) : (
-          reports.map((report, index) => (
+      {loading ? (
+        <View style={styles.loaderContainer}>
+          <LoadingScreen />
+        </View>
+      ) : (
+        <ScrollView
+          style={styles.reportList}
+          showsVerticalScrollIndicator={false}
+        >
+          {reports.map((report, index) => (
             <ReportItem key={`${report.id}-${index}`} report={report} />
-          ))
-        )}
-      </ScrollView>
+          ))}
+        </ScrollView>
+      )}
       <View style={styles.tabBar}>
         <View style={[styles.tabItem]}>
           <Ionicons name="document-text" size={24} color="#1e1e1e" />
@@ -142,36 +139,6 @@ export default function ReportsScreen() {
           </View>
         </Link>
       </View>
-      <Modal
-        visible={isDateRangeDrawerVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setIsDateRangeDrawerVisible(false)}
-      >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setIsDateRangeDrawerVisible(false)}
-        >
-          <View style={styles.drawer}>
-            <View style={styles.drawerTopDivderContainer}>
-              <View style={styles.drawerTopDivder}></View>
-            </View>
-            <Text style={styles.drawerTitle}>Select Date Range</Text>
-            {DATE_OPTIONS.map((option) => (
-              <Pressable
-                key={option.value}
-                style={[
-                  styles.dateOption,
-                  selectedDateRange === option && styles.selectedOption,
-                ]}
-                onPress={() => setSelectedDateRange(option)}
-              >
-                <Text>{option.label}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </Pressable>
-      </Modal>
       <NewReportDrawer
         isVisible={isNewReportDrawerVisible}
         onClose={() => setIsNewReportDrawerVisible(false)}
@@ -194,7 +161,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 16,
     marginBottom: 24,
-    height:40,
+    height: 40,
   },
   logo: {
     height: 24,
@@ -203,7 +170,7 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 15,
     color: "#1E1E1E",
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   filterSection: {
     flexDirection: "row",
@@ -214,24 +181,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "600",
-    color:'#1E1E1E',
-    fontFamily: "SFProDisplay"
+    color: "#1E1E1E",
+    fontFamily: "SFProDisplay",
   },
-  filterButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderColor: "#E2E8F0",
-    borderRadius: 50,
-    gap: 4,
-  },
-  filterText: {
-    color: "#5B5B5B",
-    fontSize: 13,
-    fontFamily: "SFProDisplay"
-  },
+
   reportList: {
     gap: 16,
     flex: 1,
@@ -241,8 +194,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 16,
     borderRadius: 8,
-    minHeight:134,
-    boxShadow: '0px 2px 15px 0px rgba(0, 0, 0, 0.07)',
+    minHeight: 134,
+    boxShadow: "0px 2px 15px 0px rgba(0, 0, 0, 0.07)",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -256,15 +209,15 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "600",
     marginBottom: 4,
-    color:'#1e1e1e',
-    fontFamily: "SFProDisplay"
+    color: "#1e1e1e",
+    fontFamily: "SFProDisplay",
   },
   reportAmount: {
     fontSize: 15,
     fontWeight: "600",
     marginBottom: 8,
-    color:'#1e1e1e',
-    fontFamily: "SFProDisplay"
+    color: "#1e1e1e",
+    fontFamily: "SFProDisplay",
   },
   reportDetails: {
     gap: 2,
@@ -272,7 +225,7 @@ const styles = StyleSheet.create({
   detailText: {
     fontSize: 13,
     color: "#5B5B5B",
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   statusBadge: {
     paddingHorizontal: 12,
@@ -286,7 +239,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     color: "#854D0E",
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   titleRow: {
     flexDirection: "row",
@@ -296,8 +249,8 @@ const styles = StyleSheet.create({
   reportId: {
     fontSize: 13,
     color: "#5B5B5B",
-    marginBottom:4,
-    fontFamily: "SFProDisplay"
+    marginBottom: 4,
+    fontFamily: "SFProDisplay",
   },
   statussubmitted: {
     backgroundColor: "#FEF9C3",
@@ -456,5 +409,12 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: "white",
     fontWeight: "500",
+  },
+  loaderContainer: {
+    marginTop: 57,
+    height: "100%",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

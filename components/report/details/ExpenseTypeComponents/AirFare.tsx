@@ -1,4 +1,5 @@
 import { commonService } from "@/services/commonService";
+import { Styles } from "@/Styles";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TextInput } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
@@ -28,32 +29,36 @@ export default function AirFare({ payload, setPayload }: AirFareProps) {
   }, []);
   return (
     <View style={styles.formContainer}>
-      <Text style={styles.inputLabel}>Airline</Text>
-      <Dropdown
-        data={airlines}
-        labelField="label"
-        valueField="value"
-        onChange={(item) => setPayload({ ...payload, airline: item.value })}
-        value={payload?.airline}
-        style={styles.dropdown}
-        containerStyle={styles.dropdownContainer}
-      />
-      <Text style={styles.inputLabel}>Origin</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter origin"
-        value={payload?.origin_destination}
-        onChangeText={(text) =>
-          setPayload({ ...payload, origin_destination: text })
-        }
-      />
+      <View>
+        <Text style={Styles.generalInputLabel}>Airline</Text>
+        <Dropdown
+          data={airlines}
+          labelField="label"
+          valueField="value"
+          onChange={(item) => setPayload({ ...payload, airline: item.value })}
+          value={payload?.airline}
+          style={Styles.generalInput}
+          containerStyle={styles.dropdownContainer}
+        />
+      </View>
+      <View>
+        <Text style={Styles.generalInputLabel}>Origin</Text>
+        <TextInput
+          style={Styles.generalInput}
+          placeholder="Enter origin"
+          value={payload?.origin_destination}
+          onChangeText={(text) =>
+            setPayload({ ...payload, origin_destination: text })
+          }
+        />
+      </View>
     </View>
   );
 }
 
 export const styles = StyleSheet.create({
   formContainer: {
-    gap: 6,
+    gap: 16,
   },
   inputLabel: {
     fontSize: 16,

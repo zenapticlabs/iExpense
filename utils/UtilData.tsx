@@ -3,6 +3,7 @@ export const ReportStatusBgColor = (status: string): string => {
     submitted: "#eae4c7",
     approved: "#c7e3ea",
     paid: "#d7e3d0",
+    Open: "#E4E4E4"
   };
   return colors[status as keyof typeof colors] || colors.submitted;
 };
@@ -12,6 +13,7 @@ export const ReportStatusTextColor = (status: string) => {
     submitted: "#4f440f",
     approved: "#0f404c",
     paid: "#1b350d",
+    Open: "#1E1E1E"
   };
   return colors[status as keyof typeof colors] || colors.submitted;
 };

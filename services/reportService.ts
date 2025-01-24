@@ -13,6 +13,16 @@ interface UpdateReportPayload {
   error: boolean;
 }
 
+interface ReportStatusPayload {
+  expense_type: string;
+  purpose: string;
+  payment_method: string;
+  report_currency: string;
+  report_amount: string;
+  report_date: string;
+  error: boolean;
+}
+
 export const reportService = {
   async getReports(): Promise<IReport[]> {
     const accessToken = await authService.getAccessToken();
@@ -178,5 +188,37 @@ export const reportService = {
       console.error("Error deleting report item:", error);
       throw error;
     }
+  },
+
+  async updateReportStatus(reportId: string, payload: ReportStatusPayload): Promise<IReport> {
+    const accessToken = await authService.getAccessToken();
+    const response = await axios.put(`${BASE_URL}/reports/${reportId}/status/`, payload, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error("Failed to update report status");
+    }
+
+    return response.data;
+  },
+
+  async submitReport(reportId: string, payload: ReportStatusPayload): Promise<IReport> {
+    const accessToken = await authService.getAccessToken();
+    const response = await axios.put(`${BASE_URL}/reports/${reportId}/submit/`, payload, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error("Failed to submit report");
+    }
+
+    return response.data;
   },
 };

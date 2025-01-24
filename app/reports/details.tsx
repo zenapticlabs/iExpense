@@ -14,38 +14,46 @@ import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { IExpense, IReport } from "@/constants/types";
 import { reportService } from "@/services/reportService";
-import Stepper from "@/components/Stepper";
 import DeleteReportDrawer from "@/components/report/details/DeleteDrawer";
 import CreateNewExpenseDrawer from "@/components/report/details/CreateNewExpenseDrawer";
 import EditExpenseDrawer from "@/components/report/details/EditExpenseDrawer";
+import { formatDate } from "@/utils/UtilFunctions";
+import { ReportStatusTextColor } from "@/utils/UtilData";
+import { ReportStatusBgColor } from "@/utils/UtilData";
+import ReportStepper from "@/components/ReportStepper";
+import SubmitConfirmDrawer from "@/components/report/details/SubmitConfirmDrawer";
+import LoadingScreen from "@/components/LoadingScreen";
 
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
   const [report, setReport] = useState<IReport | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<IExpense | null>(null);
-  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [isUploadFileModalVisible, setUploadFileModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isReportDeleteModalVisible, setIsReportDeleteModalVisible] =
     useState(false);
   const [isSubmitModalVisible, setIsSubmitModalVisible] = useState(false);
   const [reportItems, setReportItems] = useState<any[]>([]);
+
   useEffect(() => {
     const fetchReportItems = async () => {
       const data = await reportService.getReportItems(id as string);
-      console.log(data);
       setReportItems(data);
     };
-    fetchReportItems();
-  }, [id]);
-
-  useEffect(() => {
     const fetchReport = async () => {
       const data = await reportService.getReportById(id as string);
       setReport(data);
     };
-    fetchReport();
+    const fetchData = async () => {
+      setLoading(true);
+      await fetchReportItems();
+      await fetchReport();
+      setLoading(false);
+    };
+    fetchData();
   }, [id]);
+
+  useEffect(() => {}, [id]);
 
   const handleExpensePress = (expense: IExpense) => {
     setSelectedExpense(expense);
@@ -59,7 +67,6 @@ export default function ExpenseDetails() {
 
   const handleSubmit = () => {
     setIsSubmitModalVisible(false);
-    console.log("Report submitted");
   };
 
   const handleDeleteExpense = (expenseId: string) => {
@@ -97,71 +104,99 @@ export default function ExpenseDetails() {
           ),
         }}
       />
-
-      <View style={styles.header} className="bg-black">
-        <View style={styles.titleContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>{report?.purpose}</Text>
-            <Text style={styles.id}>#{report?.report_number}</Text>
-          </View>
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>{report?.purpose}</Text>
-          </View>
-        </View>
-        <Text style={styles.amount}>${report?.report_amount}</Text>
-        <Text style={styles.date} className="bg-black">
-          Submission: {report?.report_submit_date}
-        </Text>
-        <Text style={styles.approval}>
-          Approval: {report?.integration_date}
-        </Text>
-        <Stepper
-          currentState={report?.report_status}
-          date={report?.report_submit_date as string}
-        />
-      </View>
-
-      <TouchableOpacity style={styles.submitButton}>
-        <Text style={styles.submitButtonText}>Submit Report</Text>
-      </TouchableOpacity>
-
-      <View style={styles.expenseSection}>
-        <Text style={styles.sectionTitle}>Expense Items</Text>
-        <ScrollView>
-          {reportItems?.map((reportItem) => (
-            <TouchableOpacity
-              key={reportItem.id}
-              style={styles.expenseItem}
-              onPress={() => handleExpensePress(reportItem)}
-            >
-              <View>
-                <Text style={styles.expenseItemTitle}>
-                  {reportItem.expense_type}
-                </Text>
-                <Text style={styles.expenseItemAmount}>
-                  ${reportItem.expense_date}
-                </Text>
-                <Text style={styles.expenseItemDate}>
-                  {reportItem.receipt_amount}
+      {loading ? (
+        <LoadingScreen />
+      ) : (
+        <>
+          <View style={styles.header} className="bg-black">
+            <View style={styles.titleContainer}>
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>{report?.purpose}</Text>
+                <Text style={styles.id}>#{report?.report_number}</Text>
+              </View>
+              <View
+                style={[
+                  styles.statusBadge,
+                  {
+                    backgroundColor: ReportStatusBgColor(
+                      report?.report_status as string
+                    ),
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.statusText,
+                    {
+                      color: ReportStatusTextColor(
+                        report?.report_status as string
+                      ),
+                    },
+                  ]}
+                >
+                  {report?.report_status}
                 </Text>
               </View>
-              <Ionicons name="chevron-forward" size={24} color="#666" />
-            </TouchableOpacity>
-          ))}
-          {reportItems?.length === 0 && (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>📝</Text>
-              <Text style={styles.emptyText}>No expenses</Text>
-              <Text style={styles.emptySubtext}>
-                Tap the "+" button and start adding expenses
-              </Text>
-              <TouchableOpacity style={styles.addButton}>
-                <Text style={styles.addButtonText}>Add expense</Text>
-              </TouchableOpacity>
             </View>
-          )}
-        </ScrollView>
-      </View>
+            <Text style={styles.amount}>${report?.report_amount}</Text>
+            <Text style={styles.dateLabel} className="bg-black">
+              Submission: {formatDate(report?.report_submit_date as string)}
+            </Text>
+            <Text style={styles.dateLabel}>
+              Approval: {formatDate(report?.integration_date as string)}
+            </Text>
+            <View style={styles.stepperContainer}>
+              <ReportStepper report={report as IReport} />
+            </View>
+          </View>
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={() => setIsSubmitModalVisible(true)}
+          >
+            <Text style={styles.submitButtonText}>Submit Report</Text>
+          </TouchableOpacity>
+          <View style={styles.expenseSection}>
+            <Text style={styles.sectionTitle}>Expense Items</Text>
+            <ScrollView>
+              {reportItems?.map((reportItem) => (
+                <TouchableOpacity
+                  key={reportItem.id}
+                  style={styles.expenseItem}
+                  onPress={() => handleExpensePress(reportItem)}
+                >
+                  <View>
+                    <Text style={styles.expenseItemTitle}>
+                      {reportItem.expense_type}
+                    </Text>
+                    <Text style={styles.expenseItemAmount}>
+                      ${reportItem.receipt_amount}
+                    </Text>
+                    <Text style={styles.expenseItemDate}>
+                      {formatDate(reportItem.expense_date) || ""}
+                    </Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={24} color="#666" />
+                </TouchableOpacity>
+              ))}
+              {reportItems?.length === 0 && (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyIcon}>📝</Text>
+                  <Text style={styles.emptyText}>No expenses</Text>
+                  <Text style={styles.emptySubtext}>
+                    Tap the "+" button and start adding expenses
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={() => setIsModalVisible(true)}
+                  >
+                    <Text style={styles.addButtonText}>Add expense</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </ScrollView>
+          </View>
+        </>
+      )}
       <View style={styles.tabBar}>
         <View style={[styles.tabItem]}>
           <Ionicons name="document-text" size={24} color="#1E3A8A" />
@@ -190,38 +225,6 @@ export default function ExpenseDetails() {
           setReportItems([...reportItems, reportItem])
         }
       />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isUploadFileModalVisible}
-        onRequestClose={() =>
-          setUploadFileModalVisible(!isUploadFileModalVisible)
-        }
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalUploadTitle}>Uploaded receipt</Text>
-            <View style={styles.uploadContent}></View>
-            <View style={styles.btnsContainer}>
-              <Pressable
-                style={[styles.button, styles.buttonUpload]}
-                // onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={[styles.textStyle, styles.uploadBtnText]}>
-                  Upload receipt
-                </Text>
-              </Pressable>
-
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setUploadFileModalVisible(false)}
-              >
-                <Text style={styles.textStyle}>Cancel</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
 
       <EditExpenseDrawer
         selectedExpense={selectedExpense}
@@ -238,49 +241,12 @@ export default function ExpenseDetails() {
         report={report as IReport}
       />
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isSubmitModalVisible}
-        onRequestClose={() => setIsSubmitModalVisible(false)}
-      >
-        <Pressable
-          style={styles.deleteModalOverlay}
-          onPress={() => setIsSubmitModalVisible(false)}
-        >
-          <View style={styles.deleteModalContent}>
-            <Text style={styles.deleteModalTitle}>
-              Are you sure you want to submit this report?
-            </Text>
-
-            <View style={styles.deleteModalDetails}>
-              <Text style={styles.deleteModalText}>
-                International Travel #1001
-              </Text>
-              <Text style={styles.deleteModalText}>$120.00</Text>
-              <Text style={styles.deleteModalText}>Nov 5, 2024</Text>
-            </View>
-
-            <View style={styles.deleteModalButtons}>
-              <TouchableOpacity
-                style={styles.deleteModalCancelButton}
-                onPress={() => setIsSubmitModalVisible(false)}
-              >
-                <Text style={styles.deleteModalCancelText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.deleteModalConfirmButton,
-                  { backgroundColor: "#1E3A8A" },
-                ]}
-                onPress={handleSubmit}
-              >
-                <Text style={styles.deleteModalConfirmText}>Yes, submit</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Pressable>
-      </Modal>
+      <SubmitConfirmDrawer
+        isVisible={isSubmitModalVisible}
+        onClose={() => setIsSubmitModalVisible(false)}
+        onSubmit={handleSubmit}
+        report={report as IReport}
+      />
     </View>
   );
 }
@@ -380,6 +346,7 @@ export const styles = StyleSheet.create({
   },
   header: {
     padding: 16,
+    paddingBottom: 0,
   },
   titleContainer: {
     flexDirection: "row",
@@ -390,22 +357,22 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "600",
+    fontFamily: "SFProDisplay",
   },
   id: {
     color: "#666",
+    fontFamily: "SFProDisplay",
   },
   amount: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginTop: 8,
+    fontSize: 17,
+    fontWeight: "400",
+    marginVertical: 8,
+    fontFamily: "SFProDisplay",
   },
-  date: {
+  dateLabel: {
+    fontSize: 15,
     color: "#666",
     marginTop: 4,
-  },
-  approval: {
-    color: "#666",
-    marginTop: 2,
   },
   submitButton: {
     backgroundColor: "#1a237e",
@@ -436,25 +403,28 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
   },
   emptyText: {
-    fontSize: 16,
-    color: "#666",
+    fontSize: 17,
+    color: "#888888",
     marginBottom: 4,
   },
   emptySubtext: {
-    fontSize: 14,
-    color: "#999",
+    fontSize: 15,
+    color: "#888888",
     marginBottom: 16,
     textAlign: "center",
   },
   addButton: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#888888",
     padding: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
+    fontWeight: "600",
   },
   addButtonText: {
-    color: "#000",
+    fontSize: 17,
+    color: "#1E1E1E",
+    fontFamily: "SFProDisplay",
   },
   tabBar: {
     flexDirection: "row",
@@ -640,7 +610,9 @@ export const styles = StyleSheet.create({
   expenseSection: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#f5f5f5",
+    borderTopWidth: 1,
+    borderTopColor: "#DDDDDD",
   },
   sectionTitle: {
     fontSize: 18,
@@ -655,14 +627,9 @@ export const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 8,
     marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
   },
   expenseItemTitle: {
     fontSize: 16,
@@ -711,22 +678,20 @@ export const styles = StyleSheet.create({
   },
   deleteModalContent: {
     backgroundColor: "white",
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
     padding: 20,
     width: "100%",
   },
   deleteModalTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "600",
     marginBottom: 16,
-    textAlign: "center",
   },
   deleteModalDetails: {
-    backgroundColor: "#f5f5f5",
     padding: 16,
     borderRadius: 8,
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
   },
   deleteModalText: {
     fontSize: 16,
@@ -771,13 +736,11 @@ export const styles = StyleSheet.create({
     fontWeight: "500",
   },
   statusBadge: {
-    backgroundColor: "#F3F4E6",
     paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 16,
+    borderRadius: 4,
   },
   statusText: {
-    color: "#666666",
     fontSize: 14,
   },
   stepper: {
@@ -827,5 +790,31 @@ export const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#E5E7EB",
     marginTop: 12,
+  },
+  submitDetailsTitleContainer: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    paddingBottom: 8,
+  },
+  submitDetailsPurposeLabel: {
+    fontSize: 17,
+    fontWeight: "600",
+  },
+  submitDetailsNumberLabel: {
+    color: "#5B5B5B",
+    fontSize: 13,
+    marginLeft: 4,
+  },
+  submitDetailsAmountLabel: {
+    fontSize: 15,
+    fontWeight: "400",
+    marginBottom: 8,
+  },
+  submitDetailsDateLabel: {
+    fontSize: 13,
+    color: "#5B5B5B",
+  },
+  stepperContainer: {
+    paddingHorizontal: 16,
   },
 });

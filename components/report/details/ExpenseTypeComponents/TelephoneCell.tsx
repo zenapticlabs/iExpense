@@ -1,5 +1,6 @@
 import { commonService } from "@/services/commonService";
 import { reportService } from "@/services/reportService";
+import { Styles } from "@/Styles";
 import { ReportTypes } from "@/utils/UtilData";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TextInput } from "react-native";
@@ -16,12 +17,14 @@ export default function TelephoneCell({
 }: TelephoneCellProps) {
   return (
     <View style={styles.formContainer}>
-      <Text style={styles.inputLabel}>Carrier</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Carrier"
-        onChangeText={(text) => setPayload({ ...payload, carrier: text })}
-      />
+      <View>
+        <Text style={Styles.generalInputLabel}>Carrier</Text>
+        <TextInput
+          style={Styles.generalInput}
+          placeholder="Enter Carrier"
+          onChangeText={(text) => setPayload({ ...payload, carrier: text })}
+        />
+      </View>
     </View>
   );
 }
