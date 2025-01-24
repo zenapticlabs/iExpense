@@ -1,5 +1,6 @@
 import { commonService } from "@/services/commonService";
 import { reportService } from "@/services/reportService";
+import { Styles } from "@/Styles";
 import { ReportTypes } from "@/utils/UtilData";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TextInput } from "react-native";
@@ -10,7 +11,10 @@ interface BusinessMealsProps {
   setPayload: any;
 }
 
-export default function BusinessMeals({ payload, setPayload }: BusinessMealsProps) {
+export default function BusinessMeals({
+  payload,
+  setPayload,
+}: BusinessMealsProps) {
   const [mealCategories, setMealCategories] = useState<any[]>([]);
   useEffect(() => {
     const fetchMealCategories = async () => {
@@ -30,25 +34,29 @@ export default function BusinessMeals({ payload, setPayload }: BusinessMealsProp
   }, []);
   return (
     <View style={styles.formContainer}>
-      <Text style={styles.inputLabel}>Meal Category</Text>
-      <Dropdown
-        data={mealCategories}
-        labelField="label"
-        valueField="value"
-        onChange={(item) =>
-          setPayload({ ...payload, meal_category: item.value })
-        }
-        style={styles.dropdown}
-        containerStyle={styles.dropdownContainer}
-      />
-      <Text style={styles.inputLabel}>Employee Names</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter employee names"
-        onChangeText={(text) =>
-          setPayload({ ...payload, employee_names: text })
-        }
-      />
+      <View>
+        <Text style={Styles.generalInputLabel}>Meal Category</Text>
+        <Dropdown
+          data={mealCategories}
+          labelField="label"
+          valueField="value"
+          onChange={(item) =>
+            setPayload({ ...payload, meal_category: item.value })
+          }
+          style={Styles.generalInput}
+          containerStyle={styles.dropdownContainer}
+        />
+      </View>
+      <View>
+        <Text style={Styles.generalInputLabel}>Employee Names</Text>
+        <TextInput
+          style={Styles.generalInput}
+          placeholder="Enter employee names"
+          onChangeText={(text) =>
+            setPayload({ ...payload, employee_names: text })
+          }
+        />
+      </View>
     </View>
   );
 }
@@ -56,19 +64,6 @@ export default function BusinessMeals({ payload, setPayload }: BusinessMealsProp
 export const styles = StyleSheet.create({
   formContainer: {
     gap: 12,
-  },
-  inputLabel: {
-    fontSize: 16,
-    color: "#1E1E1E",
-    marginBottom: 4,
-  },
-  dropdown: {
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 12,
-    width: "100%",
   },
   dropdownContainer: {
     width: "100%",

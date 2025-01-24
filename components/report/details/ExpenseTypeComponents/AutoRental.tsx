@@ -1,5 +1,6 @@
 import { commonService } from "@/services/commonService";
 import { reportService } from "@/services/reportService";
+import { Styles } from "@/Styles";
 import { ReportTypes } from "@/utils/UtilData";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TextInput } from "react-native";
@@ -45,38 +46,37 @@ export default function AutoRental({ payload, setPayload }: AutoRentalProps) {
   }, []);
   return (
     <View style={styles.formContainer}>
-      <Text style={styles.inputLabel}>Car Type</Text>
-      <Dropdown
-        data={carTypes}
-        labelField="label"
-        valueField="value"
-        onChange={(item) => setPayload({ ...payload, car_type: item.value })}
-        style={styles.dropdown}
-        containerStyle={styles.dropdownContainer}
-      />
-      <Text style={styles.inputLabel}>Rental Agency</Text>
-      <Dropdown
-        data={rentalAgencies}
-        labelField="label"
-        valueField="value"
-        onChange={(item) =>
-          setPayload({ ...payload, rental_agency: item.value })
-        }
-        style={styles.dropdown}
-        containerStyle={styles.dropdownContainer}
-      />
+      <View>
+        <Text style={Styles.generalInputLabel}>Car Type</Text>
+        <Dropdown
+          data={carTypes}
+          labelField="label"
+          valueField="value"
+          onChange={(item) => setPayload({ ...payload, car_type: item.value })}
+          style={Styles.generalInput}
+          containerStyle={styles.dropdownContainer}
+        />
+      </View>
+      <View>
+        <Text style={Styles.generalInputLabel}>Rental Agency</Text>
+        <Dropdown
+          data={rentalAgencies}
+          labelField="label"
+          valueField="value"
+          onChange={(item) =>
+            setPayload({ ...payload, rental_agency: item.value })
+          }
+          style={Styles.generalInput}
+          containerStyle={styles.dropdownContainer}
+        />
+      </View>
     </View>
   );
 }
 
 export const styles = StyleSheet.create({
   formContainer: {
-    gap: 12,
-  },
-  inputLabel: {
-    fontSize: 16,
-    color: "#1E1E1E",
-    marginBottom: 4,
+    gap: 16,
   },
   dropdown: {
     borderColor: "#ccc",

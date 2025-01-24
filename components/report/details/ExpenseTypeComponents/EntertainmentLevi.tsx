@@ -1,5 +1,6 @@
 import { commonService } from "@/services/commonService";
 import { reportService } from "@/services/reportService";
+import { Styles } from "@/Styles";
 import { ReportTypes } from "@/utils/UtilData";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TextInput } from "react-native";
@@ -33,47 +34,55 @@ export default function EntertainmentLevi({
   }, []);
   return (
     <View style={styles.formContainer}>
-      <Text style={styles.inputLabel}>Name of Establishment</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter name of establishment"
-        onChangeText={(text) =>
-          setPayload({ ...payload, name_of_establishment: text })
-        }
-      />
-      <Text style={styles.inputLabel}>City</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter City"
-        onChangeText={(text) => setPayload({ ...payload, city: text })}
-      />
-
-      <Text style={styles.inputLabel}>Business Topic</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Business Topic"
-        onChangeText={(text) =>
-          setPayload({ ...payload, business_topic: text })
-        }
-      />
-
-      <Text style={styles.inputLabel}>Total Attendees</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Total Attendees"
-        keyboardType="numeric"
-        onChangeText={(text) => {
-          const numericValue = text.replace(/[^0-9]/g, "");
-          setPayload({ ...payload, total_attendees: numericValue });
-        }}
-      />
-      <Text style={styles.inputLabel}>Attendees</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Attendees"
-        keyboardType="numeric"
-        onChangeText={(text) => setPayload({ ...payload, attendees: text })}
-      />
+      <View>
+        <Text style={Styles.generalInputLabel}>Name of Establishment</Text>
+        <TextInput
+          style={Styles.generalInput}
+          placeholder="Enter name of establishment"
+          onChangeText={(text) =>
+            setPayload({ ...payload, name_of_establishment: text })
+          }
+        />
+      </View>
+      <View>
+        <Text style={Styles.generalInputLabel}>City</Text>
+        <TextInput
+          style={Styles.generalInput}
+          placeholder="Enter City"
+          onChangeText={(text) => setPayload({ ...payload, city: text })}
+        />
+      </View>
+      <View>
+        <Text style={Styles.generalInputLabel}>Business Topic</Text>
+        <TextInput
+          style={Styles.generalInput}
+          placeholder="Enter Business Topic"
+          onChangeText={(text) =>
+            setPayload({ ...payload, business_topic: text })
+          }
+        />
+      </View>
+      <View>
+        <Text style={Styles.generalInputLabel}>Total Attendees</Text>
+        <TextInput
+          style={Styles.generalInput}
+          placeholder="Enter Total Attendees"
+          keyboardType="numeric"
+          onChangeText={(text) => {
+            const numericValue = text.replace(/[^0-9]/g, "");
+            setPayload({ ...payload, total_attendees: numericValue });
+          }}
+        />
+      </View>
+      <View>
+        <Text style={Styles.generalInputLabel}>Attendees</Text>
+        <TextInput
+          style={Styles.generalInput}
+          placeholder="Enter Attendees"
+          keyboardType="numeric"
+          onChangeText={(text) => setPayload({ ...payload, attendees: text })}
+        />
+      </View>
     </View>
   );
 }

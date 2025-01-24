@@ -1,5 +1,6 @@
 import { commonService } from "@/services/commonService";
 import { reportService } from "@/services/reportService";
+import { Styles } from "@/Styles";
 import { ReportTypes } from "@/utils/UtilData";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TextInput } from "react-native";
@@ -30,37 +31,45 @@ export default function Mileage({ payload, setPayload }: MileageProps) {
   }, []);
   return (
     <View style={styles.formContainer}>
-      <Text style={styles.inputLabel}>Origin</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Origin"
-        onChangeText={(text) =>
-          setPayload({ ...payload, origin_destination: text })
-        }
-      />
-      <Text style={styles.inputLabel}>Destination</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Destination"
-        onChangeText={(text) => setPayload({ ...payload, destination: text })}
-      />
-      <Text style={styles.inputLabel}>Distance</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Distance"
-        onChangeText={(text) => setPayload({ ...payload, distance: text })}
-      />
-      <Text style={styles.inputLabel}>Mileage Rate</Text>
-      <Dropdown
-        data={mileageRates}
-        labelField="label"
-        valueField="value"
-        onChange={(item) =>
-          setPayload({ ...payload, mileage_rate: item.value })
-        }
-        style={styles.dropdown}
-        containerStyle={styles.dropdownContainer}
-      />
+      <View>
+        <Text style={Styles.generalInputLabel}>Origin</Text>
+        <TextInput
+          style={Styles.generalInput}
+          placeholder="Enter Origin"
+          onChangeText={(text) =>
+            setPayload({ ...payload, origin_destination: text })
+          }
+        />
+      </View>
+      <View>
+        <Text style={Styles.generalInputLabel}>Destination</Text>
+        <TextInput
+          style={Styles.generalInput}
+          placeholder="Enter Destination"
+          onChangeText={(text) => setPayload({ ...payload, destination: text })}
+        />
+      </View>
+      <View>
+        <Text style={Styles.generalInputLabel}>Distance</Text>
+        <TextInput
+          style={Styles.generalInput}
+          placeholder="Enter Distance"
+          onChangeText={(text) => setPayload({ ...payload, distance: text })}
+        />
+      </View>
+      <View>
+        <Text style={Styles.generalInputLabel}>Mileage Rate</Text>
+        <Dropdown
+          data={mileageRates}
+          labelField="label"
+          valueField="value"
+          onChange={(item) =>
+            setPayload({ ...payload, mileage_rate: item.value })
+          }
+          style={Styles.generalInput}
+          containerStyle={styles.dropdownContainer}
+        />
+      </View>
     </View>
   );
 }
