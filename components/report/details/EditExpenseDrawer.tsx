@@ -5,16 +5,13 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TextInput,
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { ExpenseType, WarningMessagesByType } from "@/utils/UtilData";
 import { useEffect, useState } from "react";
 import { reportService } from "@/services/reportService";
-import ExtraForms from "./ExpenseTypeComponents/ExtraForms";
-import { IExpense } from "@/constants/types";
 import DeleteExpenseItemDrawer from "./DeleteExpenseItemDrawer";
+import ExpenseForm from "./ExpenseForm";
 
 interface EditExpenseDrawerProps {
   reportId: string;
@@ -80,101 +77,10 @@ export default function EditExpenseDrawer({
 
               {newPayload && (
                 <ScrollView>
-                  <Text style={styles.label}>Expense type</Text>
-                  <View style={styles.selectedTypeContainer}>
-                    <Text>{newPayload?.expense_type}</Text>
-                  </View>
-                  <ExtraForms
-                    expense_type={newPayload?.expense_type}
+                  <ExpenseForm
                     payload={newPayload}
                     setPayload={setNewPayload}
                   />
-                  <Text style={styles.label}>Date</Text>
-                  <TouchableOpacity style={styles.inputContainer}>
-                    <Text>{newPayload?.expense_date}</Text>
-                    <Ionicons name="calendar-outline" size={20} color="#666" />
-                  </TouchableOpacity>
-
-                  <Text style={styles.label}>Receipt amount</Text>
-                  <View style={styles.currencyInputContainer}>
-                    <View style={styles.currencyPrefix}>
-                      {/* <Image
-                  source={require("../../assets/us-flag.png")}
-                  style={styles.flagIcon}
-                /> */}
-                      <Text style={styles.currencyText}>USD $</Text>
-                    </View>
-                    <TextInput
-                      style={styles.currencyInput}
-                      defaultValue={newPayload?.receipt_amount}
-                      keyboardType="decimal-pad"
-                      onChangeText={(text) =>
-                        setNewPayload({
-                          ...newPayload,
-                          receipt_amount: text,
-                        })
-                      }
-                    />
-                  </View>
-
-                  <Text style={styles.label}>Converted report amount</Text>
-                  <View style={styles.currencyInputContainer}>
-                    <View style={styles.currencyPrefix}>
-                      {/* <Image
-                  source={require("../../assets/us-flag.png")}
-                  style={styles.flagIcon}
-                /> */}
-                      <Text style={styles.currencyText}>USD $</Text>
-                    </View>
-                    <TextInput
-                      style={styles.currencyInput}
-                      defaultValue={newPayload?.amount}
-                      keyboardType="decimal-pad"
-                      onChangeText={(text) =>
-                        setNewPayload({
-                          ...newPayload,
-                          amount: text,
-                        })
-                      }
-                    />
-                  </View>
-                  <Text style={styles.label}>Justification</Text>
-                  <TextInput
-                    style={styles.justificationInput}
-                    placeholder="Enter justification"
-                    defaultValue={newPayload?.justification}
-                    onChangeText={(text) =>
-                      setNewPayload({
-                        ...newPayload,
-                        justification: text,
-                      })
-                    }
-                  />
-                  <Text style={styles.label}>Note</Text>
-                  <TextInput
-                    style={styles.justificationInput}
-                    placeholder="Enter note"
-                    defaultValue={newPayload?.note}
-                    onChangeText={(text) =>
-                      setNewPayload({
-                        ...newPayload,
-                        note: text,
-                      })
-                    }
-                  />
-
-                  <Text style={styles.label}>Attached receipt</Text>
-                  <TouchableOpacity
-                    style={styles.uploadContainer}
-                    // onPress={() => setUploadFileModalVisible(true)}
-                  >
-                    <Ionicons
-                      name="cloud-upload-outline"
-                      size={24}
-                      color="#666"
-                    />
-                    <Text style={styles.uploadText}>Upload file</Text>
-                  </TouchableOpacity>
                 </ScrollView>
               )}
               <View style={styles.buttonContainer}>

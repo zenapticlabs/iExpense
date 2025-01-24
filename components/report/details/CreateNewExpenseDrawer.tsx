@@ -13,9 +13,9 @@ import { ExpenseType, WarningMessagesByType } from "@/utils/UtilData";
 import { useEffect, useState } from "react";
 import { reportService } from "@/services/reportService";
 import ExtraForms from "./ExpenseTypeComponents/ExtraForms";
-import CountryFlag from "react-native-country-flag";
 import CurrencyDropdown from "@/components/CurrencyDropdown";
 import { Styles } from "@/Styles";
+import ExpenseForm from "./ExpenseForm";
 
 interface CreateNewExpenseDrawerProps {
   isVisible: boolean;
@@ -30,6 +30,7 @@ export default function CreateNewExpenseDrawer({
   onAddExpense,
   reportId,
 }: CreateNewExpenseDrawerProps) {
+  const [isUploadFileModalVisible, setUploadFileModalVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [convertedCurrency, setConvertedCurrency] = useState("usd");
@@ -41,13 +42,7 @@ export default function CreateNewExpenseDrawer({
     expense_date: "2025-01-21",
   });
   useEffect(() => {
-    console.log(
-      payload.receipt_currency,
-      payload.receipt_amount,
-      convertedCurrency
-    );
     const convertedAmount = 80 * payload.receipt_amount;
-    console.log("convertedAmount", convertedAmount);
     setConvertedAmount(convertedAmount);
   }, [payload.receipt_currency, payload.receipt_amount, convertedCurrency]);
   const handleClose = () => {
@@ -143,68 +138,7 @@ export default function CreateNewExpenseDrawer({
       ) : null}
 
       <ScrollView style={styles.expenseTypeList}>
-        <Text style={styles.label}>Expense type</Text>
-        <View style={styles.selectedTypeContainer}>
-          <Text style={Styles.font16}>{payload?.expense_type}</Text>
-        </View>
-        <ExtraForms
-          expense_type={payload?.expense_type}
-          payload={payload}
-          setPayload={setPayload}
-        />
-        <Text style={styles.label}>Date</Text>
-        <TouchableOpacity style={styles.inputContainer}>
-          <Text>Nov 5, 2024</Text>
-          <Ionicons name="calendar-outline" size={20} color="#666" />
-        </TouchableOpacity>
-
-        <Text style={styles.label}>Receipt amount</Text>
-        <View style={styles.currencyInputContainer}>
-          <CurrencyDropdown
-            value={payload?.receipt_currency}
-            onChange={(value) =>
-              setPayload({ ...payload, receipt_currency: value })
-            }
-          />
-          <TextInput
-            style={styles.currencyInput}
-            placeholder="0.00"
-            keyboardType="decimal-pad"
-            value={payload?.receipt_amount}
-            onChangeText={(text) =>
-              setPayload({ ...payload, receipt_amount: text })
-            }
-          />
-        </View>
-
-        <Text style={styles.label}>Converted report amount</Text>
-        <View style={styles.currencyInputContainer}>
-          <CurrencyDropdown
-            value={convertedCurrency}
-            onChange={(value) => setConvertedCurrency(value)}
-          />
-          <TextInput
-            style={styles.currencyInput}
-            placeholder="0.00"
-            keyboardType="decimal-pad"
-            value={convertedAmount.toString()}
-          />
-        </View>
-
-        <Text style={styles.label}>Justification</Text>
-        <TextInput
-          style={styles.justificationInput}
-          placeholder="Enter justification"
-          onChangeText={(text) =>
-            setPayload({ ...payload, justification: text })
-          }
-        />
-
-        <Text style={styles.label}>Attached receipt</Text>
-        <TouchableOpacity style={styles.uploadContainer}>
-          <Ionicons name="cloud-upload-outline" size={24} color="#666" />
-          <Text style={styles.uploadText}>Upload file</Text>
-        </TouchableOpacity>
+        <ExpenseForm payload={payload} setPayload={setPayload} />
       </ScrollView>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
@@ -255,8 +189,8 @@ export const styles = StyleSheet.create({
   modalView: {
     margin: 20,
     backgroundColor: "white",
-    borderRadius: 20,
-    padding: 16,
+    borderRadius: 8,
+    padding: 24,
     alignItems: "flex-start",
     shadowColor: "#000",
     width: "95%",
@@ -275,6 +209,8 @@ export const styles = StyleSheet.create({
     color: "#1e1e1e",
     lineHeight: 26,
     width: "100%",
+    fontFamily: "SFProDisplay",
+    paddingBottom: 16,
   },
   uploadContent: {
     height: 262,
@@ -288,37 +224,39 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     flexDirection: "row",
     width: "100%",
-    height: 88,
+    marginTop: 16,
+    gap: 16,
     alignItems: "center",
   },
 
   button: {
+    flex: 1,
     borderRadius: 8,
-    padding: 10,
+    paddingVertical: 20,
     elevation: 2,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    width: "49%",
-    height: 56,
   },
 
   buttonUpload: {
-    backgroundColor: "#F5F5F5",
-    color: "#000",
-  },
-
-  uploadBtnText: {
-    color: "#000",
-  },
-  buttonClose: {
     backgroundColor: "#17317F",
     color: "white",
   },
-  textStyle: {
+
+  uploadBtnText: {
     color: "white",
-    fontWeight: "bold",
+  },
+  buttonClose: {
+    backgroundColor: "#F5F5F5",
+    color: "white",
+  },
+  textStyle: {
+    color: "#1E1E1E",
+    fontWeight: "500",
     textAlign: "center",
+    fontSize: 17,
+    fontFamily: "SFProDisplay",
   },
   container: {
     flex: 1,
@@ -459,6 +397,8 @@ export const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     fontWeight: "600",
+    fontFamily: "SFProDisplay",
+    marginBottom: 16,
   },
   label: {
     fontSize: 16,
@@ -485,6 +425,7 @@ export const styles = StyleSheet.create({
   },
   expenseTypeList: {
     flex: 1,
+    gap: 16,
   },
   expenseTypeItem: {
     flexDirection: "row",
@@ -529,11 +470,15 @@ export const styles = StyleSheet.create({
   },
   cancelButtonText: {
     color: "#666",
-    fontWeight: "600",
+    fontSize: 17,
+    fontFamily: "SFProDisplay",
+    fontWeight: "500",
   },
   nextButtonText: {
     color: "white",
-    fontWeight: "600",
+    fontSize: 17,
+    fontFamily: "SFProDisplay",
+    fontWeight: "500",
   },
   selectedTypeContainer: {
     padding: 16,
@@ -544,15 +489,10 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 16,
-    backgroundColor: "#f5f5f5",
-    borderRadius: 8,
-    marginBottom: 16,
   },
   currencyInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
     borderRadius: 8,
     marginBottom: 16,
   },
@@ -793,17 +733,25 @@ export const styles = StyleSheet.create({
   warningContainer: {
     backgroundColor: "#FEF2F2",
     borderRadius: 8,
-    padding: 12,
+    padding: 16,
+    marginTop: 16,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: "#FCA5A5",
   },
   warningText: {
+    fontFamily: "SFProDisplay",
     color: "#DC2626",
-    fontSize: 14,
+    fontSize: 15,
   },
   selectExpenseTypeLabel: {
     fontSize: 20,
     paddingVertical: 20,
+  },
+  amountContainer: {
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
   },
 });
