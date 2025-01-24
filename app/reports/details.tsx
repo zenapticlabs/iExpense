@@ -18,6 +18,9 @@ import Stepper from "@/components/Stepper";
 import DeleteReportDrawer from "@/components/report/details/DeleteDrawer";
 import CreateNewExpenseDrawer from "@/components/report/details/CreateNewExpenseDrawer";
 import EditExpenseDrawer from "@/components/report/details/EditExpenseDrawer";
+import { formatDate } from "@/utils/UtilFunctions";
+import { ReportStatusTextColor } from "@/utils/UtilData";
+import { ReportStatusBgColor } from "@/utils/UtilData";
 
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
@@ -59,7 +62,6 @@ export default function ExpenseDetails() {
 
   const handleSubmit = () => {
     setIsSubmitModalVisible(false);
-    console.log("Report submitted");
   };
 
   const handleDeleteExpense = (expenseId: string) => {
@@ -104,24 +106,40 @@ export default function ExpenseDetails() {
             <Text style={styles.title}>{report?.purpose}</Text>
             <Text style={styles.id}>#{report?.report_number}</Text>
           </View>
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>{report?.purpose}</Text>
+          <View
+            style={[
+              styles.statusBadge,
+              { backgroundColor: ReportStatusBgColor(report?.report_status as string) },
+            ]}
+          >
+            <Text
+              style={[
+                styles.statusText,
+                { color: ReportStatusTextColor(report?.report_status as string) },
+              ]}
+            >
+              {report?.report_status}
+            </Text>
           </View>
         </View>
         <Text style={styles.amount}>${report?.report_amount}</Text>
-        <Text style={styles.date} className="bg-black">
+        <Text style={styles.dateLabel} className="bg-black">
           Submission: {report?.report_submit_date}
         </Text>
-        <Text style={styles.approval}>
+        <Text style={styles.dateLabel}>
           Approval: {report?.integration_date}
         </Text>
         <Stepper
-          currentState={report?.report_status}
+          // currentState={report?.report_status}
+          currentState={"submitted"}
           date={report?.report_submit_date as string}
         />
       </View>
 
-      <TouchableOpacity style={styles.submitButton}>
+      <TouchableOpacity
+        style={styles.submitButton}
+        onPress={() => setIsSubmitModalVisible(true)}
+      >
         <Text style={styles.submitButtonText}>Submit Report</Text>
       </TouchableOpacity>
 
@@ -139,10 +157,10 @@ export default function ExpenseDetails() {
                   {reportItem.expense_type}
                 </Text>
                 <Text style={styles.expenseItemAmount}>
-                  ${reportItem.expense_date}
+                  ${reportItem.receipt_amount}
                 </Text>
                 <Text style={styles.expenseItemDate}>
-                  {reportItem.receipt_amount}
+                  {formatDate(reportItem.expense_date) || ""}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={24} color="#666" />
@@ -254,11 +272,25 @@ export default function ExpenseDetails() {
             </Text>
 
             <View style={styles.deleteModalDetails}>
-              <Text style={styles.deleteModalText}>
-                International Travel #1001
+              <View style={styles.submitDetailsTitleContainer}>
+                <Text style={styles.submitDetailsPurposeLabel}>
+                  {report?.purpose}
+                </Text>
+                <Text style={styles.submitDetailsNumberLabel}>
+                  #{report?.report_number}
+                </Text>
+              </View>
+              <Text style={styles.submitDetailsAmountLabel}>
+                ${report?.report_amount}
               </Text>
-              <Text style={styles.deleteModalText}>$120.00</Text>
-              <Text style={styles.deleteModalText}>Nov 5, 2024</Text>
+              <View>
+                <Text style={styles.submitDetailsDateLabel}>
+                  Submission: {formatDate(report?.updated_at as string) || ""}
+                </Text>
+                <Text style={styles.submitDetailsDateLabel}>
+                  Approval: {formatDate(report?.updated_at as string) || ""}
+                </Text>
+              </View>
             </View>
 
             <View style={styles.deleteModalButtons}>
@@ -395,17 +427,14 @@ export const styles = StyleSheet.create({
     color: "#666",
   },
   amount: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginTop: 8,
+    fontSize: 17,
+    fontWeight: "400",
+    marginVertical: 8,
   },
-  date: {
+  dateLabel: {
+    fontSize: 15,
     color: "#666",
     marginTop: 4,
-  },
-  approval: {
-    color: "#666",
-    marginTop: 2,
   },
   submitButton: {
     backgroundColor: "#1a237e",
@@ -640,7 +669,9 @@ export const styles = StyleSheet.create({
   expenseSection: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#f5f5f5",
+    borderTopWidth: 1,
+    borderTopColor: "#DDDDDD",
   },
   sectionTitle: {
     fontSize: 18,
@@ -655,14 +686,9 @@ export const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 8,
     marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
   },
   expenseItemTitle: {
     fontSize: 16,
@@ -711,22 +737,20 @@ export const styles = StyleSheet.create({
   },
   deleteModalContent: {
     backgroundColor: "white",
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
     padding: 20,
     width: "100%",
   },
   deleteModalTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "600",
     marginBottom: 16,
-    textAlign: "center",
   },
   deleteModalDetails: {
-    backgroundColor: "#f5f5f5",
     padding: 16,
     borderRadius: 8,
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
   },
   deleteModalText: {
     fontSize: 16,
@@ -771,13 +795,11 @@ export const styles = StyleSheet.create({
     fontWeight: "500",
   },
   statusBadge: {
-    backgroundColor: "#F3F4E6",
     paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 16,
+    borderRadius: 4,
   },
   statusText: {
-    color: "#666666",
     fontSize: 14,
   },
   stepper: {
@@ -827,5 +849,28 @@ export const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#E5E7EB",
     marginTop: 12,
+  },
+  submitDetailsTitleContainer: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    paddingBottom: 8,
+  },
+  submitDetailsPurposeLabel: {
+    fontSize: 17,
+    fontWeight: "600",
+  },
+  submitDetailsNumberLabel: {
+    color: "#5B5B5B",
+    fontSize: 13,
+    marginLeft: 4,
+  },
+  submitDetailsAmountLabel: {
+    fontSize: 15,
+    fontWeight: "400",
+    marginBottom: 8,
+  },
+  submitDetailsDateLabel: {
+    fontSize: 13,
+    color: "#5B5B5B",
   },
 });
