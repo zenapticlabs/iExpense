@@ -11,7 +11,8 @@ import { Styles } from "@/Styles";
 import ExtraForms from "./ExpenseTypeComponents/ExtraForms";
 import CurrencyDropdown from "@/components/CurrencyDropdown";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import commonService from "@/services/commonService";
 
 interface ExpenseFormExpenseFormProps {
   payload: any;
@@ -25,6 +26,26 @@ export default function ExpenseFormExpenseForm({
   const [convertedCurrency, setConvertedCurrency] = useState("usd");
   const [convertedAmount, setConvertedAmount] = useState(0);
   const [isUploadFileModalVisible, setUploadFileModalVisible] = useState(false);
+  const [exchangeRates, setExchangeRates] = useState<any>({});
+
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      const response = await commonService.getExchangeRates();
+      setExchangeRates(response);
+    };
+    fetchExchangeRates();
+  }, []);
+
+  useEffect(() => {
+    if (payload.receipt_currency && payload.receipt_amount) {
+      const convertedAmount =
+        (exchangeRates[convertedCurrency.toUpperCase()] /
+          exchangeRates[payload.receipt_currency?.toUpperCase()]) *
+        payload.receipt_amount;
+      setConvertedAmount(convertedAmount);
+    }
+  }, [payload.receipt_currency, payload.receipt_amount, convertedCurrency]);
+
   return (
     <View style={{ flexDirection: "column", gap: 16 }}>
       <View>
@@ -76,6 +97,8 @@ export default function ExpenseFormExpenseForm({
             style={[Styles.generalInput, { flex: 1, marginLeft: 16 }]}
             placeholder="0.00"
             keyboardType="decimal-pad"
+            defaultValue="0"
+            editable={false}
             value={convertedAmount.toString()}
           />
         </View>
