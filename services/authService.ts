@@ -25,12 +25,27 @@ export const authService = {
     });
     return response.data;
   },
+
   async getAccessToken(): Promise<string> {
     const { access } = await storage.getAuthData();
     return access;
   },
+
+  async refreshToken(): Promise<AuthResponse> {
+    try {
+      const { refresh } = await storage.getAuthData();
+      const response = await axios.post(`${BASE_URL}/auth/refresh`, { refresh });
+      return response.data;
+    } catch (error) {
+      throw new AuthenticationError("Refresh token failed");
+    }
+  },
+
   async verify(email: string, code: string): Promise<AuthResponse> {
-    const response = await axios.post(`${BASE_URL}/auth/verify-mfa`, { email, code });
+    const response = await axios.post(`${BASE_URL}/auth/verify-mfa`, {
+      email,
+      code,
+    });
 
     if (response.status !== 200) {
       throw new AuthenticationError("Verification failed");

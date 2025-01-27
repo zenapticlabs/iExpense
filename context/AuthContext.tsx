@@ -14,6 +14,7 @@ interface AuthContextType {
   verifyCode: (email: string, code: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  checkToken: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -116,13 +117,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const checkToken = async () => {
+    try {
+      const { access, refresh } = await authService.refreshToken();
+      await storage.setAuthData(access, refresh);
+    } catch (error) {
+      signOut();
+    }
+  };
+
   if (isLoading) {
     return <LoadingScreen />;
   }
 
   return (
     <AuthContext.Provider
-      value={{ user, signIn, signOut, isLoading, verifyCode }}
+      value={{ user, signIn, signOut, isLoading, verifyCode, checkToken }}
     >
       {children}
     </AuthContext.Provider>
