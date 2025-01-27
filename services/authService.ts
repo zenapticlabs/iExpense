@@ -16,6 +16,15 @@ class AuthenticationError extends Error {
 const BASE_URL = "https://expense-management-server.vercel.app/api";
 
 export const authService = {
+  async getMe(): Promise<any> {
+    const { access } = await storage.getAuthData();
+    const response = await axios.get(`${BASE_URL}/auth/me`, {
+      headers: {
+        Authorization: `Bearer ${access}`,
+      },
+    });
+    return response.data;
+  },
   async getAccessToken(): Promise<string> {
     const { access } = await storage.getAuthData();
     return access;

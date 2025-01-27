@@ -5,12 +5,24 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
 import Divider from "@/components/Divider";
 import CurrencyDropdown from "@/components/CurrencyDropdown";
+import { useEffect, useState } from "react";
+import { authService } from "@/services/authService";
 
 export default function ProfileScreen() {
   const { signOut } = useAuth();
+  const [user, setUser] = useState<any>(null);
   const handleLogout = async () => {
     // Add your logout logic here, for example:
     await signOut();
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    const data = await authService.getMe();
+    setUser(data);
   };
 
   return (
@@ -19,19 +31,19 @@ export default function ProfileScreen() {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>User info</Text>
-        <Text style={styles.name}>James Stewart</Text>
-        <Text style={styles.department}>IT</Text>
+        <Text style={styles.name}>{user?.first_name} {user?.last_name}</Text>
+        <Text style={styles.department}>{user?.department}</Text>
       </View>
       <Divider />
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Contact details</Text>
         <View style={styles.contactItem}>
           <Ionicons name="calendar-clear-outline" size={20} color="#64748B" />
-          <Text style={styles.contactText}>example@gmail.com</Text>
+          <Text style={styles.contactText}>{user?.email}</Text>
         </View>
         <View style={styles.contactItem}>
           <Ionicons name="call-outline" size={20} color="#64748B" />
-          <Text style={styles.contactText}>+12345678</Text>
+          <Text style={styles.contactText}>{user?.phone_number}</Text>
         </View>
       </View>
 
@@ -47,7 +59,7 @@ export default function ProfileScreen() {
       <Divider />
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Default concurrency</Text>
-        {/* <CurrencyDropdown /> */}
+        <CurrencyDropdown value={user?.currency.toLowerCase()} onChange={() => {}} />
       </View>
 
       <Divider />
@@ -122,7 +134,7 @@ const styles = StyleSheet.create({
   },
   contactText: {
     marginLeft: 12,
-    fontSize: 14,
+    fontSize: 15,
     color:'#1e1e1e',
     fontFamily: "SFProDisplay"
   },
