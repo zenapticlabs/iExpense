@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { IReport } from "@/constants/types";
+import DefaultModal from "@/components/DefaultModal";
 
 interface DeleteReportDrawerProps {
   isVisible: boolean;
@@ -22,43 +23,36 @@ export default function DeleteReportDrawer({
   report,
 }: DeleteReportDrawerProps) {
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={isVisible}
-      onRequestClose={onClose}
-    >
-      <Pressable style={styles.deleteModalOverlay} onPress={onClose}>
-        <View style={styles.deleteModalContent}>
-          <Text style={styles.deleteModalTitle}>
-            Are you sure you want to delete this expense report?
+    <DefaultModal isVisible={isVisible} onClose={onClose}>
+      <View style={styles.deleteModalContent}>
+        <Text style={styles.deleteModalTitle}>
+          Are you sure you want to delete this expense report?
+        </Text>
+
+        <View style={styles.deleteModalDetails}>
+          <Text style={styles.deleteModalText}>{report?.purpose}</Text>
+          <Text style={styles.deleteModalText}>${report?.report_amount}</Text>
+          <Text style={styles.deleteModalText}>
+            {report?.report_submit_date}
           </Text>
-
-          <View style={styles.deleteModalDetails}>
-            <Text style={styles.deleteModalText}>{report?.purpose}</Text>
-            <Text style={styles.deleteModalText}>${report?.report_amount}</Text>
-            <Text style={styles.deleteModalText}>
-              {report?.report_submit_date}
-            </Text>
-          </View>
-
-          <View style={styles.deleteModalButtons}>
-            <TouchableOpacity
-              style={styles.deleteModalCancelButton}
-              onPress={onClose}
-            >
-              <Text style={styles.deleteModalCancelText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.deleteModalConfirmButton}
-              onPress={onDelete}
-            >
-              <Text style={styles.deleteModalConfirmText}>Yes, delete</Text>
-            </TouchableOpacity>
-          </View>
         </View>
-      </Pressable>
-    </Modal>
+
+        <View style={styles.deleteModalButtons}>
+          <TouchableOpacity
+            style={styles.deleteModalCancelButton}
+            onPress={onClose}
+          >
+            <Text style={styles.deleteModalCancelText}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.deleteModalConfirmButton}
+            onPress={onDelete}
+          >
+            <Text style={styles.deleteModalConfirmText}>Yes, delete</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </DefaultModal>
   );
 }
 

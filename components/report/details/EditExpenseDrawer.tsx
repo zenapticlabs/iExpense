@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { reportService } from "@/services/reportService";
 import DeleteExpenseItemDrawer from "./DeleteExpenseItemDrawer";
 import ExpenseForm from "./ExpenseForm";
+import DefaultModal from "@/components/DefaultModal";
 
 interface EditExpenseDrawerProps {
   reportId: string;
@@ -60,54 +61,47 @@ export default function EditExpenseDrawer({
     setNewPayload(selectedExpense);
   }, [selectedExpense]);
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={selectedExpense !== null}
-      onRequestClose={() => setSelectedExpense(null)}
+    // <Modal
+    //   animationType="slide"
+    //   transparent={true}
+    //   visible={selectedExpense !== null}
+    //   onRequestClose={() => setSelectedExpense(null)}
+    // >
+    // </Modal>
+    <DefaultModal
+      isVisible={selectedExpense !== null}
+      onClose={() => setSelectedExpense(null)}
     >
-      <Pressable
-        style={styles.modalOverlay}
-        // onPress={() => setSelectedExpense(null)}
-      >
-        <View style={[styles.modalContainer, { height: 700 }]}>
-          <View style={styles.modalContent}>
-            <View style={styles.editModalContainer}>
-              <Text style={styles.modalTitle}>Edit Expense</Text>
+      <View style={styles.editModalContainer}>
+        <Text style={styles.modalTitle}>Edit Expense</Text>
 
-              {newPayload && (
-                <ScrollView>
-                  <ExpenseForm
-                    payload={newPayload}
-                    setPayload={setNewPayload}
-                  />
-                </ScrollView>
-              )}
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={handleDeletePress}
-                >
-                  <Ionicons name="trash-outline" size={24} color="red" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.saveButton}
-                  onPress={() => handleEditExpense()}
-                >
-                  <Text style={styles.saveButtonText}>Save Changes</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
+        {newPayload && (
+          <ScrollView>
+            <ExpenseForm payload={newPayload} setPayload={setNewPayload} />
+          </ScrollView>
+        )}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={handleDeletePress}
+          >
+            <Ionicons name="trash-outline" size={24} color="red" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={() => handleEditExpense()}
+          >
+            <Text style={styles.saveButtonText}>Save Changes</Text>
+          </TouchableOpacity>
         </View>
-      </Pressable>
+      </View>
       <DeleteExpenseItemDrawer
         isVisible={isDeleteModalVisible}
         onClose={() => setIsDeleteModalVisible(false)}
         onDelete={handleConfirmDelete}
         reportItem={selectedExpense}
       />
-    </Modal>
+    </DefaultModal>
   );
 }
 

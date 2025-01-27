@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { IReport } from "@/constants/types";
 import { formatDate } from "@/utils/UtilFunctions";
+import DefaultModal from "@/components/DefaultModal";
 
 interface SubmitConfirmDrawerProps {
   report: IReport;
@@ -23,60 +24,53 @@ export default function SubmitConfirmDrawer({
   onSubmit,
 }: SubmitConfirmDrawerProps) {
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={isVisible}
-      onRequestClose={onClose}
-    >
-      <Pressable style={styles.deleteModalOverlay} onPress={onClose}>
-        <View style={styles.deleteModalContent}>
-          <Text style={styles.deleteModalTitle}>
-            Are you sure you want to submit this report?
-          </Text>
+    <DefaultModal isVisible={isVisible} onClose={onClose}>
+      <View style={styles.deleteModalContent}>
+        <Text style={styles.deleteModalTitle}>
+          Are you sure you want to submit this report?
+        </Text>
 
-          <View style={styles.deleteModalDetails}>
-            <View style={styles.submitDetailsTitleContainer}>
-              <Text style={styles.submitDetailsPurposeLabel}>
-                {report?.purpose}
-              </Text>
-              <Text style={styles.submitDetailsNumberLabel}>
-                #{report?.report_number}
-              </Text>
-            </View>
-            <Text style={styles.submitDetailsAmountLabel}>
-              ${report?.report_amount}
+        <View style={styles.deleteModalDetails}>
+          <View style={styles.submitDetailsTitleContainer}>
+            <Text style={styles.submitDetailsPurposeLabel}>
+              {report?.purpose}
             </Text>
-            <View>
-              <Text style={styles.submitDetailsDateLabel}>
-                Submission: {formatDate(report?.report_submit_date as string)}
-              </Text>
-              <Text style={styles.submitDetailsDateLabel}>
-                Approval: {formatDate(report?.integration_date as string)}
-              </Text>
-            </View>
+            <Text style={styles.submitDetailsNumberLabel}>
+              #{report?.report_number}
+            </Text>
           </View>
-
-          <View style={styles.deleteModalButtons}>
-            <TouchableOpacity
-              style={styles.deleteModalCancelButton}
-              onPress={onClose}
-            >
-              <Text style={styles.deleteModalCancelText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.deleteModalConfirmButton,
-                { backgroundColor: "#1E3A8A" },
-              ]}
-              onPress={onSubmit}
-            >
-              <Text style={styles.deleteModalConfirmText}>Yes, submit</Text>
-            </TouchableOpacity>
+          <Text style={styles.submitDetailsAmountLabel}>
+            ${report?.report_amount}
+          </Text>
+          <View>
+            <Text style={styles.submitDetailsDateLabel}>
+              Submission: {formatDate(report?.report_submit_date as string)}
+            </Text>
+            <Text style={styles.submitDetailsDateLabel}>
+              Approval: {formatDate(report?.integration_date as string)}
+            </Text>
           </View>
         </View>
-      </Pressable>
-    </Modal>
+
+        <View style={styles.deleteModalButtons}>
+          <TouchableOpacity
+            style={styles.deleteModalCancelButton}
+            onPress={onClose}
+          >
+            <Text style={styles.deleteModalCancelText}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.deleteModalConfirmButton,
+              { backgroundColor: "#1E3A8A" },
+            ]}
+            onPress={onSubmit}
+          >
+            <Text style={styles.deleteModalConfirmText}>Yes, submit</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </DefaultModal>
   );
 }
 

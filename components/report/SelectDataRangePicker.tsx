@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { StyleSheet, Pressable, Modal, View, Text } from "react-native";
+import DefaultModal from "../DefaultModal";
 interface SelectDataRangePickerProps {
   onChange: (dateRange: string) => void;
   value: string;
@@ -22,48 +23,36 @@ export default function SelectDataRangePicker({
   onChange,
   value,
 }: SelectDataRangePickerProps) {
-  const [isVisible, setIsVisible] =
-    useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   return (
     <>
-      <Pressable
-        style={styles.filterButton}
-        onPress={() => setIsVisible(true)}
-      >
+      <Pressable style={styles.filterButton} onPress={() => setIsVisible(true)}>
         <Ionicons name="calendar-clear-outline" size={20} color="#5B5B5B" />
         <Text style={styles.filterText}>This month</Text>
       </Pressable>
-
-      <Modal
-        visible={isVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setIsVisible(false)}
+      <DefaultModal
+        isVisible={isVisible}
+        onClose={() => setIsVisible(false)}
       >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setIsVisible(false)}
-        >
-          <View style={styles.SelectDataRangePicker}>
-            <View style={styles.drawerTopDivderContainer}>
-              <View style={styles.drawerTopDivder}></View>
-            </View>
-            <Text style={styles.drawerTitle}>Select Date Range</Text>
-            {DATE_OPTIONS.map((option) => (
-              <Pressable
-                key={option.value}
-                style={[
-                  styles.dateOption,
-                  value === option.value && styles.selectedOption,
-                ]}
-                onPress={() => onChange(option.value)}
-              >
-                <Text>{option.label}</Text>
-              </Pressable>
-            ))}
+        <View style={styles.SelectDataRangePicker}>
+          <View style={styles.drawerTopDivderContainer}>
+            <View style={styles.drawerTopDivder}></View>
           </View>
-        </Pressable>
-      </Modal>
+          <Text style={styles.drawerTitle}>Select Date Range</Text>
+          {DATE_OPTIONS.map((option) => (
+            <Pressable
+              key={option.value}
+              style={[
+                styles.dateOption,
+                value === option.value && styles.selectedOption,
+              ]}
+              onPress={() => onChange(option.value)}
+            >
+              <Text>{option.label}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </DefaultModal>
     </>
   );
 }
