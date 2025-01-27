@@ -6,7 +6,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-  import { IReport } from "@/constants/types";
+import { IReport } from "@/constants/types";
 import { formatDate } from "@/utils/UtilFunctions";
 
 interface SubmitConfirmDrawerProps {
@@ -29,10 +29,7 @@ export default function SubmitConfirmDrawer({
       visible={isVisible}
       onRequestClose={onClose}
     >
-      <Pressable
-        style={styles.deleteModalOverlay}
-        onPress={onClose}
-      >
+      <Pressable style={styles.deleteModalOverlay} onPress={onClose}>
         <View style={styles.deleteModalContent}>
           <Text style={styles.deleteModalTitle}>
             Are you sure you want to submit this report?
@@ -52,10 +49,10 @@ export default function SubmitConfirmDrawer({
             </Text>
             <View>
               <Text style={styles.submitDetailsDateLabel}>
-                Submission: {formatDate(report?.updated_at as string) || ""}
+                Submission: {formatDate(report?.report_submit_date as string)}
               </Text>
               <Text style={styles.submitDetailsDateLabel}>
-                Approval: {formatDate(report?.updated_at as string) || ""}
+                Approval: {formatDate(report?.integration_date as string)}
               </Text>
             </View>
           </View>

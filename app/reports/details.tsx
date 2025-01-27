@@ -36,24 +36,25 @@ export default function ExpenseDetails() {
   const [reportItems, setReportItems] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchReportItems = async () => {
-      const data = await reportService.getReportItems(id as string);
-      setReportItems(data);
-    };
-    const fetchReport = async () => {
-      const data = await reportService.getReportById(id as string);
-      setReport(data);
-    };
-    const fetchData = async () => {
-      setLoading(true);
-      await fetchReportItems();
-      await fetchReport();
-      setLoading(false);
-    };
     fetchData();
   }, [id]);
 
   useEffect(() => {}, [id]);
+
+  const fetchReportItems = async () => {
+    const data = await reportService.getReportItems(id as string);
+    setReportItems(data);
+  };
+  const fetchReport = async () => {
+    const data = await reportService.getReportById(id as string);
+    setReport(data);
+  };
+  const fetchData = async () => {
+    setLoading(true);
+    await fetchReportItems();
+    await fetchReport();
+    setLoading(false);
+  };
 
   const handleExpensePress = (expense: IExpense) => {
     setSelectedExpense(expense);
@@ -65,8 +66,14 @@ export default function ExpenseDetails() {
     router.replace("/reports");
   };
 
-  const handleSubmit = () => {
-    setIsSubmitModalVisible(false);
+  const handleSubmit = async () => {
+    try {
+      await reportService.submitReport(id as string);
+      await fetchData();
+      setIsSubmitModalVisible(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleDeleteExpense = (expenseId: string) => {
@@ -149,12 +156,14 @@ export default function ExpenseDetails() {
               <ReportStepper report={report as IReport} />
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.submitButton}
-            onPress={() => setIsSubmitModalVisible(true)}
-          >
-            <Text style={styles.submitButtonText}>Submit Report</Text>
-          </TouchableOpacity>
+          {report?.report_status === "Open" && (
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={() => setIsSubmitModalVisible(true)}
+            >
+              <Text style={styles.submitButtonText}>Submit Report</Text>
+            </TouchableOpacity>
+          )}
           <View style={styles.expenseSection}>
             <Text style={styles.sectionTitle}>Expense Items</Text>
             <ScrollView>
