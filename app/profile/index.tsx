@@ -1,4 +1,4 @@
-import { StyleSheet, Pressable, Image } from "react-native";
+import { StyleSheet, Pressable, Image, ScrollView } from "react-native";
 import { Link, router } from "expo-router";
 import { Text, View } from "@/components/Themed";
 import { Ionicons } from "@expo/vector-icons";
@@ -28,50 +28,55 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>My Profile</Text>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>User info</Text>
-        <Text style={styles.name}>{user?.first_name} {user?.last_name}</Text>
-        <Text style={styles.department}>{user?.department}</Text>
-      </View>
-      <Divider />
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Contact details</Text>
-        <View style={styles.contactItem}>
-          <Ionicons name="calendar-clear-outline" size={20} color="#64748B" />
-          <Text style={styles.contactText}>{user?.email}</Text>
+      <ScrollView>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>User info</Text>
+          <Text style={styles.name}>
+            {user?.first_name} {user?.last_name}
+          </Text>
+          <Text style={styles.department}>{user?.department}</Text>
         </View>
-        <View style={styles.contactItem}>
-          <Ionicons name="call-outline" size={20} color="#64748B" />
-          <Text style={styles.contactText}>{user?.phone_number}</Text>
+        <Divider />
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Contact details</Text>
+          <View style={styles.contactItem}>
+            <Ionicons name="calendar-clear-outline" size={20} color="#64748B" />
+            <Text style={styles.contactText}>{user?.email}</Text>
+          </View>
+          <View style={styles.contactItem}>
+            <Ionicons name="call-outline" size={20} color="#64748B" />
+            <Text style={styles.contactText}>{user?.phone_number}</Text>
+          </View>
         </View>
-      </View>
 
-      <Divider />
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Saved credit card</Text>
-        <Pressable style={styles.addCardButton}>
-          <Ionicons name="add" size={24} color="#5B5B5B" />
-          <Text style={styles.addCardText}>Add credit card</Text>
-        </Pressable>
-      </View>
+        <Divider />
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Saved credit card</Text>
+          <Pressable style={styles.addCardButton}>
+            <Ionicons name="add" size={24} color="#5B5B5B" />
+            <Text style={styles.addCardText}>Add credit card</Text>
+          </Pressable>
+        </View>
 
-      <Divider />
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Default concurrency</Text>
-        <CurrencyDropdown value={user?.currency.toLowerCase()} onChange={() => {}} />
-      </View>
+        <Divider />
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Default concurrency</Text>
+          <CurrencyDropdown
+            value={user?.currency.toLowerCase()}
+            onChange={() => {}}
+          />
+        </View>
 
-      <Divider />
-      <View style={styles.footer}>
-        <Link href="/auth" style={styles.forgotPassword}>
-          Forgot password?
-        </Link>
-        <Pressable onPress={handleLogout}>
-          <Text style={styles.logout}>Logout</Text>
-        </Pressable>
-      </View>
-
+        <Divider />
+        <View style={styles.footer}>
+          <Link href="/auth" style={styles.forgotPassword}>
+            Forgot password?
+          </Link>
+          <Pressable onPress={handleLogout}>
+            <Text style={styles.logout}>Logout</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
       <View style={styles.tabBar}>
         <Link href="/reports" asChild style={styles.tabItem}>
           <View>
@@ -102,7 +107,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 32,
     marginBottom: 24,
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   section: {
     marginVertical: 20,
@@ -113,19 +118,19 @@ const styles = StyleSheet.create({
     color: "#1e1e1e",
     fontWeight: "700",
     marginBottom: 12,
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   name: {
     fontSize: 15,
     fontWeight: "500",
-    color:'#1e1e1e',
-    fontFamily: "SFProDisplay"
+    color: "#1e1e1e",
+    fontFamily: "SFProDisplay",
   },
   department: {
     fontSize: 15,
     color: "#888888",
     marginTop: 12,
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   contactItem: {
     flexDirection: "row",
@@ -135,11 +140,11 @@ const styles = StyleSheet.create({
   contactText: {
     marginLeft: 12,
     fontSize: 15,
-    color:'#1e1e1e',
-    fontFamily: "SFProDisplay"
+    color: "#1e1e1e",
+    fontFamily: "SFProDisplay",
   },
   marginNone: {
-    margin:0,
+    margin: 0,
   },
   addCardButton: {
     flexDirection: "row",
@@ -149,14 +154,14 @@ const styles = StyleSheet.create({
     borderColor: "#DDDDDD",
     borderRadius: 8,
     padding: 12,
-    height:48,
+    height: 48,
   },
   addCardText: {
     marginLeft: 8,
     color: "#1e1e1e",
     fontWeight: "700",
     fontSize: 17,
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   currencySelector: {
     flexDirection: "row",
@@ -178,8 +183,8 @@ const styles = StyleSheet.create({
   },
   currencyText: {
     fontSize: 14,
-    color:'#1E1E1E',
-    fontFamily: "SFProDisplay"
+    color: "#1E1E1E",
+    fontFamily: "SFProDisplay",
   },
   footer: {
     flex: 1,
@@ -191,14 +196,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textDecorationLine: "underline",
     fontSize: 17,
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   logout: {
     color: "#E12020",
     textDecorationLine: "underline",
     marginTop: 16,
+    marginBottom: 16,
     fontSize: 17,
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   tabBar: {
     flexDirection: "row",
@@ -208,10 +214,6 @@ const styles = StyleSheet.create({
     borderTopColor: "#E2E8F0",
     paddingVertical: 8,
     backgroundColor: "white",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
   },
   tabItem: {
     alignItems: "center",
@@ -229,7 +231,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#64748B",
     marginTop: 4,
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   activeTab: {
     color: "#1E3A8A",
