@@ -14,6 +14,8 @@ import { useColorScheme } from "@/components/useColorScheme";
 import { AuthProvider } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
 
+import "../global.css";
+
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
