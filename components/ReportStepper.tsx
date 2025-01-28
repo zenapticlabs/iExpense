@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     marginTop: 16,
+    marginBottom: 16,
   },
   stepContainer: {
     flex: 1,

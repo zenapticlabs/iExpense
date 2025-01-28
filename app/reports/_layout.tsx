@@ -1,10 +1,17 @@
 // app/_layout.tsx
 import { View } from "@/components/Themed";
+import { useAuth } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
+import { useEffect } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
 export default function RootLayout() {
+  const { checkToken } = useAuth();
+  useEffect(() => {
+    checkToken();
+  }, []);
+
   return (
     <Stack>
       {/* Your routes will be rendered here */}

@@ -206,11 +206,14 @@ export const reportService = {
     return response.data;
   },
 
-  async submitReport(reportId: string, payload: ReportStatusPayload): Promise<IReport> {
+  async submitReport(reportId: string): Promise<IReport> {
     const accessToken = await authService.getAccessToken();
-    const response = await axios.put(`${BASE_URL}/reports/${reportId}/submit/`, payload, {
-      headers: {
-        "Content-Type": "application/json",
+    const response = await axios.patch(
+      `${BASE_URL}/reports/${reportId}/submit`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
     });

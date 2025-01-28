@@ -16,6 +16,7 @@ import ExtraForms from "./ExpenseTypeComponents/ExtraForms";
 import CurrencyDropdown from "@/components/CurrencyDropdown";
 import { Styles } from "@/Styles";
 import ExpenseForm from "./ExpenseForm";
+import DefaultModal from "@/components/DefaultModal";
 
 interface CreateNewExpenseDrawerProps {
   isVisible: boolean;
@@ -155,23 +156,9 @@ export default function CreateNewExpenseDrawer({
   );
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={isVisible}
-      onRequestClose={handleClose}
-    >
-      <Pressable
-        style={styles.modalOverlay}
-        // onPress={() => setIsModalVisible(false)}
-      >
-        <View style={[styles.modalContainer, { height: 700 }]}>
-          <View style={styles.modalContent}>
-            {currentStep === 1 ? renderStep1() : renderStep2()}
-          </View>
-        </View>
-      </Pressable>
-    </Modal>
+    <DefaultModal isVisible={isVisible} onClose={handleClose}>
+      {currentStep === 1 ? renderStep1() : renderStep2()}
+    </DefaultModal>
   );
 }
 

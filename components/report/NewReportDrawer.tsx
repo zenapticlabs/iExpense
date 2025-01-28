@@ -9,10 +9,13 @@ import {
   View,
   Text,
   Alert,
+  ScrollView,
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import CurrencyDropdown from "../CurrencyDropdown";
 import { ICreateReportPayload } from "@/constants/types";
+import DefaultModal from "../DefaultModal";
+import { Styles } from "@/Styles";
 
 interface NewReportDrawerProps {
   isVisible: boolean;
@@ -67,96 +70,107 @@ export default function NewReportDrawer({
   };
 
   return (
-    <Modal
-      visible={isVisible}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={onClose}
-    >
-      <Pressable
-        style={styles.modalOverlay}
-        //   onPress={onClose}
-      >
-        <View style={styles.newReportDrawer}>
-          <View style={styles.drawerTopDivderContainer}>
-            <View style={styles.drawerTopDivder} />
-          </View>
-          <Text style={styles.drawerTitle}>New Report</Text>
-
-          <Text style={styles.inputLabel}>Purpose</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter purpose"
-            value={formData.purpose}
-            onChangeText={(value) => updateFormField("purpose", value)}
-          />
-
-          <Text style={styles.inputLabel}>Report Type</Text>
-          <Dropdown
-            data={ReportTypes}
-            labelField="label"
-            valueField="value"
-            onChange={(item) => updateFormField("reportType", item.value)}
-            style={styles.dropdown}
-            containerStyle={styles.dropdownContainer}
-          />
-
-          <Text style={styles.inputLabel}>Date</Text>
-          <Pressable style={styles.selectInput}>
-            <Text>Nov 5, 2024</Text>
-            <Ionicons name="calendar-outline" size={20} color="#64748B" />
-          </Pressable>
-
-          <Text style={styles.inputLabel}>Preference</Text>
-          <Dropdown
-            data={ReportPreferences}
-            labelField="label"
-            valueField="value"
-            value={formData.preference}
-            onChange={(item) => updateFormField("preference", item.value)}
-            style={styles.dropdown}
-            containerStyle={styles.dropdownContainer}
-          />
-
-          <Text style={styles.inputLabel}>Default Currency</Text>
-          <CurrencyDropdown
-            value={formData.currency}
-            onChange={(value) => updateFormField("currency", value)}
-          />
-
-          <View style={styles.buttonRow}>
-            <Pressable style={styles.cancelButton} onPress={onClose}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </Pressable>
-            <Pressable
-              style={styles.saveButton}
-              onPress={handleCreateNewReport}
-            >
-              <Text style={styles.saveButtonText}>Save</Text>
-            </Pressable>
-          </View>
+    <DefaultModal isVisible={isVisible} onClose={onClose}>
+      <View style={styles.newReportDrawer}>
+        <View style={styles.drawerTopDivderContainer}>
+          <View style={styles.drawerTopDivder} />
         </View>
-      </Pressable>
-    </Modal>
+        <Text style={styles.drawerTitle}>New Report</Text>
+        <ScrollView style={styles.formScrollView}>
+          <View style={styles.formContainer}>
+            <View>
+              <Text style={Styles.generalInputLabel}>Purpose</Text>
+              <TextInput
+                style={Styles.generalInput}
+                placeholder="Enter purpose"
+                value={formData.purpose}
+                onChangeText={(value) => updateFormField("purpose", value)}
+              />
+            </View>
+
+            <View>
+              <Text style={Styles.generalInputLabel}>Report Type</Text>
+              <Dropdown
+                data={ReportTypes}
+                labelField="label"
+                valueField="value"
+                onChange={(item) => updateFormField("reportType", item.value)}
+                style={styles.dropdown}
+                containerStyle={styles.dropdownContainer}
+              />
+            </View>
+
+            <View>
+              <Text style={Styles.generalInputLabel}>Date</Text>
+              <Pressable style={[styles.inputContainer, Styles.generalInput]}>
+                <Text>Nov 5, 2024</Text>
+                <Ionicons name="calendar-outline" size={16} color="#64748B" />
+              </Pressable>
+            </View>
+
+            <View>
+              <Text style={Styles.generalInputLabel}>Preference</Text>
+              <Dropdown
+                data={ReportPreferences}
+                labelField="label"
+                valueField="value"
+                value={formData.preference}
+                onChange={(item) => updateFormField("preference", item.value)}
+                style={styles.dropdown}
+                containerStyle={styles.dropdownContainer}
+              />
+            </View>
+
+            <View>
+              <Text style={Styles.generalInputLabel}>Default Currency</Text>
+              <CurrencyDropdown
+                value={formData.currency}
+                onChange={(value) => updateFormField("currency", value)}
+              />
+            </View>
+          </View>
+        </ScrollView>
+        <View style={styles.buttonRow}>
+          <Pressable style={styles.cancelButton} onPress={onClose}>
+            <Text style={styles.cancelButtonText}>Cancel</Text>
+          </Pressable>
+          <Pressable style={styles.saveButton} onPress={handleCreateNewReport}>
+            <Text style={styles.saveButtonText}>Save</Text>
+          </Pressable>
+        </View>
+      </View>
+    </DefaultModal>
   );
 }
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  formScrollView: {
+    flex: 1,
+  },
+  formContainer: {
+    flexDirection: "column",
+    gap: 12,
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "flex-end",
   },
   newReportDrawer: {
+    flexDirection: "column",
     backgroundColor: "white",
     paddingHorizontal: 20,
     paddingBottom: 20,
-    gap: 12,
   },
   drawerTitle: {
     fontSize: 20,
     fontWeight: "600",
-    marginBottom: 8,
+    marginBottom: 16,
   },
   drawerTopDivderContainer: {
     flexDirection: "row",

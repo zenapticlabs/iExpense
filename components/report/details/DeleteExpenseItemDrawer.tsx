@@ -1,3 +1,4 @@
+import DefaultModal from "@/components/DefaultModal";
 import {
   StyleSheet,
   Pressable,
@@ -21,46 +22,48 @@ export default function DeleteReportDrawer({
   reportItem,
 }: DeleteReportDrawerProps) {
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={isVisible}
-      onRequestClose={onClose}
-    >
-      <Pressable
-        style={styles.deleteModalOverlay}
-        onPress={onClose}
-      >
-        <View style={styles.deleteModalContent}>
-          <Text style={styles.deleteModalTitle}>
-            Are you sure you want to delete this expense item?
+    // <Modal
+    //   animationType="slide"
+    //   transparent={true}
+    //   visible={isVisible}
+    //   onRequestClose={onClose}
+    // >
+    //   <Pressable
+    //     style={styles.deleteModalOverlay}
+    //     onPress={onClose}
+    //   >
+    //   </Pressable>
+    // </Modal>
+    <DefaultModal isVisible={isVisible} onClose={onClose}>
+      <View style={styles.deleteModalContent}>
+        <Text style={styles.deleteModalTitle}>
+          Are you sure you want to delete this expense item?
+        </Text>
+
+        <View style={styles.deleteModalDetails}>
+          <Text style={styles.deleteModalText}>{reportItem?.expense_type}</Text>
+          <Text style={styles.deleteModalText}>
+            ${reportItem?.receipt_amount}
           </Text>
-
-          <View style={styles.deleteModalDetails}>
-            <Text style={styles.deleteModalText}>{reportItem?.expense_type}</Text>
-            <Text style={styles.deleteModalText}>
-              ${reportItem?.receipt_amount}
-            </Text>
-            <Text style={styles.deleteModalText}>{reportItem?.expense_date}</Text>
-          </View>
-
-          <View style={styles.deleteModalButtons}>
-            <TouchableOpacity
-              style={styles.deleteModalCancelButton}
-              onPress={onClose}
-            >
-              <Text style={styles.deleteModalCancelText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.deleteModalConfirmButton}
-              onPress={onDelete}
-            >
-              <Text style={styles.deleteModalConfirmText}>Yes, delete</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.deleteModalText}>{reportItem?.expense_date}</Text>
         </View>
-      </Pressable>
-    </Modal>
+
+        <View style={styles.deleteModalButtons}>
+          <TouchableOpacity
+            style={styles.deleteModalCancelButton}
+            onPress={onClose}
+          >
+            <Text style={styles.deleteModalCancelText}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.deleteModalConfirmButton}
+            onPress={onDelete}
+          >
+            <Text style={styles.deleteModalConfirmText}>Yes, delete</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </DefaultModal>
   );
 }
 
