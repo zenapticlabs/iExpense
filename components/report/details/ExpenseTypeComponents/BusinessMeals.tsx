@@ -9,13 +9,22 @@ import { Dropdown } from "react-native-element-dropdown";
 interface BusinessMealsProps {
   payload: any;
   setPayload: any;
+  errors: any;
 }
 
 export default function BusinessMeals({
   payload,
   setPayload,
+  errors,
 }: BusinessMealsProps) {
   const [mealCategories, setMealCategories] = useState<any[]>([]);
+  useEffect(() => {
+    setPayload({
+      ...payload,
+      meal_category: "",
+      employee_names: "",
+    });
+  }, []);
   useEffect(() => {
     const fetchMealCategories = async () => {
       try {
@@ -46,6 +55,9 @@ export default function BusinessMeals({
           style={Styles.generalInput}
           containerStyle={styles.dropdownContainer}
         />
+        {errors?.meal_category && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.meal_category}</Text>
+        )}
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>Employee Names</Text>
@@ -56,6 +68,9 @@ export default function BusinessMeals({
             setPayload({ ...payload, employee_names: text })
           }
         />
+        {errors?.employee_names && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.employee_names}</Text>
+        )}
       </View>
     </View>
   );

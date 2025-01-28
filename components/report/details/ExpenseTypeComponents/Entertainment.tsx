@@ -9,13 +9,25 @@ import { Dropdown } from "react-native-element-dropdown";
 interface EntertainmentProps {
   payload: any;
   setPayload: any;
+  errors: any;
 }
 
 export default function Entertainment({
   payload,
   setPayload,
+  errors,
 }: EntertainmentProps) {
   const [relationshipsToPai, setRelationshipsToPai] = useState<any[]>([]);
+  useEffect(() => {
+    setPayload({
+      ...payload,
+      name_of_establishment: "",
+      city: "",
+      business_topic: "",
+      total_attendees: "",
+      relationship_to_pai: "",
+    });
+  }, []);
   useEffect(() => {
     const fetchRelationshipsToPai = async () => {
       try {
@@ -43,6 +55,9 @@ export default function Entertainment({
             setPayload({ ...payload, name_of_establishment: text })
           }
         />
+        {errors?.name_of_establishment && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.name_of_establishment}</Text>
+        )}
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>City</Text>
@@ -51,6 +66,9 @@ export default function Entertainment({
           placeholder="Enter City"
           onChangeText={(text) => setPayload({ ...payload, city: text })}
         />
+        {errors?.city && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.city}</Text>
+        )}
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>Business Topic</Text>
@@ -61,6 +79,9 @@ export default function Entertainment({
             setPayload({ ...payload, business_topic: text })
           }
         />
+        {errors?.business_topic && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.business_topic}</Text>
+        )}
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>Total Attendees</Text>
@@ -73,6 +94,9 @@ export default function Entertainment({
             setPayload({ ...payload, total_attendees: numericValue });
           }}
         />
+        {errors?.total_attendees && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.total_attendees}</Text>
+        )}
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>Relationship to PAI</Text>
@@ -86,6 +110,9 @@ export default function Entertainment({
           style={Styles.generalInput}
           containerStyle={styles.dropdownContainer}
         />
+        {errors?.relationship_to_pai && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.relationship_to_pai}</Text>
+        )}
       </View>
     </View>
   );

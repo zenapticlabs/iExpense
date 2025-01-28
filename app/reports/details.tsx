@@ -115,7 +115,7 @@ export default function ExpenseDetails() {
         <LoadingScreen />
       ) : (
         <>
-          <View style={styles.header} className="bg-black">
+          <View style={styles.header}>
             <View style={styles.titleContainer}>
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>{report?.purpose}</Text>
@@ -146,7 +146,7 @@ export default function ExpenseDetails() {
               </View>
             </View>
             <Text style={styles.amount}>${report?.report_amount}</Text>
-            <Text style={styles.dateLabel} className="bg-black">
+            <Text style={styles.dateLabel}>
               Submission: {formatDate(report?.report_submit_date as string)}
             </Text>
             <Text style={styles.dateLabel}>
@@ -341,7 +341,7 @@ export const styles = StyleSheet.create({
   },
   container: {
     display: "flex",
-    backgroundColor: "#fff",
+    backgroundColor: "white",
     height: "100%",
   },
   headerRight: {

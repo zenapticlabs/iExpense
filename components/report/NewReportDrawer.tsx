@@ -42,16 +42,24 @@ export default function NewReportDrawer({
     currency: "usd",
   });
 
+  const [errors, setErrors] = useState<any>();
+
   const updateFormField = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const validateForm = (): boolean => {
-    if (!formData.reportType || !formData.purpose) {
-      Alert.alert("Error", "Please fill in all required fields");
-      return false;
+    const keys = Object.keys(formData);
+    let isValidate = true;
+    const newErrors: any = {};
+    for (let key of keys) {
+      if (formData[key as keyof FormData] === "") {
+        newErrors[key] = "This field is required";
+        isValidate = false;
+      }
     }
-    return true;
+    setErrors(newErrors);
+    return isValidate;
   };
 
   const handleCreateNewReport = async () => {
@@ -69,8 +77,12 @@ export default function NewReportDrawer({
     onSave(newReportData);
   };
 
+  const handleClose = () => {
+    setErrors({});
+    onClose();
+  };
   return (
-    <DefaultModal isVisible={isVisible} onClose={onClose}>
+    <DefaultModal isVisible={isVisible} onClose={handleClose}>
       <View style={styles.newReportDrawer}>
         <View style={styles.drawerTopDivderContainer}>
           <View style={styles.drawerTopDivder} />
@@ -86,6 +98,11 @@ export default function NewReportDrawer({
                 value={formData.purpose}
                 onChangeText={(value) => updateFormField("purpose", value)}
               />
+              {errors?.purpose && (
+                <Text className="text-red-500 pl-4 mt-1">
+                  {errors?.purpose}
+                </Text>
+              )}
             </View>
 
             <View>
@@ -98,6 +115,11 @@ export default function NewReportDrawer({
                 style={styles.dropdown}
                 containerStyle={styles.dropdownContainer}
               />
+              {errors?.reportType && (
+                <Text className="text-red-500 pl-4 mt-1">
+                  {errors?.reportType}
+                </Text>
+              )}
             </View>
 
             <View>
@@ -119,6 +141,11 @@ export default function NewReportDrawer({
                 style={styles.dropdown}
                 containerStyle={styles.dropdownContainer}
               />
+              {errors?.preference && (
+                <Text className="text-red-500 pl-4 mt-1">
+                  {errors?.preference}
+                </Text>
+              )}
             </View>
 
             <View>
@@ -127,11 +154,16 @@ export default function NewReportDrawer({
                 value={formData.currency}
                 onChange={(value) => updateFormField("currency", value)}
               />
+              {errors?.currency && (
+                <Text className="text-red-500 pl-4 mt-1">
+                  {errors?.currency}
+                </Text>
+              )}
             </View>
           </View>
         </ScrollView>
         <View style={styles.buttonRow}>
-          <Pressable style={styles.cancelButton} onPress={onClose}>
+          <Pressable style={styles.cancelButton} onPress={handleClose}>
             <Text style={styles.cancelButtonText}>Cancel</Text>
           </Pressable>
           <Pressable style={styles.saveButton} onPress={handleCreateNewReport}>

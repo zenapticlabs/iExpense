@@ -7,10 +7,18 @@ import { Dropdown } from "react-native-element-dropdown";
 interface AirFareProps {
   payload: any;
   setPayload: any;
+  errors: any;
 }
 
-export default function AirFare({ payload, setPayload }: AirFareProps) {
+export default function AirFare({ payload, setPayload, errors }: AirFareProps) {
   const [airlines, setAirlines] = useState<any[]>([]);
+  useEffect(() => {
+    setPayload({
+      ...payload,
+      airline: payload?.airline || "",
+      origin_destination: payload?.origin_destination || "",
+    });
+  }, []);
   useEffect(() => {
     const fetchAirlines = async () => {
       try {
@@ -40,6 +48,9 @@ export default function AirFare({ payload, setPayload }: AirFareProps) {
           style={Styles.generalInput}
           containerStyle={styles.dropdownContainer}
         />
+        {errors?.airline && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.airline}</Text>
+        )}
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>Origin</Text>
@@ -51,6 +62,11 @@ export default function AirFare({ payload, setPayload }: AirFareProps) {
             setPayload({ ...payload, origin_destination: text })
           }
         />
+        {errors?.origin_destination && (
+          <Text className="text-red-500 pl-4 mt-1">
+            {errors?.origin_destination}
+          </Text>
+        )}
       </View>
     </View>
   );

@@ -18,25 +18,39 @@ export default function AuthScreen() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [biometricLogin, setBiometricLogin] = useState(false);
+  const [errors, setErrors] = useState<any>();
 
   const images = {
     brand: require("@/assets/images/brand.png"),
   };
 
   const handleSignIn = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please fill in all fields");
-      return;
+    let isValidate = true;
+    const newErrors: any = {};
+    if (email === "") {
+      newErrors.email = "Email is required";
+      isValidate = false;
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        newErrors.email = "Please enter a valid email address";
+        isValidate = false;
+      }
     }
+    if (password === "") {
+      newErrors.password = "Password is required";
+      isValidate = false;
+    }
+    setErrors(newErrors);
+    if (!isValidate) return;
 
     try {
       setIsLoading(true);
       await signIn(email, password);
     } catch (error) {
-      Alert.alert(
-        "Authentication Error",
-        "Invalid email or password. Please try again."
-      );
+      setErrors({
+        password: "Invalid email or password. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -61,15 +75,21 @@ export default function AuthScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
           />
-
-          <Text style={styles.label}>Password</Text>
+          {errors?.email && (
+            <Text className="!text-red-500 mt-1 mb-2">{errors?.email}</Text>
+          )}
+          <Text style={styles.label} className="mt-4">
+            Password
+          </Text>
           <TextInput
             style={styles.input}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
           />
-
+          {errors?.password && (
+            <Text className="!text-red-500 mt-1 mb-2">{errors?.password}</Text>
+          )}
           <Link href="/auth" style={styles.forgotPassword}>
             Forgot password?
           </Link>
@@ -93,20 +113,18 @@ export default function AuthScreen() {
           </View>
         </View>
         <View style={styles.bottomContainer}>
-        <Pressable style={styles.loginButton} onPress={handleSignIn}>
-          <Text style={styles.buttonText}>Login</Text>
-        </Pressable>
+          <Pressable style={styles.loginButton} onPress={handleSignIn}>
+            <Text style={styles.buttonText}>Login</Text>
+          </Pressable>
 
-        <View style={styles.signupContainer}>
-          <Text style={styles.signupText}>Don't have an account? </Text>
-          <Link href="/auth" style={styles.signupLink}>
-            Sign up
-          </Link>
+          <View style={styles.signupContainer}>
+            <Text style={styles.signupText}>Don't have an account? </Text>
+            <Link href="/auth" style={styles.signupLink}>
+              Sign up
+            </Link>
+          </View>
         </View>
       </View>
-      </View>
-
-     
     </View>
   );
 }
@@ -132,20 +150,20 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 30,
     color: "#1E1E1E",
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   inputContainer: {
     width: "100%",
   },
   titleContainer: {
     width: "100%",
-    marginTop: 40
+    marginTop: 40,
   },
   label: {
     fontSize: 15,
     color: "#000",
     marginBottom: 8,
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   input: {
     width: "100%",
@@ -154,17 +172,16 @@ const styles = StyleSheet.create({
     borderColor: "#DDDDDD",
     borderRadius: 8,
     padding: 16,
-    marginBottom: 16,
     backgroundColor: "white",
   },
   forgotPassword: {
     alignSelf: "flex-end",
     color: "#5B5B5B",
     fontSize: 15,
-    marginTop: -16,
+    marginTop: 8,
     marginBottom: 16,
-    textDecorationLine:'underline',
-    fontFamily: "SFProDisplay"
+    textDecorationLine: "underline",
+    fontFamily: "SFProDisplay",
   },
   toggleContainer: {
     flexDirection: "row",
@@ -175,11 +192,11 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 15,
     color: "#5B5B5B",
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   bottomContainer: {
     paddingBottom: 40,
-    width:'100%'
+    width: "100%",
   },
   loginButton: {
     backgroundColor: "#17317F",
@@ -188,13 +205,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
     marginTop: 30,
-    height: 56
+    height: 56,
   },
   buttonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "600",
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   signupContainer: {
     flexDirection: "row",
@@ -203,13 +220,13 @@ const styles = StyleSheet.create({
   signupText: {
     color: "#5B5B5B",
     fontSize: 15,
-    fontFamily: "SFProDisplay"
+    fontFamily: "SFProDisplay",
   },
   signupLink: {
     color: "#17317F",
     fontSize: 14,
     fontWeight: 600,
-    textDecorationLine:'underline',
-    fontFamily: "SFProDisplay"
+    textDecorationLine: "underline",
+    fontFamily: "SFProDisplay",
   },
 });

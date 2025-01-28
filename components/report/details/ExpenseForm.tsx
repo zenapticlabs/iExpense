@@ -16,12 +16,14 @@ import commonService from "@/services/commonService";
 
 interface ExpenseFormExpenseFormProps {
   payload: any;
+  errors: any;
   setPayload: (value: any) => void;
 }
 
 export default function ExpenseFormExpenseForm({
   payload,
   setPayload,
+  errors,
 }: ExpenseFormExpenseFormProps) {
   const [convertedCurrency, setConvertedCurrency] = useState("usd");
   const [convertedAmount, setConvertedAmount] = useState(0);
@@ -35,7 +37,6 @@ export default function ExpenseFormExpenseForm({
     };
     fetchExchangeRates();
   }, []);
-
   useEffect(() => {
     if (payload.receipt_currency && payload.receipt_amount) {
       const convertedAmount =
@@ -58,6 +59,7 @@ export default function ExpenseFormExpenseForm({
         expense_type={payload?.expense_type}
         payload={payload}
         setPayload={setPayload}
+        errors={errors}
       />
       <View>
         <Text style={Styles.generalInputLabel}>Date</Text>
@@ -113,6 +115,9 @@ export default function ExpenseFormExpenseForm({
             setPayload({ ...payload, justification: text })
           }
         />
+        {errors?.justification && (
+          <Text className="text-red-500 pl-4 mt-1">{errors.justification}</Text>
+        )}
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>Note</Text>
@@ -122,6 +127,9 @@ export default function ExpenseFormExpenseForm({
           value={payload?.note}
           onChangeText={(text) => setPayload({ ...payload, note: text })}
         />
+        {errors?.note && (
+          <Text className="text-red-500 pl-4 mt-1">{errors.note}</Text>
+        )}
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>Attached receipt</Text>

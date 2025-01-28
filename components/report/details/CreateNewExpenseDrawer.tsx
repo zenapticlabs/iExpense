@@ -25,35 +25,48 @@ interface CreateNewExpenseDrawerProps {
   onAddExpense: (reportItem: any) => void;
 }
 
+const initialPayload = {
+  receipt_currency: "usd",
+  filename: "test_filename",
+  s3_path: "test_s3_path",
+  expense_date: "2025-01-21",
+  justification: "",
+  note: "",
+};
+
 export default function CreateNewExpenseDrawer({
   isVisible,
   onClose,
   onAddExpense,
   reportId,
 }: CreateNewExpenseDrawerProps) {
-  const [isUploadFileModalVisible, setUploadFileModalVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [convertedCurrency, setConvertedCurrency] = useState("usd");
-  const [convertedAmount, setConvertedAmount] = useState(0);
-  const [payload, setPayload] = useState<any>({
-    receipt_currency: "usd",
-    filename: "test_filename",
-    s3_path: "test_s3_path",
-    expense_date: "2025-01-21",
-  });
-  useEffect(() => {
-    const convertedAmount = 80 * payload.receipt_amount;
-    setConvertedAmount(convertedAmount);
-  }, [payload.receipt_currency, payload.receipt_amount, convertedCurrency]);
+  const [payload, setPayload] = useState<any>(initialPayload);
+
+  const [errors, setErrors] = useState<any>({});
+
   const handleClose = () => {
     setCurrentStep(1);
     setSearchQuery("");
+    setErrors({});
+    setPayload(initialPayload);
     onClose();
   };
 
   const handleAddExpense = async () => {
     try {
+      const keys = Object.keys(payload);
+      let isValidate = true;
+      const newErrors: any = {};
+      for (let key of keys) {
+        if (payload[key] === "") {
+          newErrors[key] = "This field is required";
+          isValidate = false;
+        }
+      }
+      setErrors({ ...errors, ...newErrors });
+      if (!isValidate) return;
       const response = await reportService.createReportItem(payload, reportId);
       onAddExpense(response);
       onClose();
@@ -62,9 +75,13 @@ export default function CreateNewExpenseDrawer({
     }
   };
 
+  useEffect(() => {
+    console.log(errors);
+  }, [errors]);
   const handleBack = () => {
     setCurrentStep(1);
-    setPayload({});
+    setPayload(initialPayload);
+    setErrors({});
   };
 
   const renderStep1 = () => (
@@ -139,7 +156,11 @@ export default function CreateNewExpenseDrawer({
       ) : null}
 
       <ScrollView style={styles.expenseTypeList}>
-        <ExpenseForm payload={payload} setPayload={setPayload} />
+        <ExpenseForm
+          payload={payload}
+          setPayload={setPayload}
+          errors={errors}
+        />
       </ScrollView>
       <View style={styles.buttonContainer}>
         <TouchableOpacity

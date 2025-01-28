@@ -9,11 +9,19 @@ import { Dropdown } from "react-native-element-dropdown";
 interface AutoRentalProps {
   payload: any;
   setPayload: any;
+  errors: any;
 }
 
-export default function AutoRental({ payload, setPayload }: AutoRentalProps) {
+export default function AutoRental({ payload, setPayload, errors }: AutoRentalProps) {
   const [carTypes, setCarTypes] = useState<any[]>([]);
   const [rentalAgencies, setRentalAgencies] = useState<any[]>([]);
+  useEffect(() => {
+    setPayload({
+      ...payload,
+      car_type: "",
+      rental_agency: "",
+    });
+  }, []);
   useEffect(() => {
     const fetchCarTypes = async () => {
       try {
@@ -56,6 +64,9 @@ export default function AutoRental({ payload, setPayload }: AutoRentalProps) {
           style={Styles.generalInput}
           containerStyle={styles.dropdownContainer}
         />
+        {errors?.car_type && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.car_type}</Text>
+        )}
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>Rental Agency</Text>
@@ -69,6 +80,9 @@ export default function AutoRental({ payload, setPayload }: AutoRentalProps) {
           style={Styles.generalInput}
           containerStyle={styles.dropdownContainer}
         />
+        {errors?.rental_agency && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.rental_agency}</Text>
+        )}
       </View>
     </View>
   );
