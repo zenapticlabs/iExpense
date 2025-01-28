@@ -25,14 +25,18 @@ export default function DeleteReportDrawer({
   return (
     <DefaultModal isVisible={isVisible} onClose={onClose}>
       <View style={styles.deleteModalContent}>
-        <Text style={styles.deleteModalTitle}>
+        <Text style={styles.deleteModalTitle} className="font-sfpro">
           Are you sure you want to delete this expense report?
         </Text>
 
         <View style={styles.deleteModalDetails}>
-          <Text style={styles.deleteModalText}>{report?.purpose}</Text>
-          <Text style={styles.deleteModalText}>${report?.report_amount}</Text>
-          <Text style={styles.deleteModalText}>
+          <Text style={styles.deleteModalText} className="font-sfpro">
+            {report?.purpose}
+          </Text>
+          <Text style={styles.deleteModalText} className="font-sfpro">
+            ${report?.report_amount}
+          </Text>
+          <Text style={styles.deleteModalText} className="font-sfpro">
             {report?.report_submit_date}
           </Text>
         </View>
@@ -42,13 +46,17 @@ export default function DeleteReportDrawer({
             style={styles.deleteModalCancelButton}
             onPress={onClose}
           >
-            <Text style={styles.deleteModalCancelText}>Cancel</Text>
+            <Text style={styles.deleteModalCancelText} className="font-sfpro">
+              Cancel
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.deleteModalConfirmButton}
             onPress={onDelete}
           >
-            <Text style={styles.deleteModalConfirmText}>Yes, delete</Text>
+            <Text style={styles.deleteModalConfirmText} className="font-sfpro">
+              Yes, delete
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -73,7 +81,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     marginBottom: 16,
-    textAlign: "center",
   },
   deleteModalDetails: {
     backgroundColor: "#f5f5f5",

@@ -36,16 +36,20 @@ export default function DeleteReportDrawer({
     // </Modal>
     <DefaultModal isVisible={isVisible} onClose={onClose}>
       <View style={styles.deleteModalContent}>
-        <Text style={styles.deleteModalTitle}>
+        <Text style={styles.deleteModalTitle} className="font-sfpro">
           Are you sure you want to delete this expense item?
         </Text>
 
         <View style={styles.deleteModalDetails}>
-          <Text style={styles.deleteModalText}>{reportItem?.expense_type}</Text>
-          <Text style={styles.deleteModalText}>
+          <Text style={styles.deleteModalText} className="font-sfpro">
+            {reportItem?.expense_type}
+          </Text>
+          <Text style={styles.deleteModalText} className="font-sfpro">
             ${reportItem?.receipt_amount}
           </Text>
-          <Text style={styles.deleteModalText}>{reportItem?.expense_date}</Text>
+          <Text style={styles.deleteModalText} className="font-sfpro">
+            {reportItem?.expense_date}
+          </Text>
         </View>
 
         <View style={styles.deleteModalButtons}>
@@ -53,13 +57,17 @@ export default function DeleteReportDrawer({
             style={styles.deleteModalCancelButton}
             onPress={onClose}
           >
-            <Text style={styles.deleteModalCancelText}>Cancel</Text>
+            <Text style={styles.deleteModalCancelText} className="font-sfpro">
+              Cancel
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.deleteModalConfirmButton}
             onPress={onDelete}
           >
-            <Text style={styles.deleteModalConfirmText}>Yes, delete</Text>
+            <Text style={styles.deleteModalConfirmText} className="font-sfpro">
+              Yes, delete
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

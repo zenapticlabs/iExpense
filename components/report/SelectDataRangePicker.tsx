@@ -25,20 +25,19 @@ export default function SelectDataRangePicker({
 }: SelectDataRangePickerProps) {
   const [isVisible, setIsVisible] = useState(false);
   return (
-    <>
+    <View>
       <Pressable style={styles.filterButton} onPress={() => setIsVisible(true)}>
         <Ionicons name="calendar-clear-outline" size={20} color="#5B5B5B" />
         <Text style={styles.filterText}>This month</Text>
       </Pressable>
-      <DefaultModal
-        isVisible={isVisible}
-        onClose={() => setIsVisible(false)}
-      >
+      <DefaultModal isVisible={isVisible} onClose={() => setIsVisible(false)}>
         <View style={styles.SelectDataRangePicker}>
           <View style={styles.drawerTopDivderContainer}>
             <View style={styles.drawerTopDivder}></View>
           </View>
-          <Text style={styles.drawerTitle}>Select Date Range</Text>
+          <Text style={styles.drawerTitle} className="font-sfpro">
+            Select Date Range
+          </Text>
           {DATE_OPTIONS.map((option) => (
             <Pressable
               key={option.value}
@@ -48,12 +47,12 @@ export default function SelectDataRangePicker({
               ]}
               onPress={() => onChange(option.value)}
             >
-              <Text>{option.label}</Text>
+              <Text className="font-sfpro">{option.label}</Text>
             </Pressable>
           ))}
         </View>
       </DefaultModal>
-    </>
+    </View>
   );
 }
 

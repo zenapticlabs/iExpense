@@ -151,16 +151,17 @@ export default function ExpenseDetails() {
                       ),
                     },
                   ]}
+                  className="font-sfpro"
                 >
                   {report?.report_status}
                 </Text>
               </View>
             </View>
             <Text style={styles.amount}>${report?.report_amount}</Text>
-            <Text style={styles.dateLabel}>
+            <Text style={styles.dateLabel} className="font-sfpro">
               Submission: {formatDate(report?.report_submit_date as string)}
             </Text>
-            <Text style={styles.dateLabel}>
+            <Text style={styles.dateLabel} className="font-sfpro">
               Approval: {formatDate(report?.integration_date as string)}
             </Text>
             <View style={styles.stepperContainer}>
@@ -176,7 +177,9 @@ export default function ExpenseDetails() {
             </TouchableOpacity>
           )}
           <View style={styles.expenseSection}>
-            <Text style={styles.sectionTitle}>Expense Items</Text>
+            <Text style={styles.sectionTitle} className="font-sfpro">
+              Expense Items
+            </Text>
             <ScrollView>
               {reportItems?.map((reportItem) => (
                 <TouchableOpacity
@@ -185,13 +188,13 @@ export default function ExpenseDetails() {
                   onPress={() => handleExpensePress(reportItem)}
                 >
                   <View>
-                    <Text style={styles.expenseItemTitle}>
+                    <Text style={styles.expenseItemTitle} className="font-sfpro">
                       {reportItem.expense_type}
                     </Text>
-                    <Text style={styles.expenseItemAmount}>
+                    <Text style={styles.expenseItemAmount} className="font-sfpro">
                       ${reportItem.receipt_amount}
                     </Text>
-                    <Text style={styles.expenseItemDate}>
+                    <Text style={styles.expenseItemDate} className="font-sfpro">
                       {formatDate(reportItem.expense_date) || ""}
                     </Text>
                   </View>
@@ -641,7 +644,6 @@ export const styles = StyleSheet.create({
   },
   expenseItemAmount: {
     fontSize: 16,
-    fontWeight: "600",
     marginBottom: 4,
   },
   expenseItemDate: {

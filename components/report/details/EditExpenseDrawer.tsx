@@ -84,7 +84,9 @@ export default function EditExpenseDrawer({
   return (
     <DefaultModal isVisible={selectedExpense !== null} onClose={handleClose}>
       <View style={styles.editModalContainer}>
-        <Text style={styles.modalTitle}>Edit Expense</Text>
+        <Text style={styles.modalTitle} className="font-sfpro">
+          Edit Expense
+        </Text>
 
         {newPayload && (
           <ScrollView>
@@ -107,7 +109,9 @@ export default function EditExpenseDrawer({
             style={styles.saveButton}
             onPress={() => handleEditExpense()}
           >
-            <Text style={styles.saveButtonText}>Save Changes</Text>
+            <Text style={styles.saveButtonText} className="font-sfpro">
+              Save Changes
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

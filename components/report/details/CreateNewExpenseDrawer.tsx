@@ -106,8 +106,12 @@ export default function CreateNewExpenseDrawer({
 
   const renderStep1 = () => (
     <View style={styles.stepContainer}>
-      <Text style={styles.modalTitle}>Create New Expense</Text>
-      <Text style={styles.selectExpenseTypeLabel}>Select expense type</Text>
+      <Text style={styles.modalTitle} className="font-sfpro">
+        Create New Expense
+      </Text>
+      <Text style={styles.selectExpenseTypeLabel} className="font-sfpro">
+        Select expense type
+      </Text>
 
       <View style={styles.searchContainer}>
         <Ionicons
@@ -118,6 +122,7 @@ export default function CreateNewExpenseDrawer({
         />
         <TextInput
           style={styles.searchInput}
+          className="font-sfpro"
           placeholder="Search"
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -138,7 +143,9 @@ export default function CreateNewExpenseDrawer({
               ]}
               onPress={() => setPayload({ ...payload, expense_type: type })}
             >
-              <Text style={styles.expenseTypeText}>{type}</Text>
+              <Text style={styles.expenseTypeText} className="font-sfpro">
+                {type}
+              </Text>
               {payload?.expense_type === type && (
                 <Ionicons name="checkmark" size={20} color="#1E3A8A" />
               )}
@@ -148,7 +155,9 @@ export default function CreateNewExpenseDrawer({
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.cancelButton} onPress={handleClose}>
-          <Text style={styles.cancelButtonText}>Cancel</Text>
+          <Text style={styles.cancelButtonText} className="font-sfpro">
+            Cancel
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
@@ -158,7 +167,9 @@ export default function CreateNewExpenseDrawer({
           onPress={() => payload?.expense_type && setCurrentStep(2)}
           disabled={!payload?.expense_type}
         >
-          <Text style={styles.nextButtonText}>Next</Text>
+          <Text style={styles.nextButtonText} className="font-sfpro">
+            Next
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -188,10 +199,14 @@ export default function CreateNewExpenseDrawer({
           style={styles.cancelButton}
           onPress={() => handleBack()}
         >
-          <Text style={styles.cancelButtonText}>Back</Text>
+          <Text style={styles.cancelButtonText} className="font-sfpro">
+            Back
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.nextButton} onPress={handleAddExpense}>
-          <Text style={styles.nextButtonText}>Add expense</Text>
+          <Text style={styles.nextButtonText} className="font-sfpro">
+            Add expense
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
