@@ -24,6 +24,7 @@ import ReportStepper from "@/components/ReportStepper";
 import SubmitConfirmDrawer from "@/components/report/details/SubmitConfirmDrawer";
 import LoadingScreen from "@/components/LoadingScreen";
 import commonService from "@/services/commonService";
+import BottomNavBar from "@/components/BottomNavBar";
 
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
@@ -216,28 +217,7 @@ export default function ExpenseDetails() {
           </View>
         </>
       )}
-      <View style={styles.tabBar}>
-        <View style={[styles.tabItem]}>
-          <Ionicons name="document-text" size={24} color="#1e1e1e" />
-          <Text style={styles.tabText}>Reports</Text>
-        </View>
-        <View style={styles.tabItem}>
-          <Pressable
-            style={styles.tabAddButton}
-            // onPress={() => setIsNewReportDrawerVisible(true)}
-            onPress={() => console.log(true)}
-          >
-            <Ionicons name="add" size={24} color="white" />
-          </Pressable>
-        </View>
-        <Link href="/profile" asChild style={styles.tabItem}>
-          <View style={styles.tabItem}>
-            <Ionicons name="person-outline" size={24} color="#64748B" />
-            <Text style={styles.tabText}>My Profile</Text>
-          </View>
-        </Link>
-      </View>
-
+      <BottomNavBar page="reports" />
       <CreateNewExpenseDrawer
         isVisible={isModalVisible}
         reportId={id as string}
