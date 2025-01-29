@@ -9,10 +9,20 @@ import { Dropdown } from "react-native-element-dropdown";
 interface MileageProps {
   payload: any;
   setPayload: any;
+  errors: any;
 }
 
-export default function Mileage({ payload, setPayload }: MileageProps) {
+export default function Mileage({ payload, setPayload, errors }: MileageProps) {
   const [mileageRates, setMileageRates] = useState<any[]>([]);
+  useEffect(() => {
+    setPayload({
+      ...payload,
+      origin_destination: "",
+      destination: "",
+      distance: "",
+      mileage_rate: "",
+    });
+  }, []);
   useEffect(() => {
     const fetchMileageRates = async () => {
       try {
@@ -40,6 +50,9 @@ export default function Mileage({ payload, setPayload }: MileageProps) {
             setPayload({ ...payload, origin_destination: text })
           }
         />
+        {errors?.origin_destination && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.origin_destination}</Text>
+        )}
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>Destination</Text>
@@ -48,6 +61,9 @@ export default function Mileage({ payload, setPayload }: MileageProps) {
           placeholder="Enter Destination"
           onChangeText={(text) => setPayload({ ...payload, destination: text })}
         />
+        {errors?.destination && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.destination}</Text>
+        )}
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>Distance</Text>
@@ -56,6 +72,9 @@ export default function Mileage({ payload, setPayload }: MileageProps) {
           placeholder="Enter Distance"
           onChangeText={(text) => setPayload({ ...payload, distance: text })}
         />
+        {errors?.distance && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.distance}</Text>
+        )}
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>Mileage Rate</Text>
@@ -69,6 +88,9 @@ export default function Mileage({ payload, setPayload }: MileageProps) {
           style={Styles.generalInput}
           containerStyle={styles.dropdownContainer}
         />
+        {errors?.mileage_rate && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.mileage_rate}</Text>
+        )}
       </View>
     </View>
   );

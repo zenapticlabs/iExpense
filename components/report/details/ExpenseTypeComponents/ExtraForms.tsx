@@ -17,30 +17,32 @@ interface ExtraFormsProps {
   expense_type: any;
   payload: any;
   setPayload: any;
+  errors: any;
 }
 
 export default function ExtraForms({
   expense_type,
   payload,
   setPayload,
+  errors,
 }: ExtraFormsProps) {
   switch (expense_type) {
     case ExpenseType.airFare:
-      return <AirFare payload={payload} setPayload={setPayload} />;
+      return <AirFare payload={payload} setPayload={setPayload} errors={errors} />;
     case ExpenseType.autoRental:
-      return <AutoRental payload={payload} setPayload={setPayload} />;
+      return <AutoRental payload={payload} setPayload={setPayload} errors={errors} />;
     case ExpenseType.businessMeals:
-      return <BusinessMeals payload={payload} setPayload={setPayload} />;
+      return <BusinessMeals payload={payload} setPayload={setPayload} errors={errors} />;
     case ExpenseType.entertainment:
-      return <Entertainment payload={payload} setPayload={setPayload} />;
+      return <Entertainment payload={payload} setPayload={setPayload} errors={errors} />;
     case ExpenseType.entertainmentLevi:
-      return <EntertainmentLevi payload={payload} setPayload={setPayload} />;
+      return <EntertainmentLevi payload={payload} setPayload={setPayload} errors={errors} />;
     case ExpenseType.hotel:
-      return <Hotel payload={payload} setPayload={setPayload} />;
+      return <Hotel payload={payload} setPayload={setPayload} errors={errors} />;
     case ExpenseType.mileage:
-      return <Mileage payload={payload} setPayload={setPayload} />;
+      return <Mileage payload={payload} setPayload={setPayload} errors={errors} />;
     case ExpenseType.telephoneCell:
-      return <TelephoneCell payload={payload} setPayload={setPayload} />;
+      return <TelephoneCell payload={payload} setPayload={setPayload} errors={errors} />;
     default:
       return null;
   }

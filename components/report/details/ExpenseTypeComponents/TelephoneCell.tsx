@@ -9,12 +9,20 @@ import { Dropdown } from "react-native-element-dropdown";
 interface TelephoneCellProps {
   payload: any;
   setPayload: any;
+  errors: any;
 }
 
 export default function TelephoneCell({
   payload,
   setPayload,
+  errors,
 }: TelephoneCellProps) {
+  useEffect(() => {
+    setPayload({
+      ...payload,
+      carrier: "",
+    });
+  }, []);
   return (
     <View style={styles.formContainer}>
       <View>
@@ -24,6 +32,9 @@ export default function TelephoneCell({
           placeholder="Enter Carrier"
           onChangeText={(text) => setPayload({ ...payload, carrier: text })}
         />
+        {errors?.carrier && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.carrier}</Text>
+        )}
       </View>
     </View>
   );

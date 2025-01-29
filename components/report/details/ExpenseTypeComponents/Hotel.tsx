@@ -9,11 +9,19 @@ import { Dropdown } from "react-native-element-dropdown";
 interface HotelProps {
   payload: any;
   setPayload: any;
+  errors: any;
 }
 
-export default function Hotel({ payload, setPayload }: HotelProps) {
+export default function Hotel({ payload, setPayload, errors }: HotelProps) {
   const [cities, setCities] = useState<any[]>([]);
   const [hotelDailyBaseRates, setHotelDailyBaseRates] = useState<any[]>([]);
+  useEffect(() => {
+    setPayload({
+      ...payload,
+      hotel_name: "",
+      city: "",
+    });
+  }, []);
   useEffect(() => {
     const fetchCities = async () => {
       try {
@@ -59,6 +67,9 @@ export default function Hotel({ payload, setPayload }: HotelProps) {
           style={Styles.generalInput}
           containerStyle={styles.dropdownContainer}
         />
+        {errors?.city && (
+          <Text className="text-red-500 pl-4 mt-1">{errors?.city}</Text>
+        )}
       </View>
     </View>
   );

@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import React from "react";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Link, router, Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { IExpense, IReport } from "@/constants/types";
@@ -23,6 +23,7 @@ import { ReportStatusBgColor } from "@/utils/UtilData";
 import ReportStepper from "@/components/ReportStepper";
 import SubmitConfirmDrawer from "@/components/report/details/SubmitConfirmDrawer";
 import LoadingScreen from "@/components/LoadingScreen";
+import commonService from "@/services/commonService";
 
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
@@ -34,6 +35,15 @@ export default function ExpenseDetails() {
     useState(false);
   const [isSubmitModalVisible, setIsSubmitModalVisible] = useState(false);
   const [reportItems, setReportItems] = useState<any[]>([]);
+  const [exchangeRates, setExchangeRates] = useState<any>({});
+
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      const response = await commonService.getExchangeRates();
+      setExchangeRates(response);
+    };
+    fetchExchangeRates();
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -115,7 +125,7 @@ export default function ExpenseDetails() {
         <LoadingScreen />
       ) : (
         <>
-          <View style={styles.header} className="bg-black">
+          <View style={styles.header}>
             <View style={styles.titleContainer}>
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>{report?.purpose}</Text>
@@ -146,7 +156,7 @@ export default function ExpenseDetails() {
               </View>
             </View>
             <Text style={styles.amount}>${report?.report_amount}</Text>
-            <Text style={styles.dateLabel} className="bg-black">
+            <Text style={styles.dateLabel}>
               Submission: {formatDate(report?.report_submit_date as string)}
             </Text>
             <Text style={styles.dateLabel}>
@@ -208,7 +218,7 @@ export default function ExpenseDetails() {
       )}
       <View style={styles.tabBar}>
         <View style={[styles.tabItem]}>
-          <Ionicons name="document-text" size={24} color="#1E3A8A" />
+          <Ionicons name="document-text" size={24} color="#1e1e1e" />
           <Text style={styles.tabText}>Reports</Text>
         </View>
         <View style={styles.tabItem}>
@@ -220,16 +230,19 @@ export default function ExpenseDetails() {
             <Ionicons name="add" size={24} color="white" />
           </Pressable>
         </View>
-        <View style={styles.tabItem}>
-          <Ionicons name="person-outline" size={24} color="#64748B" />
-          <Text style={styles.tabText}>My Profile</Text>
-        </View>
+        <Link href="/profile" asChild style={styles.tabItem}>
+          <View style={styles.tabItem}>
+            <Ionicons name="person-outline" size={24} color="#64748B" />
+            <Text style={styles.tabText}>My Profile</Text>
+          </View>
+        </Link>
       </View>
 
       <CreateNewExpenseDrawer
         isVisible={isModalVisible}
         reportId={id as string}
         onClose={() => setIsModalVisible(false)}
+        exchangeRates={exchangeRates}
         onAddExpense={(reportItem) =>
           setReportItems([...reportItems, reportItem])
         }
@@ -241,6 +254,7 @@ export default function ExpenseDetails() {
         setSelectedExpense={setSelectedExpense}
         onDeleteExpense={handleDeleteExpense}
         onEditExpense={handleEditExpense}
+        exchangeRates={exchangeRates}
       />
 
       <DeleteReportDrawer
@@ -341,7 +355,7 @@ export const styles = StyleSheet.create({
   },
   container: {
     display: "flex",
-    backgroundColor: "#fff",
+    backgroundColor: "white",
     height: "100%",
   },
   headerRight: {
@@ -448,7 +462,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   tabAddButton: {
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#1e1e1e",
     width: 48,
     height: 48,
     borderRadius: 24,

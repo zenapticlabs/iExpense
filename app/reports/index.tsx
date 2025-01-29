@@ -148,7 +148,7 @@ export default function ReportsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     display: "flex",

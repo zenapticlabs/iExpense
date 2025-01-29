@@ -17,6 +17,7 @@ import DefaultModal from "@/components/DefaultModal";
 interface EditExpenseDrawerProps {
   reportId: string;
   selectedExpense: any;
+  exchangeRates: any;
   setSelectedExpense: (expense: any) => void;
   onDeleteExpense: (expenseId: string) => void;
   onEditExpense: (expense: any) => void;
@@ -28,9 +29,11 @@ export default function EditExpenseDrawer({
   setSelectedExpense,
   onDeleteExpense,
   onEditExpense,
+  exchangeRates
 }: EditExpenseDrawerProps) {
   const [newPayload, setNewPayload] = useState<any>();
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [errors, setErrors] = useState<any>();
   const handleDeletePress = () => {
     setIsDeleteModalVisible(true);
   };
@@ -42,17 +45,30 @@ export default function EditExpenseDrawer({
       console.error("Error deleting report item:", error);
     }
     setIsDeleteModalVisible(false);
-    setSelectedExpense(null);
+    handleClose();
   };
   const handleEditExpense = async () => {
     try {
+      const keys = Object.keys(newPayload);
+      let isValidate = true;
+      const newErrors: any = {};
+      for (let key of keys) {
+        if (newPayload[key] === "") {
+          newErrors[key] = "This field is required";
+          isValidate = false;
+        }
+      }
+      setErrors({ ...errors, ...newErrors });
+      if (!isValidate) {
+        return;
+      }
       const response = await reportService.updateReportItem(
         reportId,
         selectedExpense.id,
         newPayload
       );
       onEditExpense(response);
-      setSelectedExpense(null);
+      handleClose();
     } catch (error) {
       console.error("Error editing report item:", error);
     }
@@ -60,24 +76,24 @@ export default function EditExpenseDrawer({
   useEffect(() => {
     setNewPayload(selectedExpense);
   }, [selectedExpense]);
+  const handleClose = () => {
+    setErrors({});
+    setNewPayload({});
+    setSelectedExpense(null);
+  };
   return (
-    // <Modal
-    //   animationType="slide"
-    //   transparent={true}
-    //   visible={selectedExpense !== null}
-    //   onRequestClose={() => setSelectedExpense(null)}
-    // >
-    // </Modal>
-    <DefaultModal
-      isVisible={selectedExpense !== null}
-      onClose={() => setSelectedExpense(null)}
-    >
+    <DefaultModal isVisible={selectedExpense !== null} onClose={handleClose}>
       <View style={styles.editModalContainer}>
         <Text style={styles.modalTitle}>Edit Expense</Text>
 
         {newPayload && (
           <ScrollView>
-            <ExpenseForm payload={newPayload} setPayload={setNewPayload} />
+            <ExpenseForm
+              payload={newPayload}
+              setPayload={setNewPayload}
+              errors={errors}
+              exchangeRates={exchangeRates}
+            />
           </ScrollView>
         )}
         <View style={styles.buttonContainer}>

@@ -34,7 +34,9 @@ export const authService = {
   async refreshToken(): Promise<AuthResponse> {
     try {
       const { refresh } = await storage.getAuthData();
-      const response = await axios.post(`${BASE_URL}/auth/refresh`, { refresh });
+      const response = await axios.post(`${BASE_URL}/auth/refresh`, {
+        refresh,
+      });
       return response.data;
     } catch (error) {
       throw new AuthenticationError("Refresh token failed");
@@ -66,7 +68,7 @@ export const authService = {
       if (error.response.data.code == "second_factor_required") {
         throw "second_factor_required";
       }
-      throw new Error("Login failed");
+      throw "Invalid login credentials";
     }
   },
 };
