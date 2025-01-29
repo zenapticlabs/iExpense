@@ -6,7 +6,9 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
+  Image,
 } from "react-native";
+import { WebView } from "react-native-webview";
 import { Styles } from "@/Styles";
 import ExtraForms from "./ExpenseTypeComponents/ExtraForms";
 import CurrencyDropdown from "@/components/CurrencyDropdown";
@@ -14,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import commonService from "@/services/commonService";
 import * as DocumentPicker from "expo-document-picker";
+const baseS3Url = "https://iexpense-receipts.s3.amazonaws.com/";
 
 interface ExpenseFormExpenseFormProps {
   payload: any;
@@ -30,13 +33,10 @@ export default function ExpenseFormExpenseForm({
 }: ExpenseFormExpenseFormProps) {
   const [convertedCurrency, setConvertedCurrency] = useState("usd");
   const [convertedAmount, setConvertedAmount] = useState(0);
-  const [isUploadFileModalVisible, setUploadFileModalVisible] = useState(false);
+  const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
 
   useEffect(() => {
     if (payload.receipt_currency && payload.receipt_amount) {
-      console.log(exchangeRates);
-      console.log(exchangeRates[convertedCurrency.toUpperCase()]);
-      console.log(exchangeRates[payload.receipt_currency?.toUpperCase()]);
       const convertedAmount =
         (exchangeRates[convertedCurrency.toUpperCase()] /
           exchangeRates[payload.receipt_currency?.toUpperCase()]) *
@@ -59,7 +59,6 @@ export default function ExpenseFormExpenseForm({
 
       if (result.assets && result.assets[0]) {
         const file = result.assets[0];
-        console.log(file);
         setPayload({
           ...payload,
           file: file,
@@ -76,6 +75,43 @@ export default function ExpenseFormExpenseForm({
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  const isImageFile = (file: any) => {
+    const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"];
+    if (
+      file?.mimeType?.startsWith("image/") ||
+      file?.type?.startsWith("image/")
+    ) {
+      return true;
+    }
+    if (file?.name) {
+      const extension = file.name.toLowerCase().match(/\.[^.]*$/)?.[0];
+      return extension && imageExtensions.includes(extension);
+    }
+    if (typeof file === "string") {
+      const extension = file.toLowerCase().match(/\.[^.]*$/)?.[0];
+      return extension && imageExtensions.includes(extension);
+    }
+    return false;
+  };
+
+  const isPdfFile = (file: any) => {
+    if (
+      file?.mimeType === "application/pdf" ||
+      file?.type === "application/pdf"
+    ) {
+      return true;
+    }
+    if (file?.name) {
+      const extension = file.name.toLowerCase().match(/\.[^.]*$/)?.[0];
+      return extension === ".pdf";
+    }
+    if (typeof file === "string") {
+      const extension = file.toLowerCase().match(/\.[^.]*$/)?.[0];
+      return extension === ".pdf";
+    }
+    return false;
   };
 
   return (
@@ -164,9 +200,11 @@ export default function ExpenseFormExpenseForm({
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>Attached receipt</Text>
-
         {payload?.file && (
-          <View style={styles.selectedFileContainer}>
+          <Pressable
+            onPress={() => setIsPreviewModalVisible(true)}
+            className="flex flex-row items-center p-3 bg-gray-100 rounded-lg mb-2 active:bg-gray-200"
+          >
             <View style={styles.fileIconContainer}>
               <Ionicons name="document-outline" size={24} color="#666" />
             </View>
@@ -176,25 +214,36 @@ export default function ExpenseFormExpenseForm({
                 {formatFileSize(payload.file.size)}
               </Text>
             </View>
-          </View>
+            <Ionicons
+              name="close-circle-outline"
+              size={24}
+              color="#666"
+              onPress={() => setPayload({ ...payload, file: null })}
+            />
+          </Pressable>
         )}
         {payload?.filename && (
-          <View style={styles.selectedFileContainer}>
+          <Pressable
+            onPress={() => setIsPreviewModalVisible(true)}
+            className="flex flex-row items-center p-3 bg-gray-100 rounded-lg mb-2 active:bg-gray-200"
+          >
             <View style={styles.fileIconContainer}>
               <Ionicons name="document-outline" size={24} color="#666" />
             </View>
             <View style={styles.fileDetailsContainer}>
               <Text style={styles.fileNameText}>{payload.filename}</Text>
-              {/* <Text style={styles.fileSizeText}>
-                {formatFileSize(payload.file.size)}
-              </Text> */}
             </View>
-          </View>
+            <Ionicons
+              name="close-circle-outline"
+              size={24}
+              color="#666"
+              onPress={() =>
+                setPayload({ ...payload, filename: null, s3_path: null })
+              }
+            />
+          </Pressable>
         )}
-        <TouchableOpacity
-          style={styles.uploadContainer}
-          onPress={() => setUploadFileModalVisible(true)}
-        >
+        <TouchableOpacity style={styles.uploadContainer} onPress={pickDocument}>
           <Ionicons name="cloud-upload-outline" size={24} color="#666" />
           <Text style={styles.uploadText}>Upload file</Text>
         </TouchableOpacity>
@@ -202,49 +251,68 @@ export default function ExpenseFormExpenseForm({
       <Modal
         animationType="fade"
         transparent={true}
-        visible={isUploadFileModalVisible}
-        onRequestClose={() =>
-          setUploadFileModalVisible(!isUploadFileModalVisible)
-        }
+        visible={isPreviewModalVisible}
+        onRequestClose={() => setIsPreviewModalVisible(!isPreviewModalVisible)}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalUploadTitle}>Uploaded receipt</Text>
-            <View style={styles.uploadContent}>
-              {payload?.file ? (
-                <View style={styles.fileInfoContainer}>
-                  <Ionicons name="document-outline" size={40} color="#666" />
-                  <Text style={styles.fileName}>{payload.file.name}</Text>
-                  <Text style={styles.fileSize}>
-                    {formatFileSize(payload.file.size)}
-                  </Text>
-                </View>
-              ) : (
-                <View style={styles.emptyUploadContent}>
-                  <Ionicons
-                    name="cloud-upload-outline"
-                    size={40}
-                    color="#666"
+            {payload?.file && (
+              <View style={styles.uploadContent}>
+                {isImageFile(payload.file) ? (
+                  <Image
+                    source={{ uri: payload.file.uri }}
+                    style={styles.previewImage}
+                    resizeMode="contain"
                   />
-                  <Text style={styles.uploadText}>No file selected</Text>
-                </View>
-              )}
-            </View>
-
+                ) : isPdfFile(payload.file) ? (
+                  <WebView
+                    source={{ uri: payload.file.uri }}
+                    style={styles.pdfPreview}
+                    javaScriptEnabled={true}
+                  />
+                ) : (
+                  <View>
+                    <Ionicons name="document-outline" size={40} color="#666" />
+                    <Text style={styles.fileName}>{payload.file.name}</Text>
+                    <Text style={styles.fileSize}>
+                      {formatFileSize(payload.file.size)}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
+            {payload?.filename && (
+              <View style={styles.uploadContent}>
+                {isImageFile(payload.filename) ? (
+                  <Image
+                    source={{ uri: baseS3Url + payload.s3_path }}
+                    style={styles.previewImage}
+                    resizeMode="contain"
+                  />
+                ) : isPdfFile(payload.filename) ? (
+                  <WebView
+                    source={{ uri: baseS3Url + payload.s3_path }}
+                    style={styles.pdfPreview}
+                    javaScriptEnabled={true}
+                  />
+                ) : (
+                  <View>
+                    <Ionicons name="document-outline" size={40} color="#666" />
+                    <Text style={styles.fileName}>{payload.filename}</Text>
+                    <Text style={styles.fileSize}>
+                      {formatFileSize(payload.file.size)}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
             <View style={styles.btnsContainer}>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
-                onPress={() => setUploadFileModalVisible(false)}
+                onPress={() => setIsPreviewModalVisible(false)}
               >
-                <Text style={styles.textStyle}>Save</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.button, styles.buttonUpload]}
-                onPress={pickDocument}
-              >
-                <Text style={[styles.textStyle, styles.uploadBtnText]}>
-                  Upload receipt
-                </Text>
+                <Text style={styles.textStyle}>Close</Text>
               </Pressable>
             </View>
           </View>
@@ -323,9 +391,8 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   uploadContent: {
-    height: 262,
+    minHeight: 200,
     width: "100%",
-    backgroundColor: "#F5F5F5",
     borderRadius: 8,
     marginBlock: 10,
     justifyContent: "center",
@@ -418,5 +485,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#666",
     marginTop: 2,
+  },
+  previewImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 8,
+  },
+  pdfPreview: {
+    width: "100%",
+    height: 400,
+    borderRadius: 8,
   },
 });
