@@ -17,6 +17,7 @@ import DefaultModal from "@/components/DefaultModal";
 interface EditExpenseDrawerProps {
   reportId: string;
   selectedExpense: any;
+  exchangeRates: any;
   setSelectedExpense: (expense: any) => void;
   onDeleteExpense: (expenseId: string) => void;
   onEditExpense: (expense: any) => void;
@@ -28,6 +29,7 @@ export default function EditExpenseDrawer({
   setSelectedExpense,
   onDeleteExpense,
   onEditExpense,
+  exchangeRates
 }: EditExpenseDrawerProps) {
   const [newPayload, setNewPayload] = useState<any>();
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
@@ -57,6 +59,9 @@ export default function EditExpenseDrawer({
         }
       }
       setErrors({ ...errors, ...newErrors });
+      if (!isValidate) {
+        return;
+      }
       const response = await reportService.updateReportItem(
         reportId,
         selectedExpense.id,
@@ -77,10 +82,7 @@ export default function EditExpenseDrawer({
     setSelectedExpense(null);
   };
   return (
-    <DefaultModal
-      isVisible={selectedExpense !== null}
-      onClose={handleClose}
-    >
+    <DefaultModal isVisible={selectedExpense !== null} onClose={handleClose}>
       <View style={styles.editModalContainer}>
         <Text style={styles.modalTitle}>Edit Expense</Text>
 
@@ -90,6 +92,7 @@ export default function EditExpenseDrawer({
               payload={newPayload}
               setPayload={setNewPayload}
               errors={errors}
+              exchangeRates={exchangeRates}
             />
           </ScrollView>
         )}

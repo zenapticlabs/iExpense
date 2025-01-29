@@ -3520,6 +3520,11 @@ expo-constants@~17.0.0, expo-constants@~17.0.3, expo-constants@~17.0.4:
     "@expo/config" "~10.0.8"
     "@expo/env" "~0.4.1"
 
+expo-document-picker@~13.0.2:
+  version "13.0.2"
+  resolved "https://registry.yarnpkg.com/expo-document-picker/-/expo-document-picker-13.0.2.tgz#75168c214ba03588a85e612300b82aa484b765ec"
+  integrity sha512-Ssnmgx6OTsFEBOx5ktVyJmD5q+7pnGvPRrBHppiJYwX65cREVZuuJ8xAPhoqPHYn65+4WjaxS1lP2rDkSsMo8w==
+
 expo-file-system@~18.0.4:
   version "18.0.4"
   resolved "https://registry.npmjs.org/expo-file-system/-/expo-file-system-18.0.4.tgz"

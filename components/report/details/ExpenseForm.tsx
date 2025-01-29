@@ -19,35 +19,31 @@ interface ExpenseFormExpenseFormProps {
   payload: any;
   errors: any;
   setPayload: (value: any) => void;
+  exchangeRates: any
 }
 
 export default function ExpenseFormExpenseForm({
   payload,
   setPayload,
   errors,
+  exchangeRates
 }: ExpenseFormExpenseFormProps) {
   const [convertedCurrency, setConvertedCurrency] = useState("usd");
   const [convertedAmount, setConvertedAmount] = useState(0);
   const [isUploadFileModalVisible, setUploadFileModalVisible] = useState(false);
-  const [exchangeRates, setExchangeRates] = useState<any>({});
-
-  useEffect(() => {
-    const fetchExchangeRates = async () => {
-      const response = await commonService.getExchangeRates();
-      setExchangeRates(response);
-    };
-    fetchExchangeRates();
-  }, []);
 
   useEffect(() => {
     if (payload.receipt_currency && payload.receipt_amount) {
+      console.log(exchangeRates);
+      console.log(exchangeRates[convertedCurrency.toUpperCase()]);
+      console.log(exchangeRates[payload.receipt_currency?.toUpperCase()])
       const convertedAmount =
         (exchangeRates[convertedCurrency.toUpperCase()] /
           exchangeRates[payload.receipt_currency?.toUpperCase()]) *
         payload.receipt_amount;
       setConvertedAmount(convertedAmount);
     }
-  }, [payload.receipt_currency, payload.receipt_amount, convertedCurrency]);
+  }, [payload, payload.receipt_currency, payload.receipt_amount, convertedCurrency]);
 
   const pickDocument = async () => {
     try {

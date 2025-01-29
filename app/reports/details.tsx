@@ -23,6 +23,7 @@ import { ReportStatusBgColor } from "@/utils/UtilData";
 import ReportStepper from "@/components/ReportStepper";
 import SubmitConfirmDrawer from "@/components/report/details/SubmitConfirmDrawer";
 import LoadingScreen from "@/components/LoadingScreen";
+import commonService from "@/services/commonService";
 
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
@@ -34,6 +35,15 @@ export default function ExpenseDetails() {
     useState(false);
   const [isSubmitModalVisible, setIsSubmitModalVisible] = useState(false);
   const [reportItems, setReportItems] = useState<any[]>([]);
+  const [exchangeRates, setExchangeRates] = useState<any>({});
+
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      const response = await commonService.getExchangeRates();
+      setExchangeRates(response);
+    };
+    fetchExchangeRates();
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -230,6 +240,7 @@ export default function ExpenseDetails() {
         isVisible={isModalVisible}
         reportId={id as string}
         onClose={() => setIsModalVisible(false)}
+        exchangeRates={exchangeRates}
         onAddExpense={(reportItem) =>
           setReportItems([...reportItems, reportItem])
         }
@@ -241,6 +252,7 @@ export default function ExpenseDetails() {
         setSelectedExpense={setSelectedExpense}
         onDeleteExpense={handleDeleteExpense}
         onEditExpense={handleEditExpense}
+        exchangeRates={exchangeRates}
       />
 
       <DeleteReportDrawer
