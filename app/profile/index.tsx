@@ -229,11 +229,11 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 12,
-    color: "#64748B",
+    color: "#1e1e1e",
     marginTop: 4,
     fontFamily: "SFProDisplay",
   },
   activeTab: {
-    color: "#1E3A8A",
+    color: "#1e1e1e",
   },
 });

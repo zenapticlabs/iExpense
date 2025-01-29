@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import React from "react";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Link, router, Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { IExpense, IReport } from "@/constants/types";
@@ -218,7 +218,7 @@ export default function ExpenseDetails() {
       )}
       <View style={styles.tabBar}>
         <View style={[styles.tabItem]}>
-          <Ionicons name="document-text" size={24} color="#1E3A8A" />
+          <Ionicons name="document-text" size={24} color="#1e1e1e" />
           <Text style={styles.tabText}>Reports</Text>
         </View>
         <View style={styles.tabItem}>
@@ -230,10 +230,12 @@ export default function ExpenseDetails() {
             <Ionicons name="add" size={24} color="white" />
           </Pressable>
         </View>
-        <View style={styles.tabItem}>
-          <Ionicons name="person-outline" size={24} color="#64748B" />
-          <Text style={styles.tabText}>My Profile</Text>
-        </View>
+        <Link href="/profile" asChild style={styles.tabItem}>
+          <View style={styles.tabItem}>
+            <Ionicons name="person-outline" size={24} color="#64748B" />
+            <Text style={styles.tabText}>My Profile</Text>
+          </View>
+        </Link>
       </View>
 
       <CreateNewExpenseDrawer
@@ -460,7 +462,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   tabAddButton: {
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#1e1e1e",
     width: 48,
     height: 48,
     borderRadius: 24,

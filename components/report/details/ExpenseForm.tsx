@@ -19,14 +19,14 @@ interface ExpenseFormExpenseFormProps {
   payload: any;
   errors: any;
   setPayload: (value: any) => void;
-  exchangeRates: any
+  exchangeRates: any;
 }
 
 export default function ExpenseFormExpenseForm({
   payload,
   setPayload,
   errors,
-  exchangeRates
+  exchangeRates,
 }: ExpenseFormExpenseFormProps) {
   const [convertedCurrency, setConvertedCurrency] = useState("usd");
   const [convertedAmount, setConvertedAmount] = useState(0);
@@ -36,14 +36,19 @@ export default function ExpenseFormExpenseForm({
     if (payload.receipt_currency && payload.receipt_amount) {
       console.log(exchangeRates);
       console.log(exchangeRates[convertedCurrency.toUpperCase()]);
-      console.log(exchangeRates[payload.receipt_currency?.toUpperCase()])
+      console.log(exchangeRates[payload.receipt_currency?.toUpperCase()]);
       const convertedAmount =
         (exchangeRates[convertedCurrency.toUpperCase()] /
           exchangeRates[payload.receipt_currency?.toUpperCase()]) *
         payload.receipt_amount;
       setConvertedAmount(convertedAmount);
     }
-  }, [payload, payload.receipt_currency, payload.receipt_amount, convertedCurrency]);
+  }, [
+    payload,
+    payload.receipt_currency,
+    payload.receipt_amount,
+    convertedCurrency,
+  ]);
 
   const pickDocument = async () => {
     try {
@@ -173,6 +178,19 @@ export default function ExpenseFormExpenseForm({
             </View>
           </View>
         )}
+        {payload?.filename && (
+          <View style={styles.selectedFileContainer}>
+            <View style={styles.fileIconContainer}>
+              <Ionicons name="document-outline" size={24} color="#666" />
+            </View>
+            <View style={styles.fileDetailsContainer}>
+              <Text style={styles.fileNameText}>{payload.filename}</Text>
+              {/* <Text style={styles.fileSizeText}>
+                {formatFileSize(payload.file.size)}
+              </Text> */}
+            </View>
+          </View>
+        )}
         <TouchableOpacity
           style={styles.uploadContainer}
           onPress={() => setUploadFileModalVisible(true)}
@@ -218,7 +236,7 @@ export default function ExpenseFormExpenseForm({
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setUploadFileModalVisible(false)}
               >
-                <Text style={styles.textStyle}>Cancel</Text>
+                <Text style={styles.textStyle}>Save</Text>
               </Pressable>
               <Pressable
                 style={[styles.button, styles.buttonUpload]}

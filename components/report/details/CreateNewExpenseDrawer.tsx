@@ -21,7 +21,7 @@ import DefaultModal from "@/components/DefaultModal";
 interface CreateNewExpenseDrawerProps {
   isVisible: boolean;
   reportId: string;
-  exchangeRates: any,
+  exchangeRates: any;
   onClose: () => void;
   onAddExpense: (reportItem: any) => void;
 }
@@ -38,7 +38,7 @@ export default function CreateNewExpenseDrawer({
   onClose,
   onAddExpense,
   reportId,
-  exchangeRates
+  exchangeRates,
 }: CreateNewExpenseDrawerProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -180,7 +180,7 @@ export default function CreateNewExpenseDrawer({
           payload={payload}
           setPayload={setPayload}
           errors={errors}
-          exchangeRates
+          exchangeRates={exchangeRates}
         />
       </ScrollView>
       <View style={styles.buttonContainer}>
