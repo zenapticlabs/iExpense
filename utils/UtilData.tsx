@@ -19,13 +19,8 @@ export const ReportStatusTextColor = (status: string) => {
 };
 
 export const ReportTypes = [
-  { label: "Mobiles", value: "Mobiles" },
-  { label: "Appliances", value: "Appliances" },
-  { label: "Cameras", value: "Cameras" },
-  { label: "Computers", value: "Computers" },
-  { label: "Vegetables", value: "Vegetables" },
-  { label: "Diary Products", value: "Diary Products" },
-  { label: "Drinks", value: "Drinks" },
+  { label: "Domestic", value: "Domestic" },
+  { label: "International", value: "International" },
 ];
 
 export const ReportPreferences = [
