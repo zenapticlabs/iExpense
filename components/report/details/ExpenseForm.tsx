@@ -13,6 +13,7 @@ import CurrencyDropdown from "@/components/CurrencyDropdown";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import commonService from "@/services/commonService";
+import * as DocumentPicker from "expo-document-picker";
 
 interface ExpenseFormExpenseFormProps {
   payload: any;
@@ -37,6 +38,7 @@ export default function ExpenseFormExpenseForm({
     };
     fetchExchangeRates();
   }, []);
+
   useEffect(() => {
     if (payload.receipt_currency && payload.receipt_amount) {
       const convertedAmount =
@@ -46,6 +48,34 @@ export default function ExpenseFormExpenseForm({
       setConvertedAmount(convertedAmount);
     }
   }, [payload.receipt_currency, payload.receipt_amount, convertedCurrency]);
+
+  const pickDocument = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ["image/*", "application/pdf"], // Allows images and PDFs
+        multiple: false,
+      });
+
+      if (result.assets && result.assets[0]) {
+        const file = result.assets[0];
+        console.log(file);
+        setPayload({
+          ...payload,
+          file: file,
+        });
+      }
+    } catch (err) {
+      console.error("Error picking document:", err);
+    }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
 
   return (
     <View style={{ flexDirection: "column", gap: 16 }}>
@@ -133,6 +163,20 @@ export default function ExpenseFormExpenseForm({
       </View>
       <View>
         <Text style={Styles.generalInputLabel}>Attached receipt</Text>
+
+        {payload?.file && (
+          <View style={styles.selectedFileContainer}>
+            <View style={styles.fileIconContainer}>
+              <Ionicons name="document-outline" size={24} color="#666" />
+            </View>
+            <View style={styles.fileDetailsContainer}>
+              <Text style={styles.fileNameText}>{payload.file.name}</Text>
+              <Text style={styles.fileSizeText}>
+                {formatFileSize(payload.file.size)}
+              </Text>
+            </View>
+          </View>
+        )}
         <TouchableOpacity
           style={styles.uploadContainer}
           onPress={() => setUploadFileModalVisible(true)}
@@ -142,7 +186,7 @@ export default function ExpenseFormExpenseForm({
         </TouchableOpacity>
       </View>
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={isUploadFileModalVisible}
         onRequestClose={() =>
@@ -152,7 +196,27 @@ export default function ExpenseFormExpenseForm({
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalUploadTitle}>Uploaded receipt</Text>
-            <View style={styles.uploadContent}></View>
+            <View style={styles.uploadContent}>
+              {payload?.file ? (
+                <View style={styles.fileInfoContainer}>
+                  <Ionicons name="document-outline" size={40} color="#666" />
+                  <Text style={styles.fileName}>{payload.file.name}</Text>
+                  <Text style={styles.fileSize}>
+                    {formatFileSize(payload.file.size)}
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.emptyUploadContent}>
+                  <Ionicons
+                    name="cloud-upload-outline"
+                    size={40}
+                    color="#666"
+                  />
+                  <Text style={styles.uploadText}>No file selected</Text>
+                </View>
+              )}
+            </View>
+
             <View style={styles.btnsContainer}>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
@@ -162,7 +226,7 @@ export default function ExpenseFormExpenseForm({
               </Pressable>
               <Pressable
                 style={[styles.button, styles.buttonUpload]}
-                onPress={() => setUploadFileModalVisible(false)}
+                onPress={pickDocument}
               >
                 <Text style={[styles.textStyle, styles.uploadBtnText]}>
                   Upload receipt
@@ -247,9 +311,32 @@ const styles = StyleSheet.create({
   uploadContent: {
     height: 262,
     width: "100%",
-    backgroundColor: "#DDDDDD",
+    backgroundColor: "#F5F5F5",
     borderRadius: 8,
     marginBlock: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fileInfoContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  fileName: {
+    fontSize: 16,
+    color: "#1e1e1e",
+    marginTop: 12,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  fileSize: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 4,
+  },
+  emptyUploadContent: {
+    alignItems: "center",
+    justifyContent: "center",
   },
   btnsContainer: {
     display: "flex",
@@ -287,5 +374,35 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 17,
     fontFamily: "SFProDisplay",
+  },
+  selectedFileContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: "#F5F5F5",
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  fileIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fileDetailsContainer: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  fileNameText: {
+    fontSize: 14,
+    color: "#1e1e1e",
+    fontWeight: "500",
+  },
+  fileSizeText: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 2,
   },
 });

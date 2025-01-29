@@ -27,9 +27,7 @@ interface CreateNewExpenseDrawerProps {
 
 const initialPayload = {
   receipt_currency: "usd",
-  filename: "test_filename",
-  s3_path: "test_s3_path",
-  expense_date: "2025-01-21",
+  expense_date: new Date().toISOString().split("T")[0],
   justification: "",
   note: "",
 };
@@ -67,9 +65,29 @@ export default function CreateNewExpenseDrawer({
       }
       setErrors({ ...errors, ...newErrors });
       if (!isValidate) return;
-      const response = await reportService.createReportItem(payload, reportId);
+
+      const { file, ...rest } = payload;
+
+      const prePayload = {
+        ...rest,
+        filename: payload.file.name,
+      };
+      const response = await reportService.createReportItem(
+        prePayload,
+        reportId
+      );
+      const presigned_url = response.presigned_url;
+
+      await fetch(presigned_url, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
+
       onAddExpense(response);
-      onClose();
+      handleClose();
     } catch (error) {
       console.error("Error creating report item:", error);
     }
