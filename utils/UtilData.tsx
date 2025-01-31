@@ -1,9 +1,11 @@
+export const BASE_URL = "https://expense-management-server.vercel.app/api";
+
 export const ReportStatusBgColor = (status: string): string => {
   const colors = {
     Submitted: "#eae4c7",
     Approved: "#c7e3ea",
     Paid: "#d7e3d0",
-    Open: "#E4E4E4"
+    Open: "#E4E4E4",
   };
   return colors[status as keyof typeof colors] || colors.Submitted;
 };
@@ -13,7 +15,7 @@ export const ReportStatusTextColor = (status: string) => {
     Submitted: "#4f440f",
     Approved: "#0f404c",
     Paid: "#1b350d",
-    Open: "#1E1E1E"
+    Open: "#1E1E1E",
   };
   return colors[status as keyof typeof colors] || colors.Submitted;
 };
@@ -63,15 +65,17 @@ export enum ExpenseType {
   telephoneSupplies = "Telephone - Supplies",
   tips = "Tips",
   travelAgentFee = "Travel Agent Fee",
-  marketingDevelopment = "Marketing Development"
+  marketingDevelopment = "Marketing Development",
 }
 
-const WarningMessages = {
-  approvedRequisition: "Approved Requisition is required for this expense type. Enter Requisition number in Justification Field",
+export const WarningMessages = {
+  approvedRequisition:
+    "Approved Requisition is required for this expense type. Enter Requisition number in Justification Field",
   preApproval: "Pre-approval required, include approved form with receipts",
   mustPurchase: "Must include approved Purchase Requisition number",
-  mustETA: "Must include approved ETA number. Enter ETA number in Justification field"
-}
+  mustETA:
+    "Must include approved ETA number. Enter ETA number in Justification field",
+};
 
 export const WarningMessagesByType: any = {
   [ExpenseType.airlineClubMembershipDues]: WarningMessages.approvedRequisition,
@@ -86,4 +90,67 @@ export const WarningMessagesByType: any = {
   [ExpenseType.seminarsTraining]: WarningMessages.mustETA,
   [ExpenseType.prepaidExpenseFutureMonths]: WarningMessages.preApproval,
   [ExpenseType.marketingDevelopment]: WarningMessages.approvedRequisition,
-}
+};
+
+export const ExpenseDetailsInfos: any = {
+  [ExpenseType.airlineClubMembershipDues]: {
+    justificationRequired: true,
+    receiptRequired: false,
+    errorMessage: WarningMessages.approvedRequisition,
+  },
+  [ExpenseType.automobile]: {
+    justificationRequired: true,
+    receiptRequired: false,
+    errorMessage: WarningMessages.preApproval,
+  },
+  [ExpenseType.companySponsorVPDF]: {
+    justificationRequired: false,
+    receiptRequired: true,
+    errorMessage: WarningMessages.preApproval,
+  },
+  [ExpenseType.customerGifts]: {
+    justificationRequired: false,
+    receiptRequired: true,
+    errorMessage: WarningMessages.preApproval,
+  },
+  [ExpenseType.dataProcessingDisksManual]: {
+    justificationRequired: false,
+    receiptRequired: true,
+    errorMessage: WarningMessages.preApproval,
+  },
+  [ExpenseType.entertainment]: {
+    justificationRequired: true,
+    receiptRequired: false,
+    errorMessage: WarningMessages.approvedRequisition,
+  },
+  [ExpenseType.fieldEngineerSupplies]: {
+    justificationRequired: true,
+    receiptRequired: false,
+    errorMessage: WarningMessages.approvedRequisition,
+  },
+  [ExpenseType.officeSupplies]: {
+    justificationRequired: false,
+    receiptRequired: false,
+    errorMessage: WarningMessages.mustPurchase,
+  },
+  [ExpenseType.otherMarketingExpenses]: {
+    justificationRequired: true,
+    receiptRequired: false,
+    errorMessage: WarningMessages.approvedRequisition,
+  },
+  [ExpenseType.seminarsTraining]: {
+    justificationRequired: true,
+    receiptRequired: false,
+    errorMessage: WarningMessages.mustETA,
+  },
+  [ExpenseType.prepaidExpenseFutureMonths]: {
+    justificationRequired: true,
+    receiptRequired: false,
+    errorMessage: WarningMessages.preApproval,
+  },
+  [ExpenseType.marketingDevelopment]: {
+    justificationRequired: true,
+    receiptRequired: false,
+    errorMessage: WarningMessages.approvedRequisition,
+  },
+};

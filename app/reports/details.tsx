@@ -50,8 +50,6 @@ export default function ExpenseDetails() {
     fetchData();
   }, [id]);
 
-  useEffect(() => {}, [id]);
-
   const fetchReportItems = async () => {
     const data = await reportService.getReportItems(id as string);
     setReportItems(data);
@@ -188,10 +186,16 @@ export default function ExpenseDetails() {
                   onPress={() => handleExpensePress(reportItem)}
                 >
                   <View>
-                    <Text style={styles.expenseItemTitle} className="font-sfpro">
+                    <Text
+                      style={styles.expenseItemTitle}
+                      className="font-sfpro"
+                    >
                       {reportItem.expense_type}
                     </Text>
-                    <Text style={styles.expenseItemAmount} className="font-sfpro">
+                    <Text
+                      style={styles.expenseItemAmount}
+                      className="font-sfpro"
+                    >
                       ${reportItem.receipt_amount}
                     </Text>
                     <Text style={styles.expenseItemDate} className="font-sfpro">

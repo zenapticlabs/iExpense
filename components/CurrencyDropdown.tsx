@@ -88,7 +88,7 @@ const CurrencyDropdown = ({
             <Text style={{ marginRight: 10 }}>
               <CountryFlag isoCode={item.countryCode} size={16} />
             </Text>
-            <Text style={{ fontFamily: "SFProDisplay", fontSize: 15 }}>
+            <Text style={{ fontFamily: "SFProDisplay", fontSize: 16 }}>
               {item.label}
             </Text>
           </View>
