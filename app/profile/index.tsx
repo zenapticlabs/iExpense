@@ -7,6 +7,7 @@ import Divider from "@/components/Divider";
 import CurrencyDropdown from "@/components/CurrencyDropdown";
 import { useEffect, useState } from "react";
 import { authService } from "@/services/authService";
+import BottomNavBar from "@/components/BottomNavBar";
 
 export default function ProfileScreen() {
   const { signOut } = useAuth();
@@ -77,21 +78,7 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
       </ScrollView>
-      <View style={styles.tabBar}>
-        <Link href="/reports" asChild style={styles.tabItem}>
-          <View>
-            <Ionicons name="document-text-outline" size={24} color="#64748B" />
-            <Text style={styles.tabText}>Reports</Text>
-          </View>
-        </Link>
-        <View style={styles.addButton}>
-          <Ionicons name="add" size={24} color="white" />
-        </View>
-        <View style={styles.tabItem}>
-          <Ionicons name="person" size={24} color="#1e1e1e" />
-          <Text style={[styles.tabText, styles.activeTab]}>My Profile</Text>
-        </View>
-      </View>
+      <BottomNavBar page="profile" />
     </View>
   );
 }

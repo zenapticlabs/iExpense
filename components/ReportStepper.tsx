@@ -81,10 +81,13 @@ const ReportStepper = ({ report }: ReportStepperProps) => {
                 styles.stepText,
                 index < stepIndex && styles.completedStepText,
               ]}
+              className="font-sfpro"
             >
               {step.label}
             </Text>
-            <Text style={styles.stepDate}>{getStepDate(step, index)}</Text>
+            <Text style={styles.stepDate} className="font-sfpro">
+              {getStepDate(step, index)}
+            </Text>
           </View>
           {index < STEPS.length - 1 && (
             <View

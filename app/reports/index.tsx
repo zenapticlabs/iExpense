@@ -19,6 +19,7 @@ import LoadingScreen from "@/components/LoadingScreen";
 import SelectDataRangePicker, {
   DATE_OPTIONS,
 } from "@/components/report/SelectDataRangePicker";
+import BottomNavBar from "@/components/BottomNavBar";
 
 const ReportItem = ({ report }: { report: IReport }) => (
   <Link href={`/reports/details?id=${report.id}`} asChild>
@@ -119,26 +120,10 @@ export default function ReportsScreen() {
           ))}
         </ScrollView>
       )}
-      <View style={styles.tabBar}>
-        <View style={[styles.tabItem]}>
-          <Ionicons name="document-text" size={24} color="#1e1e1e" />
-          <Text style={styles.tabText}>Reports</Text>
-        </View>
-        <View style={styles.tabItem}>
-          <Pressable
-            style={styles.addButton}
-            onPress={() => setIsNewReportDrawerVisible(true)}
-          >
-            <Ionicons name="add" size={24} color="white" />
-          </Pressable>
-        </View>
-        <Link href="/profile" asChild style={styles.tabItem}>
-          <View>
-            <Ionicons name="person-outline" size={24} color="#64748B" />
-            <Text style={styles.tabText}>My Profile</Text>
-          </View>
-        </Link>
-      </View>
+      <BottomNavBar
+        onNewReport={() => setIsNewReportDrawerVisible(true)}
+        page="reports"
+      />
       <NewReportDrawer
         isVisible={isNewReportDrawerVisible}
         onClose={() => setIsNewReportDrawerVisible(false)}
@@ -153,7 +138,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     backgroundColor: "white",
-    paddingHorizontal: 20,
   },
   header: {
     flexDirection: "row",
@@ -162,6 +146,7 @@ export const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 24,
     height: 40,
+    paddingHorizontal: 20,
   },
   logo: {
     height: 24,
@@ -177,6 +162,7 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
+    paddingHorizontal: 20,
   },
   title: {
     fontSize: 22,
@@ -188,13 +174,15 @@ export const styles = StyleSheet.create({
   reportList: {
     gap: 16,
     flex: 1,
+    flexDirection: "column",
+    paddingHorizontal: 20,
   },
   reportItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 16,
     borderRadius: 8,
-    minHeight: 134,
+    marginBottom: 12,
     boxShadow: "0px 2px 15px 0px rgba(0, 0, 0, 0.07)",
     shadowColor: "#000",
     shadowOffset: {
@@ -320,25 +308,27 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     borderTopWidth: 1,
     borderTopColor: "#E2E8F0",
-    paddingVertical: 8,
+    paddingTop: 12,
     backgroundColor: "white",
+    paddingBottom: 24,
   },
   tabItem: {
     alignItems: "center",
   },
   addButton: {
     backgroundColor: "#1e1e1e",
-    width: 48,
-    height: 48,
+    width: 42,
+    height: 42,
     borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    marginBottom: 8,
   },
   tabText: {
     fontSize: 12,
     color: "#64748B",
     marginTop: 4,
+    fontFamily: "SFProDisplay",
   },
   activeTab: {
     color: "#1E3A8A",

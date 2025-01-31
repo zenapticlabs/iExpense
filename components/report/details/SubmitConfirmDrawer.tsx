@@ -26,27 +26,27 @@ export default function SubmitConfirmDrawer({
   return (
     <DefaultModal isVisible={isVisible} onClose={onClose}>
       <View style={styles.deleteModalContent}>
-        <Text style={styles.deleteModalTitle}>
+        <Text style={styles.deleteModalTitle} className="font-sfpro">
           Are you sure you want to submit this report?
         </Text>
 
         <View style={styles.deleteModalDetails}>
           <View style={styles.submitDetailsTitleContainer}>
-            <Text style={styles.submitDetailsPurposeLabel}>
+            <Text style={styles.submitDetailsPurposeLabel} className="font-sfpro">
               {report?.purpose}
             </Text>
-            <Text style={styles.submitDetailsNumberLabel}>
+            <Text style={styles.submitDetailsNumberLabel} className="font-sfpro">
               #{report?.report_number}
             </Text>
           </View>
-          <Text style={styles.submitDetailsAmountLabel}>
+          <Text style={styles.submitDetailsAmountLabel} className="font-sfpro">
             ${report?.report_amount}
           </Text>
           <View>
-            <Text style={styles.submitDetailsDateLabel}>
+            <Text style={styles.submitDetailsDateLabel} className="font-sfpro">
               Submission: {formatDate(report?.report_submit_date as string)}
             </Text>
-            <Text style={styles.submitDetailsDateLabel}>
+            <Text style={styles.submitDetailsDateLabel} className="font-sfpro">
               Approval: {formatDate(report?.integration_date as string)}
             </Text>
           </View>
@@ -57,7 +57,9 @@ export default function SubmitConfirmDrawer({
             style={styles.deleteModalCancelButton}
             onPress={onClose}
           >
-            <Text style={styles.deleteModalCancelText}>Cancel</Text>
+            <Text style={styles.deleteModalCancelText} className="font-sfpro">
+              Cancel
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
@@ -66,7 +68,9 @@ export default function SubmitConfirmDrawer({
             ]}
             onPress={onSubmit}
           >
-            <Text style={styles.deleteModalConfirmText}>Yes, submit</Text>
+            <Text style={styles.deleteModalConfirmText} className="font-sfpro">
+              Yes, submit
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
