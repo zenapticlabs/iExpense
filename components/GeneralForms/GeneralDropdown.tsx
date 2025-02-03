@@ -47,8 +47,10 @@ export default function GeneralDropdown({
       valueField="value"
       onChange={(item) => onChange(item.value)}
       value={value}
-      style={Styles.generalInput}
+      style={styles.dropdown}
       containerStyle={styles.dropdownContainer}
+      selectedTextStyle={styles.selectedTextStyle}
+      itemTextStyle={styles.itemTextStyle}
     />
   );
 }
@@ -65,12 +67,22 @@ export const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 12,
-    fontSize: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
+    width: "100%",
+    color: "#1E1E1E",
+    fontSize: 14,
   },
   dropdownContainer: {
     width: "100%",
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    fontFamily: "SFProDisplay",
+  },
+  itemTextStyle: {
+    fontSize: 16,
+    fontFamily: "SFProDisplay",
   },
   input: {
     borderWidth: 1,
