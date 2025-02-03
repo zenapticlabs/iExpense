@@ -17,6 +17,8 @@ import ReceiptAmountForm from "../../GeneralForms/ReceiptAmountForm";
 import { ExpenseDetailsInfos, WarningMessages } from "@/utils/UtilData";
 import GeneralUploadForm from "../../GeneralForms/GeneralUploadPanel";
 import { reportService } from "@/services/reportService";
+import { formatDate } from "@/utils/UtilFunctions";
+import { Calendar } from "react-native-calendars";
 
 interface CreateNewExpenseDrawerProps {
   isVisible: boolean;
@@ -127,14 +129,44 @@ export default function CreateNewExpenseDrawer({
                 rules={{ required: "Date is required" }}
                 defaultValue={new Date().toISOString().split("T")[0]}
                 render={({ field: { onChange, onBlur, value } }) => {
+                  const [showDatePicker, setShowDatePicker] = useState(false);
+                  const handleDateSelect = (day: any) => {
+                    onChange(day.dateString);
+                    setShowDatePicker(false);
+                  };
                   return (
-                    <TextInput
-                      className="border border-[#ccc] rounded-lg font-sfpro text-base text-[#1E1E1E] px-4 py-2.5"
-                      onBlur={onBlur}
-                      onChangeText={onChange}
-                      value={value}
-                      editable={false}
-                    />
+                    <View>
+                      <Pressable
+                        className="border border-[#ccc] rounded-lg font-sfpro text-base text-[#1E1E1E] px-4 py-2.5"
+                        onPress={() => {
+                          setShowDatePicker(true);
+                        }}
+                      >
+                        <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
+                          {formatDate(value)}
+                        </Text>
+                      </Pressable>
+                      <DefaultModal
+                        isVisible={showDatePicker}
+                        onClose={() => setShowDatePicker(false)}
+                      >
+                        <View className="bg-white rounded-lg p-4 mx-5">
+                          <Calendar
+                            onDayPress={handleDateSelect}
+                            markedDates={{
+                              [value]: {
+                                selected: true,
+                                selectedColor: "#1E3A8A",
+                              },
+                            }}
+                            theme={{
+                              todayTextColor: "#1E3A8A",
+                              selectedDayBackgroundColor: "#1E3A8A",
+                            }}
+                          />
+                        </View>
+                      </DefaultModal>
+                    </View>
                   );
                 }}
               />
