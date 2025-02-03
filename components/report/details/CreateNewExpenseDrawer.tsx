@@ -74,13 +74,24 @@ export default function CreateNewExpenseDrawer({
       ?.receiptRequired;
 
   const onSubmit = async (data: any) => {
+    const { file, ...rest } = data;
     const payload = {
-      ...data,
+      ...rest,
+      filename: file?.name,
       expense_type: expenseType,
       origin_destination: `${data?.origin}_${data?.destination}`,
     };
     try {
       const response = await reportService.createReportItem(payload, reportId);
+      if (response?.presigned_url && file) {
+        await fetch(response.presigned_url, {
+          method: 'PUT',
+          body: file,
+          headers: {
+            'Content-Type': file.type,
+          },
+        });
+      }
       onAddExpense(response);
       handleClose();
     } catch (error) {
