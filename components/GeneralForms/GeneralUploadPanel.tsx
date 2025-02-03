@@ -36,7 +36,7 @@ export default function GeneralUploadForm({
   required,
 }: GeneralUploadFormProps) {
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
-
+  const [uploadedFileUrl, setUploadedFileUrl] = useState("");
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
@@ -100,8 +100,11 @@ export default function GeneralUploadForm({
   const handlePreviewModal = async () => {
     setIsPreviewModalVisible(true);
     if (reportId) {
-      const response = await reportService.downloadReceipt(reportId, formValues?.id);
-      console.log(response.presigned_url);
+      const response = await reportService.downloadReceipt(
+        reportId,
+        formValues?.id
+      );
+      setUploadedFileUrl(response.presigned_url);
     }
   };
   return (
@@ -201,6 +204,23 @@ export default function GeneralUploadForm({
                     </Text>
                   </View>
                 )}
+              </View>
+            )}
+            {uploadedFileUrl && (
+              <View className="min-h-[200px] w-full rounded-lg my-2.5 justify-center items-center">
+                {isImageFile(uploadedFileUrl) ? (
+                  <Image
+                    source={{ uri: uploadedFileUrl }}
+                    className="w-full h-full rounded-lg"
+                    resizeMode="contain"
+                  />
+                ) : isPdfFile(uploadedFileUrl) ? (
+                  <WebView
+                    source={{ uri: uploadedFileUrl }}
+                    className="w-full h-[400px] rounded-lg"
+                    javaScriptEnabled={true}
+                  />
+                ) : null}
               </View>
             )}
             <View className="flex flex-row justify-between w-full mt-4 gap-4 items-center">

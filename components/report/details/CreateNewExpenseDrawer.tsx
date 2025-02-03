@@ -86,9 +86,9 @@ export default function CreateNewExpenseDrawer({
       if (response?.presigned_url && file) {
         await fetch(response.presigned_url, {
           method: 'PUT',
-          body: file,
+          body: file.file,
           headers: {
-            'Content-Type': file.type,
+            'Content-Type': file.mimeType,
           },
         });
       }
