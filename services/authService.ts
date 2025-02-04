@@ -71,4 +71,42 @@ export const authService = {
       throw "Invalid login credentials";
     }
   },
+
+  async addCreditCard(
+    cardNumber: string,
+    expirationDate: string
+  ): Promise<any> {
+    const { access } = await storage.getAuthData();
+    const response = await axios.post(
+      `${BASE_URL}/auth/credit-card`,
+      {
+        card_number: cardNumber,
+        expiration_date: expirationDate,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${access}`,
+        },
+      }
+    );
+    return response.data;
+  },
+  async getCreditCard(): Promise<any> {
+    const { access } = await storage.getAuthData();
+    const response = await axios.get(`${BASE_URL}/auth/credit-card`, {
+      headers: {
+        Authorization: `Bearer ${access}`,
+      },
+    });
+    return response.data;
+  },
+  async deleteCreditCard(): Promise<any> {
+    const { access } = await storage.getAuthData();
+    const response = await axios.delete(`${BASE_URL}/auth/credit-card`, {
+      headers: {
+        Authorization: `Bearer ${access}`,
+      },
+    });
+    return response.data;
+  },
 };
