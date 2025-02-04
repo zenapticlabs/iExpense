@@ -20,6 +20,7 @@ import DefaultModal from "@/components/DefaultModal";
 import { formatDate } from "@/utils/UtilFunctions";
 import { Calendar } from "react-native-calendars";
 import { useForm, Controller } from "react-hook-form";
+import ChangePasswordDrawer from "@/components/profile/ChangePasswordDrawer";
 
 export default function ProfileScreen() {
   const {
@@ -34,6 +35,7 @@ export default function ProfileScreen() {
   const [user, setUser] = useState<any>(null);
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] =
     useState(false);
+  const [changePasswordVisible, setChangePasswordVisible] = useState(false);
   const handleLogout = async () => {
     await signOut();
   };
@@ -191,12 +193,13 @@ export default function ProfileScreen() {
           <Divider />
 
           <View className="flex-1 items-center mt-5">
-            <Link
-              href="/auth"
+            <Pressable
+              onPress={() => setChangePasswordVisible(true)}
               className="text-[#5B5B5B] mb-4 underline text-lg font-sfpro"
             >
-              Forgot password?
-            </Link>
+              Change password
+            </Pressable>
+
             <Pressable onPress={handleLogout}>
               <Text className="text-[#E12020] underline mt-4 mb-4 text-lg font-sfpro">
                 Logout
@@ -206,6 +209,12 @@ export default function ProfileScreen() {
         </ScrollView>
         <BottomNavBar page="profile" />
       </View>
+
+      <ChangePasswordDrawer
+        isVisible={changePasswordVisible}
+        onClose={() => setChangePasswordVisible(false)}
+      />
+
       <DefaultModal
         isVisible={deleteConfirmationVisible}
         onClose={() => setDeleteConfirmationVisible(false)}

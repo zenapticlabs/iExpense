@@ -124,4 +124,25 @@ export const authService = {
     );
     return response.data;
   },
+  async changePassword(oldPassword: string, newPassword: string): Promise<any> {
+    try {
+      const { access } = await storage.getAuthData();
+      const response = await axios.patch(
+        `${BASE_URL}/auth/reset-password`,
+
+        {
+          current_password: oldPassword,
+          new_password: newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${access}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      throw error;
+    }
+  },
 };
