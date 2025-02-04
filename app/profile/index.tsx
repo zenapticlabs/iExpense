@@ -68,6 +68,11 @@ export default function ProfileScreen() {
     setDeleteConfirmationVisible(false);
   };
 
+  const handleChangeCurrency = async (currency: string) => {
+    const response = await authService.changeCurrency(currency);
+    setUser(response);
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View style={styles.container}>
@@ -155,7 +160,7 @@ export default function ProfileScreen() {
             <Text style={styles.sectionTitle}>Default concurrency</Text>
             <CurrencyDropdown
               value={user?.currency.toLowerCase()}
-              onChange={() => {}}
+              onChange={(currency) => handleChangeCurrency(currency)}
             />
           </View>
 

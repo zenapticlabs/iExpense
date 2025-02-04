@@ -109,4 +109,19 @@ export const authService = {
     });
     return response.data;
   },
+  async changeCurrency(currency: string): Promise<any> {
+    const { access } = await storage.getAuthData();
+    const response = await axios.patch(
+      `${BASE_URL}/auth/me`,
+      {
+        currency,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${access}`,
+        },
+      }
+    );
+    return response.data;
+  },
 };
