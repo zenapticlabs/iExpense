@@ -70,11 +70,12 @@ export default function ExpenseDetails() {
     await fetchReport();
     await fetchUserData();
     setLoading(false);
-
   };
 
   const handleExpensePress = (expense: IExpense) => {
-    setSelectedExpense(expense);
+    if (report?.report_status === "Open") {
+      setSelectedExpense(expense);
+    }
   };
 
   const handleReportDelete = async () => {
@@ -221,15 +222,20 @@ export default function ExpenseDetails() {
                   <View style={styles.emptyState}>
                     <Text style={styles.emptyIcon}>📝</Text>
                     <Text style={styles.emptyText}>No expenses</Text>
-                    <Text style={styles.emptySubtext}>
-                      Tap the "+" button and start adding expenses
-                    </Text>
-                    <TouchableOpacity
-                      style={styles.addButton}
-                      onPress={() => setIsModalVisible(true)}
-                    >
-                      <Text style={styles.addButtonText}>Add expense</Text>
-                    </TouchableOpacity>
+                    {report?.report_status === "Open" && (
+                      <>
+                        <Text style={styles.emptySubtext}>
+                          Tap the "+" button and start adding expenses
+                        </Text>
+
+                        <TouchableOpacity
+                          style={styles.addButton}
+                          onPress={() => setIsModalVisible(true)}
+                        >
+                          <Text style={styles.addButtonText}>Add expense</Text>
+                        </TouchableOpacity>
+                      </>
+                    )}
                   </View>
                 )}
               </ScrollView>

@@ -208,7 +208,7 @@ export const reportService = {
 
   async submitReport(reportId: string): Promise<IReport> {
     const accessToken = await authService.getAccessToken();
-    const response = await axios.patch(
+    const response = await axios.post(
       `${BASE_URL}/reports/${reportId}/submit`,
       {},
       {
