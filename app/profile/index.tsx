@@ -75,36 +75,53 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View style={styles.container}>
-        <Text style={styles.header}>My Profile</Text>
+      <View className="flex-1 bg-white">
+        <Text className="text-xl font-semibold text-center mt-8 mb-6 font-sfpro">
+          My Profile
+        </Text>
         <ScrollView>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>User info</Text>
-            <Text style={styles.name}>
+          <View className="my-5 px-5">
+            <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
+              User info
+            </Text>
+            <Text className="text-base font-medium text-[#1e1e1e] font-sfpro">
               {user?.first_name} {user?.last_name}
             </Text>
-            <Text style={styles.department}>{user?.department}</Text>
+            <Text className="text-base text-gray-500 mt-3 font-sfpro">
+              {user?.department}
+            </Text>
           </View>
+
           <Divider />
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Contact details</Text>
-            <View style={styles.contactItem}>
+
+          <View className="my-5 px-5">
+            <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
+              Contact details
+            </Text>
+            <View className="flex-row items-center mb-3">
               <Ionicons
                 name="calendar-clear-outline"
                 size={20}
                 color="#64748B"
               />
-              <Text style={styles.contactText}>{user?.email}</Text>
+              <Text className="ml-3 text-base text-[#1e1e1e] font-sfpro">
+                {user?.email}
+              </Text>
             </View>
-            <View style={styles.contactItem}>
+            <View className="flex-row items-center mb-3">
               <Ionicons name="call-outline" size={20} color="#64748B" />
-              <Text style={styles.contactText}>{user?.phone_number}</Text>
+              <Text className="ml-3 text-base text-[#1e1e1e] font-sfpro">
+                {user?.phone_number}
+              </Text>
             </View>
           </View>
 
           <Divider />
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Saved credit card</Text>
+
+          <View className="my-5 px-5">
+            <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
+              Saved credit card
+            </Text>
             {creditCard?.card_number && (
               <View className="flex-col gap-2 mb-4 mt-2">
                 <View className="flex-row gap-2 items-center justify-between">
@@ -135,29 +152,36 @@ export default function ProfileScreen() {
                 </View>
               </View>
             )}
-            {!creditCard?.card_number && (
+            {!creditCard && (
               <Pressable
-                style={styles.addCardButton}
+                className="flex-row items-center justify-center border border-[#DDDDDD] rounded-lg p-3 h-12"
                 onPress={() => setCreditAddCardVisible(true)}
               >
                 <Ionicons name="add" size={24} color="#5B5B5B" />
-                <Text style={styles.addCardText}>Add credit card</Text>
+                <Text className="ml-2 text-[#1e1e1e] font-bold text-lg font-sfpro">
+                  Add credit card
+                </Text>
               </Pressable>
             )}
-            {creditCard?.card_number && (
+            {creditCard && (
               <Pressable
-                style={styles.addCardButton}
+                className="flex-row items-center justify-center border border-[#DDDDDD] rounded-lg p-3 h-12"
                 onPress={() => setDeleteConfirmationVisible(true)}
               >
                 <Ionicons name="trash-outline" size={24} color="#5B5B5B" />
-                <Text style={styles.addCardText}>Delete credit card</Text>
+                <Text className="ml-2 text-[#1e1e1e] font-bold text-lg font-sfpro">
+                  Delete credit card
+                </Text>
               </Pressable>
             )}
           </View>
 
           <Divider />
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Default concurrency</Text>
+
+          <View className="my-5 px-5">
+            <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
+              Default concurrency
+            </Text>
             <CurrencyDropdown
               value={user?.currency.toLowerCase()}
               onChange={(currency) => handleChangeCurrency(currency)}
@@ -165,12 +189,18 @@ export default function ProfileScreen() {
           </View>
 
           <Divider />
-          <View style={styles.footer}>
-            <Link href="/auth" style={styles.forgotPassword}>
+
+          <View className="flex-1 items-center mt-5">
+            <Link
+              href="/auth"
+              className="text-[#5B5B5B] mb-4 underline text-lg font-sfpro"
+            >
               Forgot password?
             </Link>
             <Pressable onPress={handleLogout}>
-              <Text style={styles.logout}>Logout</Text>
+              <Text className="text-[#E12020] underline mt-4 mb-4 text-lg font-sfpro">
+                Logout
+              </Text>
             </Pressable>
           </View>
         </ScrollView>
@@ -321,145 +351,3 @@ export default function ProfileScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: "600",
-    textAlign: "center",
-    marginTop: 32,
-    marginBottom: 24,
-    fontFamily: "SFProDisplay",
-  },
-  section: {
-    marginVertical: 20,
-    paddingHorizontal: 20,
-  },
-  sectionTitle: {
-    fontSize: 17,
-    color: "#1e1e1e",
-    fontWeight: "700",
-    marginBottom: 12,
-    fontFamily: "SFProDisplay",
-  },
-  name: {
-    fontSize: 15,
-    fontWeight: "500",
-    color: "#1e1e1e",
-    fontFamily: "SFProDisplay",
-  },
-  department: {
-    fontSize: 15,
-    color: "#888888",
-    marginTop: 12,
-    fontFamily: "SFProDisplay",
-  },
-  contactItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  contactText: {
-    marginLeft: 12,
-    fontSize: 15,
-    color: "#1e1e1e",
-    fontFamily: "SFProDisplay",
-  },
-  marginNone: {
-    margin: 0,
-  },
-  addCardButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#DDDDDD",
-    borderRadius: 8,
-    padding: 12,
-    height: 48,
-  },
-  addCardText: {
-    marginLeft: 8,
-    color: "#1e1e1e",
-    fontWeight: "700",
-    fontSize: 17,
-    fontFamily: "SFProDisplay",
-  },
-  currencySelector: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderWidth: 1,
-    borderColor: "#DDDDDD",
-    borderRadius: 8,
-    padding: 12,
-  },
-  currencyOption: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  flag: {
-    width: 20,
-    height: 13,
-    marginRight: 8,
-  },
-  currencyText: {
-    fontSize: 14,
-    color: "#1E1E1E",
-    fontFamily: "SFProDisplay",
-  },
-  footer: {
-    flex: 1,
-    alignItems: "center",
-    marginTop: 20,
-  },
-  forgotPassword: {
-    color: "#5B5B5B",
-    marginBottom: 16,
-    textDecorationLine: "underline",
-    fontSize: 17,
-    fontFamily: "SFProDisplay",
-  },
-  logout: {
-    color: "#E12020",
-    textDecorationLine: "underline",
-    marginTop: 16,
-    marginBottom: 16,
-    fontSize: 17,
-    fontFamily: "SFProDisplay",
-  },
-  tabBar: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    borderTopWidth: 1,
-    borderTopColor: "#E2E8F0",
-    paddingVertical: 8,
-    backgroundColor: "white",
-  },
-  tabItem: {
-    alignItems: "center",
-  },
-  addButton: {
-    backgroundColor: "#1e1e1e",
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 20,
-  },
-  tabText: {
-    fontSize: 12,
-    color: "#1e1e1e",
-    marginTop: 4,
-    fontFamily: "SFProDisplay",
-  },
-  activeTab: {
-    color: "#1e1e1e",
-  },
-});
