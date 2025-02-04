@@ -104,6 +104,11 @@ export default function ExpenseDetails() {
     );
   };
 
+  const handleAddExpenseItemBtnClick = () => {
+    if (report?.report_status === "Open") {
+      setIsModalVisible(true);
+    }
+  };
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View style={styles.container}>
@@ -118,9 +123,11 @@ export default function ExpenseDetails() {
             ),
             headerRight: () => (
               <View style={styles.headerRight}>
-                <TouchableOpacity onPress={() => setIsModalVisible(true)}>
-                  <Ionicons name="add" size={36} color="#000" />
-                </TouchableOpacity>
+                {report?.report_status === "Open" && (
+                  <TouchableOpacity onPress={handleAddExpenseItemBtnClick}>
+                    <Ionicons name="add" size={36} color="#000" />
+                  </TouchableOpacity>
+                )}
                 <TouchableOpacity
                   onPress={() => setIsReportDeleteModalVisible(true)}
                 >
