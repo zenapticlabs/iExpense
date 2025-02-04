@@ -1,4 +1,10 @@
-import { StyleSheet, Pressable, Image, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  Pressable,
+  Image,
+  ScrollView,
+  SafeAreaView,
+} from "react-native";
 import { Link, router } from "expo-router";
 import { Text, View } from "@/components/Themed";
 import { Ionicons } from "@expo/vector-icons";
@@ -27,59 +33,65 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>My Profile</Text>
-      <ScrollView>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>User info</Text>
-          <Text style={styles.name}>
-            {user?.first_name} {user?.last_name}
-          </Text>
-          <Text style={styles.department}>{user?.department}</Text>
-        </View>
-        <Divider />
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Contact details</Text>
-          <View style={styles.contactItem}>
-            <Ionicons name="calendar-clear-outline" size={20} color="#64748B" />
-            <Text style={styles.contactText}>{user?.email}</Text>
+    <SafeAreaView className="flex-1 bg-white">
+      <View style={styles.container}>
+        <Text style={styles.header}>My Profile</Text>
+        <ScrollView>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>User info</Text>
+            <Text style={styles.name}>
+              {user?.first_name} {user?.last_name}
+            </Text>
+            <Text style={styles.department}>{user?.department}</Text>
           </View>
-          <View style={styles.contactItem}>
-            <Ionicons name="call-outline" size={20} color="#64748B" />
-            <Text style={styles.contactText}>{user?.phone_number}</Text>
+          <Divider />
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Contact details</Text>
+            <View style={styles.contactItem}>
+              <Ionicons
+                name="calendar-clear-outline"
+                size={20}
+                color="#64748B"
+              />
+              <Text style={styles.contactText}>{user?.email}</Text>
+            </View>
+            <View style={styles.contactItem}>
+              <Ionicons name="call-outline" size={20} color="#64748B" />
+              <Text style={styles.contactText}>{user?.phone_number}</Text>
+            </View>
           </View>
-        </View>
 
-        <Divider />
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Saved credit card</Text>
-          <Pressable style={styles.addCardButton}>
-            <Ionicons name="add" size={24} color="#5B5B5B" />
-            <Text style={styles.addCardText}>Add credit card</Text>
-          </Pressable>
-        </View>
+          <Divider />
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Saved credit card</Text>
+            <Pressable style={styles.addCardButton}>
+              <Ionicons name="add" size={24} color="#5B5B5B" />
+              <Text style={styles.addCardText}>Add credit card</Text>
+            </Pressable>
+          </View>
 
-        <Divider />
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Default concurrency</Text>
-          <CurrencyDropdown
-            value={user?.currency.toLowerCase()}
-            onChange={() => {}}
-          />
-        </View>
+          <Divider />
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Default concurrency</Text>
+            <CurrencyDropdown
+              value={user?.currency.toLowerCase()}
+              onChange={() => {}}
+            />
+          </View>
 
-        <Divider />
-        <View style={styles.footer}>
-          <Link href="/auth" style={styles.forgotPassword}>
-            Forgot password?
-          </Link>
-          <Pressable onPress={handleLogout}>
-            <Text style={styles.logout}>Logout</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
-      <BottomNavBar page="profile" />
-    </View>
+          <Divider />
+          <View style={styles.footer}>
+            <Link href="/auth" style={styles.forgotPassword}>
+              Forgot password?
+            </Link>
+            <Pressable onPress={handleLogout}>
+              <Text style={styles.logout}>Logout</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+        <BottomNavBar page="profile" />
+      </View>
+    </SafeAreaView>
   );
 }
 
