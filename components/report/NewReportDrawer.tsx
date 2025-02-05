@@ -1,28 +1,17 @@
 import { ReportTypes, ReportPreferences } from "@/utils/UtilData";
-import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
-import {
-  StyleSheet,
-  Pressable,
-  Modal,
-  TextInput,
-  View,
-  Text,
-  Alert,
-  ScrollView,
-} from "react-native";
-import { Dropdown } from "react-native-element-dropdown";
+import { useEffect } from "react";
+import { StyleSheet, Pressable, View, Text, ScrollView } from "react-native";
 import CurrencyDropdown from "../CurrencyDropdown";
 import { ICreateReportPayload } from "@/constants/types";
 import DefaultModal from "../DefaultModal";
-import { Styles } from "@/Styles";
-import { Calendar } from "react-native-calendars";
-import { formatDate } from "@/utils/UtilFunctions";
+import { Controller, useForm } from "react-hook-form";
+import GeneralForm from "../GeneralForms/GeneralForm";
 
 interface NewReportDrawerProps {
   isVisible: boolean;
   onClose: () => void;
   onSave: (report: ICreateReportPayload) => void;
+  haveCreditCard: boolean;
 }
 
 interface FormData {
@@ -33,287 +22,112 @@ interface FormData {
   date: string;
 }
 
+const FormData = [
+  {
+    name: "purpose",
+    label: "Purpose",
+    type: "text",
+    required: true,
+  },
+  {
+    name: "expense_type",
+    label: "Report Type",
+    type: "dropdown",
+    options: ReportTypes,
+    required: true,
+  },
+  {
+    name: "date",
+    label: "Date",
+    type: "date",
+    required: true,
+  },
+  {
+    name: "payment_method",
+    label: "Preference",
+    type: "dropdown",
+    options: ReportPreferences,
+    required: true,
+  },
+];
+
 export default function NewReportDrawer({
   isVisible,
   onClose,
   onSave,
+  haveCreditCard,
 }: NewReportDrawerProps) {
-  const [formData, setFormData] = useState<FormData>({
-    reportType: "",
-    purpose: "",
-    preference: ReportPreferences[0].value,
-    currency: "usd",
-    date: new Date().toISOString().split("T")[0],
-  });
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    watch,
+    setError,
+  } = useForm();
 
-  const [errors, setErrors] = useState<any>();
+  const paymentMethod = watch("payment_method");
 
-  const updateFormField = (field: keyof FormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const validateForm = (): boolean => {
-    const keys = Object.keys(formData);
-    let isValidate = true;
-    const newErrors: any = {};
-    for (let key of keys) {
-      if (formData[key as keyof FormData] === "") {
-        newErrors[key] = "This field is required";
-        isValidate = false;
-      }
+  useEffect(() => {
+    if (paymentMethod === "Credit Card" && !haveCreditCard) {
+      setError("payment_method", {
+        message: "Please add credit card information in the profile",
+      });
     }
-    setErrors(newErrors);
-    return isValidate;
+  }, [paymentMethod, haveCreditCard]);
+
+  const onSubmit = (data: any) => {
+    onSave(data);
   };
 
-  const handleCreateNewReport = async () => {
-    if (!validateForm()) return;
-
-    const newReportData: ICreateReportPayload = {
-      expense_type: formData.reportType,
-      purpose: formData.purpose,
-      payment_method: formData.preference,
-      report_currency: formData.currency,
-      report_amount: 0,
-      report_date: formData.date,
-      error: false,
-    };
-    onSave(newReportData);
-  };
-
-  const handleClose = () => {
-    setErrors({});
-    onClose();
-  };
-
-  const handleDateSelect = (day: any) => {
-    console.log(day);
-    setFormData((prev) => ({ ...prev, date: day.dateString }));
-    setShowDatePicker(false);
-  };
+  useEffect(() => {
+    reset();
+  }, [isVisible]);
 
   return (
-    <DefaultModal isVisible={isVisible} onClose={handleClose}>
-      <View style={styles.newReportDrawer}>
-        <View style={styles.drawerTopDivderContainer}>
-          <View style={styles.drawerTopDivder} />
+    <DefaultModal isVisible={isVisible} onClose={onClose}>
+      <View className="flex-col bg-white px-5 pb-5">
+        <View className="flex-row justify-center items-center pt-4 px-4">
+          <View className="h-1.5 w-8 bg-[#DDDDDD] rounded-md" />
         </View>
-        <Text style={styles.drawerTitle}>New Report</Text>
-        <ScrollView style={styles.formScrollView}>
-          <View style={styles.formContainer}>
-            <View>
-              <Text style={Styles.generalInputLabel}>Purpose</Text>
-              <TextInput
-                style={Styles.generalInput}
-                placeholder="Enter purpose"
-                value={formData.purpose}
-                onChangeText={(value) => updateFormField("purpose", value)}
-              />
-              {errors?.purpose && (
-                <Text className="text-red-500 pl-4 mt-1">
-                  {errors?.purpose}
+        <Text className="text-xl font-semibold mb-4">New Report</Text>
+        <ScrollView className="flex-1">
+          {FormData.map((item) => (
+            <GeneralForm field={item} control={control} errors={errors} />
+          ))}
+          <Controller
+            control={control}
+            name="report_currency"
+            defaultValue="usd"
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View className="">
+                <Text className="font-sfpro text-base font-medium text-[#1E1E1E] mb-1">
+                  Currency
+                  <Text className="text-red-500">*</Text>
                 </Text>
-              )}
-            </View>
-
-            <View>
-              <Text style={Styles.generalInputLabel}>Report Type</Text>
-              <Dropdown
-                data={ReportTypes}
-                labelField="label"
-                valueField="value"
-                onChange={(item) => updateFormField("reportType", item.value)}
-                style={styles.dropdown}
-                containerStyle={styles.dropdownContainer}
-              />
-              {errors?.reportType && (
-                <Text className="text-red-500 pl-4 mt-1">
-                  {errors?.reportType}
-                </Text>
-              )}
-            </View>
-
-            <View>
-              <Text style={Styles.generalInputLabel}>Date</Text>
-              <Pressable
-                style={[styles.inputContainer, Styles.generalInput]}
-                onPress={() => setShowDatePicker(true)}
-              >
-                <Text>{formatDate(formData.date)}</Text>
-                <Ionicons name="calendar-outline" size={16} color="#64748B" />
-              </Pressable>
-            </View>
-
-            <View>
-              <Text style={Styles.generalInputLabel}>Preference</Text>
-              <Dropdown
-                data={ReportPreferences}
-                labelField="label"
-                valueField="value"
-                value={formData.preference}
-                onChange={(item) => updateFormField("preference", item.value)}
-                style={styles.dropdown}
-                containerStyle={styles.dropdownContainer}
-              />
-              {errors?.preference && (
-                <Text className="text-red-500 pl-4 mt-1">
-                  {errors?.preference}
-                </Text>
-              )}
-            </View>
-
-            <View>
-              <Text style={Styles.generalInputLabel}>Default Currency</Text>
-              <CurrencyDropdown
-                value={formData.currency}
-                onChange={(value) => updateFormField("currency", value)}
-              />
-              {errors?.currency && (
-                <Text className="text-red-500 pl-4 mt-1">
-                  {errors?.currency}
-                </Text>
-              )}
-            </View>
-          </View>
+                <CurrencyDropdown value={value} onChange={onChange} />
+              </View>
+            )}
+          />
         </ScrollView>
-        <View style={styles.buttonRow}>
-          <Pressable style={styles.cancelButton} onPress={handleClose}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
+        <View className="flex-row gap-3 mt-3">
+          <Pressable
+            className="flex-1 p-3 rounded-lg items-center bg-[#F1F5F9]"
+            onPress={onClose}
+          >
+            <Text className="text-[#1E293B] font-medium">Cancel</Text>
           </Pressable>
-          <Pressable style={styles.saveButton} onPress={handleCreateNewReport}>
-            <Text style={styles.saveButtonText}>Save</Text>
+          <Pressable
+            className="flex-1 p-3 rounded-lg items-center bg-[#1E3A8A]"
+            onPress={handleSubmit(onSubmit)}
+          >
+            <Text className="text-white font-medium">Save</Text>
           </Pressable>
         </View>
       </View>
-
-      <DefaultModal
-        isVisible={showDatePicker}
-        onClose={() => setShowDatePicker(false)}
-      >
-        <View style={styles.calendarModal}>
-          <Calendar
-            onDayPress={handleDateSelect}
-            markedDates={{
-              [formData.date]: { selected: true, selectedColor: "#1E3A8A" },
-            }}
-            theme={{
-              todayTextColor: "#1E3A8A",
-              selectedDayBackgroundColor: "#1E3A8A",
-            }}
-          />
-        </View>
-      </DefaultModal>
     </DefaultModal>
   );
 }
-
-const styles = StyleSheet.create({
-  inputContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  formScrollView: {
-    flex: 1,
-  },
-  formContainer: {
-    flexDirection: "column",
-    gap: 12,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "flex-end",
-  },
-  newReportDrawer: {
-    flexDirection: "column",
-    backgroundColor: "white",
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  drawerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 16,
-  },
-  drawerTopDivderContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingTop: 16,
-    paddingHorizontal: 16,
-  },
-  drawerTopDivder: {
-    height: 6,
-    width: 32,
-    backgroundColor: "#DDDDDD",
-    borderRadius: 4,
-  },
-  inputLabel: {
-    fontSize: 16,
-    color: "#1E1E1E",
-    marginBottom: 4,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-  },
-  selectInput: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-  },
-  buttonRow: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 12,
-  },
-  cancelButton: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    backgroundColor: "#F1F5F9",
-  },
-  saveButton: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    backgroundColor: "#1E3A8A",
-  },
-  cancelButtonText: {
-    color: "#1E293B",
-    fontWeight: "500",
-  },
-  saveButtonText: {
-    color: "white",
-    fontWeight: "500",
-  },
-  dropdown: {
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 12,
-    width: "100%",
-  },
-  dropdownContainer: {
-    width: "100%",
-  },
-  calendarModal: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 16,
-    marginHorizontal: 20,
-  },
-});

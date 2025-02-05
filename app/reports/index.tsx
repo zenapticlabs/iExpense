@@ -140,6 +140,7 @@ export default function ReportsScreen() {
           isVisible={isNewReportDrawerVisible}
           onClose={() => setIsNewReportDrawerVisible(false)}
           onSave={handleCreateNewReport}
+          haveCreditCard={user?.cc_card}
         />
       </View>
     </SafeAreaView>
