@@ -1,7 +1,7 @@
 import axios from "axios";
 import { authService } from "./authService";
 
-const BASE_URL = "https://expense-management-server.vercel.app/api";
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export interface CommonListItem {
   value: string;
