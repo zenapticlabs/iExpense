@@ -1,4 +1,4 @@
-export const BASE_URL = "https://expense-management-server.vercel.app/api";
+export const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export const ReportStatusBgColor = (status: string): string => {
   const colors = {
