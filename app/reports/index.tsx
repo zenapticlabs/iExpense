@@ -10,7 +10,7 @@ import {
 import { Link, useRouter } from "expo-router";
 import { Text, View } from "@/components/Themed";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ReportStatusBgColor, ReportStatusTextColor } from "@/utils/UtilData";
 import { ICreateReportPayload, IReport } from "@/constants/types";
 import { reportService } from "@/services/reportService";
@@ -63,10 +63,10 @@ const ReportItem = ({ report }: { report: IReport }) => (
 
 export default function ReportsScreen() {
   const [reports, setReports] = useState<IReport[]>([]);
+  const [filteredReports, setFilteredReports] = useState<IReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDataRange] = useState(DATE_OPTIONS[0].value);
   const [user, setUser] = useState<any>(null);
-
   const [isNewReportDrawerVisible, setIsNewReportDrawerVisible] =
     useState(false);
 
@@ -94,10 +94,50 @@ export default function ReportsScreen() {
     }, [])
   );
 
+  useEffect(() => {
+    const filteredReports = reports.filter((report) =>
+      filterByDateRange(new Date(report.created_at), dateRange)
+    );
+    setFilteredReports(filteredReports);
+  }, [dateRange, reports]);
+
   const handleCreateNewReport = async (report: ICreateReportPayload) => {
     const newReport = await reportService.createReport(report);
     setReports([...reports, newReport]);
     setIsNewReportDrawerVisible(false);
+  };
+
+  const filterByDateRange = (date: Date, selectedRange: string) => {
+    const today = new Date();
+    const targetDate = new Date(date);
+
+    switch (selectedRange) {
+      case "last_3_months": {
+        const threeMonthsAgo = new Date();
+        threeMonthsAgo.setMonth(today.getMonth() - 3);
+        return targetDate >= threeMonthsAgo && targetDate <= today;
+      }
+
+      case "last_6_months": {
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(today.getMonth() - 6);
+        return targetDate >= sixMonthsAgo && targetDate <= today;
+      }
+
+      case "this_year": {
+        const startOfYear = new Date(today.getFullYear(), 0, 1);
+        return targetDate >= startOfYear && targetDate <= today;
+      }
+
+      case "last_year": {
+        const startOfLastYear = new Date(today.getFullYear() - 1, 0, 1);
+        const endOfLastYear = new Date(today.getFullYear() - 1, 11, 31);
+        return targetDate >= startOfLastYear && targetDate <= endOfLastYear;
+      }
+
+      default:
+        return true; // If no valid range is selected, include all dates
+    }
   };
 
   return (
@@ -127,10 +167,11 @@ export default function ReportsScreen() {
             style={styles.reportList}
             showsVerticalScrollIndicator={false}
           >
-            {reports.map((report, index) => (
+            {filteredReports.map((report, index) => (
               <ReportItem key={`${report.id}-${index}`} report={report} />
             ))}
           </ScrollView>
+
         )}
         <BottomNavBar
           onNewReport={() => setIsNewReportDrawerVisible(true)}
