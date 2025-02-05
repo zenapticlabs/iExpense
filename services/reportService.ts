@@ -1,7 +1,7 @@
 import { ICreateReportPayload, IReport } from "@/constants/types";
 import { authService } from "./authService";
 import axios from "axios";
-const BASE_URL = "https://expense-management-server.vercel.app/api";
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 interface UpdateReportPayload {
   expense_type: string;
