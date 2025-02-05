@@ -26,7 +26,7 @@ import SubmitConfirmDrawer from "@/components/report/details/SubmitConfirmDrawer
 import LoadingScreen from "@/components/LoadingScreen";
 import commonService from "@/services/commonService";
 import BottomNavBar from "@/components/BottomNavBar";
-
+import { authService } from "@/services/authService";
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
   const [report, setReport] = useState<IReport | null>(null);
@@ -38,6 +38,7 @@ export default function ExpenseDetails() {
   const [isSubmitModalVisible, setIsSubmitModalVisible] = useState(false);
   const [reportItems, setReportItems] = useState<any[]>([]);
   const [exchangeRates, setExchangeRates] = useState<any>({});
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     const fetchExchangeRates = async () => {
@@ -59,11 +60,17 @@ export default function ExpenseDetails() {
     const data = await reportService.getReportById(id as string);
     setReport(data);
   };
+  const fetchUserData = async () => {
+    const data = await authService.getMe();
+    setUser(data);
+  };
   const fetchData = async () => {
     setLoading(true);
     await fetchReportItems();
     await fetchReport();
+    await fetchUserData();
     setLoading(false);
+
   };
 
   const handleExpensePress = (expense: IExpense) => {
@@ -235,6 +242,7 @@ export default function ExpenseDetails() {
           reportId={id as string}
           onClose={() => setIsModalVisible(false)}
           exchangeRates={exchangeRates}
+          defaultCurrency={user?.currency}
           onAddExpense={(reportItem) =>
             setReportItems([...reportItems, reportItem])
           }

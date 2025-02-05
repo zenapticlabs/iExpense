@@ -26,6 +26,7 @@ interface CreateNewExpenseDrawerProps {
   exchangeRates: any;
   onClose: () => void;
   onAddExpense: (reportItem: any) => void;
+  defaultCurrency: string;
 }
 
 const getDefaultFormData = (expenseType: string) => {
@@ -48,6 +49,7 @@ export default function CreateNewExpenseDrawer({
   onAddExpense,
   reportId,
   exchangeRates,
+  defaultCurrency,
 }: CreateNewExpenseDrawerProps) {
   const {
     control,
@@ -85,10 +87,10 @@ export default function CreateNewExpenseDrawer({
       const response = await reportService.createReportItem(payload, reportId);
       if (response?.presigned_url && file) {
         await fetch(response.presigned_url, {
-          method: 'PUT',
+          method: "PUT",
           body: file.file,
           headers: {
-            'Content-Type': file.mimeType,
+            "Content-Type": file.mimeType,
           },
         });
       }
@@ -191,7 +193,9 @@ export default function CreateNewExpenseDrawer({
               control={control}
               errors={errors}
               exchangeRates={exchangeRates}
+              defaultCurrency={defaultCurrency}
             />
+
             {expenseType &&
               getDefaultFormData(expenseType).map((field: any) => (
                 <GeneralForm field={field} control={control} errors={errors} />

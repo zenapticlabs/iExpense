@@ -9,23 +9,28 @@ interface ReceiptAmountFormProps {
   control: any;
   errors: any;
   exchangeRates: any;
+  defaultCurrency: string;
 }
 
 export default function ReceiptAmountForm({
   control,
   errors,
   exchangeRates,
+  defaultCurrency,
 }: ReceiptAmountFormProps) {
-  const [receiptCurrency, setReceiptCurrency] = useState("usd");
+  const [receiptCurrency, setReceiptCurrency] = useState("USD");
   const [receiptAmount, setReceiptAmount] = useState(0);
-  const [convertedCurrency, setConvertedCurrency] = useState("usd");
+  const [convertedCurrency, setConvertedCurrency] = useState("USD");
   const [convertedAmount, setConvertedAmount] = useState(0);
+
+  useEffect(() => {
+    setConvertedCurrency(defaultCurrency);
+  }, [defaultCurrency]);
 
   useEffect(() => {
     if (receiptCurrency && receiptAmount) {
       const convertedAmount =
-        (exchangeRates[convertedCurrency.toUpperCase()] /
-          exchangeRates[receiptCurrency?.toUpperCase()]) *
+        (exchangeRates[convertedCurrency] / exchangeRates[receiptCurrency]) *
         receiptAmount;
       setConvertedAmount(convertedAmount);
     }
@@ -45,7 +50,7 @@ export default function ReceiptAmountForm({
         <Controller
           control={control}
           name="receipt_currency"
-          defaultValue="usd"
+          defaultValue="USD"
           rules={{
             required: true,
           }}
