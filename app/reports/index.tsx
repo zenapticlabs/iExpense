@@ -5,6 +5,7 @@ import {
   Modal,
   TextInput,
   ScrollView,
+  SafeAreaView,
 } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { Text, View } from "@/components/Themed";
@@ -92,44 +93,46 @@ export default function ReportsScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Image
-          source={require("@/assets/images/brand.png")}
-          style={styles.logo}
-        />
-        <Text style={styles.userName}>James Stewart</Text>
-      </View>
-
-      <View style={styles.filterSection}>
-        <Text style={styles.title}>Expense Reports</Text>
-        <SelectDataRangePicker onChange={setDataRange} value={dateRange} />
-      </View>
-
-      {loading ? (
-        <View style={styles.loaderContainer}>
-          <LoadingScreen />
+    <SafeAreaView className="flex-1 bg-white">
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Image
+            source={require("@/assets/images/brand.png")}
+            style={styles.logo}
+          />
+          <Text style={styles.userName}>James Stewart</Text>
         </View>
-      ) : (
-        <ScrollView
-          style={styles.reportList}
-          showsVerticalScrollIndicator={false}
-        >
-          {reports.map((report, index) => (
-            <ReportItem key={`${report.id}-${index}`} report={report} />
-          ))}
-        </ScrollView>
-      )}
-      <BottomNavBar
-        onNewReport={() => setIsNewReportDrawerVisible(true)}
-        page="reports"
-      />
-      <NewReportDrawer
-        isVisible={isNewReportDrawerVisible}
-        onClose={() => setIsNewReportDrawerVisible(false)}
-        onSave={handleCreateNewReport}
-      />
-    </View>
+
+        <View style={styles.filterSection}>
+          <Text style={styles.title}>Expense Reports</Text>
+          <SelectDataRangePicker onChange={setDataRange} value={dateRange} />
+        </View>
+
+        {loading ? (
+          <View style={styles.loaderContainer}>
+            <LoadingScreen />
+          </View>
+        ) : (
+          <ScrollView
+            style={styles.reportList}
+            showsVerticalScrollIndicator={false}
+          >
+            {reports.map((report, index) => (
+              <ReportItem key={`${report.id}-${index}`} report={report} />
+            ))}
+          </ScrollView>
+        )}
+        <BottomNavBar
+          onNewReport={() => setIsNewReportDrawerVisible(true)}
+          page="reports"
+        />
+        <NewReportDrawer
+          isVisible={isNewReportDrawerVisible}
+          onClose={() => setIsNewReportDrawerVisible(false)}
+          onSave={handleCreateNewReport}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 

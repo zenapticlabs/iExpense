@@ -7,6 +7,7 @@ import {
   Pressable,
   Modal,
   ScrollView,
+  SafeAreaView,
 } from "react-native";
 import React from "react";
 import { Link, router, Stack, useLocalSearchParams } from "expo-router";
@@ -96,168 +97,173 @@ export default function ExpenseDetails() {
   };
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          headerLeft: () => (
-            <View style={styles.headerLeft}>
-              <TouchableOpacity onPress={() => router.back()}>
-                <Ionicons name="arrow-back" size={36} color="#000" />
-              </TouchableOpacity>
-            </View>
-          ),
-          headerRight: () => (
-            <View style={styles.headerRight}>
-              <TouchableOpacity onPress={() => setIsModalVisible(true)}>
-                <Ionicons name="add" size={36} color="#000" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setIsReportDeleteModalVisible(true)}
-              >
-                <Ionicons name="trash-outline" size={36} color="#000" />
-              </TouchableOpacity>
-            </View>
-          ),
-        }}
-      />
-      {loading ? (
-        <LoadingScreen />
-      ) : (
-        <>
-          <View style={styles.header}>
-            <View style={styles.titleContainer}>
-              <View style={styles.titleContainer}>
-                <Text style={styles.title}>{report?.purpose}</Text>
-                <Text style={styles.id}>#{report?.report_number}</Text>
+    <SafeAreaView className="flex-1 bg-white">
+      <View style={styles.container}>
+        <Stack.Screen
+          options={{
+            headerLeft: () => (
+              <View style={styles.headerLeft}>
+                <TouchableOpacity onPress={() => router.back()}>
+                  <Ionicons name="arrow-back" size={36} color="#000" />
+                </TouchableOpacity>
               </View>
-              <View
-                style={[
-                  styles.statusBadge,
-                  {
-                    backgroundColor: ReportStatusBgColor(
-                      report?.report_status as string
-                    ),
-                  },
-                ]}
-              >
-                <Text
+            ),
+            headerRight: () => (
+              <View style={styles.headerRight}>
+                <TouchableOpacity onPress={() => setIsModalVisible(true)}>
+                  <Ionicons name="add" size={36} color="#000" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setIsReportDeleteModalVisible(true)}
+                >
+                  <Ionicons name="trash-outline" size={36} color="#000" />
+                </TouchableOpacity>
+              </View>
+            ),
+          }}
+        />
+        {loading ? (
+          <LoadingScreen />
+        ) : (
+          <>
+            <View style={styles.header}>
+              <View style={styles.titleContainer}>
+                <View style={styles.titleContainer}>
+                  <Text style={styles.title}>{report?.purpose}</Text>
+                  <Text style={styles.id}>#{report?.report_number}</Text>
+                </View>
+                <View
                   style={[
-                    styles.statusText,
+                    styles.statusBadge,
                     {
-                      color: ReportStatusTextColor(
+                      backgroundColor: ReportStatusBgColor(
                         report?.report_status as string
                       ),
                     },
                   ]}
-                  className="font-sfpro"
                 >
-                  {report?.report_status}
-                </Text>
+                  <Text
+                    style={[
+                      styles.statusText,
+                      {
+                        color: ReportStatusTextColor(
+                          report?.report_status as string
+                        ),
+                      },
+                    ]}
+                    className="font-sfpro"
+                  >
+                    {report?.report_status}
+                  </Text>
+                </View>
+              </View>
+              <Text style={styles.amount}>${report?.report_amount}</Text>
+              <Text style={styles.dateLabel} className="font-sfpro">
+                Submission: {formatDate(report?.report_submit_date as string)}
+              </Text>
+              <Text style={styles.dateLabel} className="font-sfpro">
+                Approval: {formatDate(report?.integration_date as string)}
+              </Text>
+              <View style={styles.stepperContainer}>
+                <ReportStepper report={report as IReport} />
               </View>
             </View>
-            <Text style={styles.amount}>${report?.report_amount}</Text>
-            <Text style={styles.dateLabel} className="font-sfpro">
-              Submission: {formatDate(report?.report_submit_date as string)}
-            </Text>
-            <Text style={styles.dateLabel} className="font-sfpro">
-              Approval: {formatDate(report?.integration_date as string)}
-            </Text>
-            <View style={styles.stepperContainer}>
-              <ReportStepper report={report as IReport} />
-            </View>
-          </View>
-          {report?.report_status === "Open" && (
-            <TouchableOpacity
-              style={styles.submitButton}
-              onPress={() => setIsSubmitModalVisible(true)}
-            >
-              <Text style={styles.submitButtonText}>Submit Report</Text>
-            </TouchableOpacity>
-          )}
-          <View style={styles.expenseSection}>
-            <Text style={styles.sectionTitle} className="font-sfpro">
-              Expense Items
-            </Text>
-            <ScrollView>
-              {reportItems?.map((reportItem) => (
-                <TouchableOpacity
-                  key={reportItem.id}
-                  style={styles.expenseItem}
-                  onPress={() => handleExpensePress(reportItem)}
-                >
-                  <View>
-                    <Text
-                      style={styles.expenseItemTitle}
-                      className="font-sfpro"
-                    >
-                      {reportItem.expense_type}
-                    </Text>
-                    <Text
-                      style={styles.expenseItemAmount}
-                      className="font-sfpro"
-                    >
-                      ${reportItem.receipt_amount}
-                    </Text>
-                    <Text style={styles.expenseItemDate} className="font-sfpro">
-                      {formatDate(reportItem.expense_date) || ""}
-                    </Text>
-                  </View>
-                  <Ionicons name="chevron-forward" size={24} color="#666" />
-                </TouchableOpacity>
-              ))}
-              {reportItems?.length === 0 && (
-                <View style={styles.emptyState}>
-                  <Text style={styles.emptyIcon}>📝</Text>
-                  <Text style={styles.emptyText}>No expenses</Text>
-                  <Text style={styles.emptySubtext}>
-                    Tap the "+" button and start adding expenses
-                  </Text>
+            {report?.report_status === "Open" && (
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={() => setIsSubmitModalVisible(true)}
+              >
+                <Text style={styles.submitButtonText}>Submit Report</Text>
+              </TouchableOpacity>
+            )}
+            <View style={styles.expenseSection}>
+              <Text style={styles.sectionTitle} className="font-sfpro">
+                Expense Items
+              </Text>
+              <ScrollView>
+                {reportItems?.map((reportItem) => (
                   <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={() => setIsModalVisible(true)}
+                    key={reportItem.id}
+                    style={styles.expenseItem}
+                    onPress={() => handleExpensePress(reportItem)}
                   >
-                    <Text style={styles.addButtonText}>Add expense</Text>
+                    <View>
+                      <Text
+                        style={styles.expenseItemTitle}
+                        className="font-sfpro"
+                      >
+                        {reportItem.expense_type}
+                      </Text>
+                      <Text
+                        style={styles.expenseItemAmount}
+                        className="font-sfpro"
+                      >
+                        ${reportItem.receipt_amount}
+                      </Text>
+                      <Text
+                        style={styles.expenseItemDate}
+                        className="font-sfpro"
+                      >
+                        {formatDate(reportItem.expense_date) || ""}
+                      </Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={24} color="#666" />
                   </TouchableOpacity>
-                </View>
-              )}
-            </ScrollView>
-          </View>
-        </>
-      )}
-      <BottomNavBar page="reports" />
-      <CreateNewExpenseDrawer
-        isVisible={isModalVisible}
-        reportId={id as string}
-        onClose={() => setIsModalVisible(false)}
-        exchangeRates={exchangeRates}
-        onAddExpense={(reportItem) =>
-          setReportItems([...reportItems, reportItem])
-        }
-      />
+                ))}
+                {reportItems?.length === 0 && (
+                  <View style={styles.emptyState}>
+                    <Text style={styles.emptyIcon}>📝</Text>
+                    <Text style={styles.emptyText}>No expenses</Text>
+                    <Text style={styles.emptySubtext}>
+                      Tap the "+" button and start adding expenses
+                    </Text>
+                    <TouchableOpacity
+                      style={styles.addButton}
+                      onPress={() => setIsModalVisible(true)}
+                    >
+                      <Text style={styles.addButtonText}>Add expense</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </ScrollView>
+            </View>
+          </>
+        )}
+        <BottomNavBar page="reports" />
+        <CreateNewExpenseDrawer
+          isVisible={isModalVisible}
+          reportId={id as string}
+          onClose={() => setIsModalVisible(false)}
+          exchangeRates={exchangeRates}
+          onAddExpense={(reportItem) =>
+            setReportItems([...reportItems, reportItem])
+          }
+        />
 
-      <EditExpenseDrawer
-        selectedExpense={selectedExpense}
-        reportId={id as string}
-        setSelectedExpense={setSelectedExpense}
-        onDeleteExpense={handleDeleteExpense}
-        onEditExpense={handleEditExpense}
-        exchangeRates={exchangeRates}
-      />
+        <EditExpenseDrawer
+          selectedExpense={selectedExpense}
+          reportId={id as string}
+          setSelectedExpense={setSelectedExpense}
+          onDeleteExpense={handleDeleteExpense}
+          onEditExpense={handleEditExpense}
+          exchangeRates={exchangeRates}
+        />
 
-      <DeleteReportDrawer
-        isVisible={isReportDeleteModalVisible}
-        onClose={() => setIsReportDeleteModalVisible(false)}
-        onDelete={handleReportDelete}
-        report={report as IReport}
-      />
+        <DeleteReportDrawer
+          isVisible={isReportDeleteModalVisible}
+          onClose={() => setIsReportDeleteModalVisible(false)}
+          onDelete={handleReportDelete}
+          report={report as IReport}
+        />
 
-      <SubmitConfirmDrawer
-        isVisible={isSubmitModalVisible}
-        onClose={() => setIsSubmitModalVisible(false)}
-        onSubmit={handleSubmit}
-        report={report as IReport}
-      />
-    </View>
+        <SubmitConfirmDrawer
+          isVisible={isSubmitModalVisible}
+          onClose={() => setIsSubmitModalVisible(false)}
+          onSubmit={handleSubmit}
+          report={report as IReport}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
