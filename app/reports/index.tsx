@@ -21,6 +21,7 @@ import SelectDataRangePicker, {
   DATE_OPTIONS,
 } from "@/components/report/SelectDataRangePicker";
 import BottomNavBar from "@/components/BottomNavBar";
+import { authService } from "@/services/authService";
 
 const ReportItem = ({ report }: { report: IReport }) => (
   <Link href={`/reports/details?id=${report.id}`} asChild>
@@ -64,6 +65,7 @@ export default function ReportsScreen() {
   const [reports, setReports] = useState<IReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDataRange] = useState(DATE_OPTIONS[0].value);
+  const [user, setUser] = useState<any>(null);
 
   const [isNewReportDrawerVisible, setIsNewReportDrawerVisible] =
     useState(false);
@@ -80,9 +82,15 @@ export default function ReportsScreen() {
     }
   };
 
+  const fetchUserData = async () => {
+    const data = await authService.getMe();
+    setUser(data);
+  };
+
   useFocusEffect(
     useCallback(() => {
       fetchReports();
+      fetchUserData();
     }, [])
   );
 
@@ -100,7 +108,9 @@ export default function ReportsScreen() {
             source={require("@/assets/images/brand.png")}
             style={styles.logo}
           />
-          <Text style={styles.userName}>James Stewart</Text>
+          <Text style={styles.userName}>
+            {user?.first_name} {user?.last_name}
+          </Text>
         </View>
 
         <View style={styles.filterSection}>
