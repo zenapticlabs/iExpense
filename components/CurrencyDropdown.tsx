@@ -21,32 +21,36 @@ const CurrencyDropdown = ({
   const options: Option[] = [
     {
       label: "USD $",
-      value: "usd",
+      value: "USD",
       countryCode: "US",
     },
     {
       label: "CAD $",
-      value: "cad",
+      value: "CAD",
       countryCode: "CA",
     },
+
     {
       label: "JPY ¥",
-      value: "jpy",
+      value: "JPY",
       countryCode: "JP",
     },
+
     {
       label: "EUR €",
-      value: "eur",
+      value: "EUR",
       countryCode: "EU",
     },
+
     {
       label: "GBP £",
-      value: "gbp",
+      value: "GBP",
       countryCode: "GB",
     },
+
     {
       label: "INR ₹",
-      value: "inr",
+      value: "INR",
       countryCode: "IN",
     },
   ];

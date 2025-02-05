@@ -98,7 +98,7 @@ export default function NewReportDrawer({
           <Controller
             control={control}
             name="report_currency"
-            defaultValue="usd"
+            defaultValue="USD"
             rules={{
               required: true,
             }}
