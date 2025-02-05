@@ -16,6 +16,8 @@ import CurrencyDropdown from "../CurrencyDropdown";
 import { ICreateReportPayload } from "@/constants/types";
 import DefaultModal from "../DefaultModal";
 import { Styles } from "@/Styles";
+import { Calendar } from "react-native-calendars";
+import { formatDate } from "@/utils/UtilFunctions";
 
 interface NewReportDrawerProps {
   isVisible: boolean;
@@ -28,6 +30,7 @@ interface FormData {
   purpose: string;
   preference: string;
   currency: string;
+  date: string;
 }
 
 export default function NewReportDrawer({
@@ -40,7 +43,9 @@ export default function NewReportDrawer({
     purpose: "",
     preference: ReportPreferences[0].value,
     currency: "usd",
+    date: new Date().toISOString().split("T")[0],
   });
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [errors, setErrors] = useState<any>();
 
@@ -71,7 +76,7 @@ export default function NewReportDrawer({
       payment_method: formData.preference,
       report_currency: formData.currency,
       report_amount: 0,
-      report_date: new Date().toISOString().split("T")[0],
+      report_date: formData.date,
       error: false,
     };
     onSave(newReportData);
@@ -81,6 +86,13 @@ export default function NewReportDrawer({
     setErrors({});
     onClose();
   };
+
+  const handleDateSelect = (day: any) => {
+    console.log(day);
+    setFormData((prev) => ({ ...prev, date: day.dateString }));
+    setShowDatePicker(false);
+  };
+
   return (
     <DefaultModal isVisible={isVisible} onClose={handleClose}>
       <View style={styles.newReportDrawer}>
@@ -124,8 +136,11 @@ export default function NewReportDrawer({
 
             <View>
               <Text style={Styles.generalInputLabel}>Date</Text>
-              <Pressable style={[styles.inputContainer, Styles.generalInput]}>
-                <Text>Nov 5, 2024</Text>
+              <Pressable
+                style={[styles.inputContainer, Styles.generalInput]}
+                onPress={() => setShowDatePicker(true)}
+              >
+                <Text>{formatDate(formData.date)}</Text>
                 <Ionicons name="calendar-outline" size={16} color="#64748B" />
               </Pressable>
             </View>
@@ -171,6 +186,24 @@ export default function NewReportDrawer({
           </Pressable>
         </View>
       </View>
+
+      <DefaultModal
+        isVisible={showDatePicker}
+        onClose={() => setShowDatePicker(false)}
+      >
+        <View style={styles.calendarModal}>
+          <Calendar
+            onDayPress={handleDateSelect}
+            markedDates={{
+              [formData.date]: { selected: true, selectedColor: "#1E3A8A" },
+            }}
+            theme={{
+              todayTextColor: "#1E3A8A",
+              selectedDayBackgroundColor: "#1E3A8A",
+            }}
+          />
+        </View>
+      </DefaultModal>
     </DefaultModal>
   );
 }
@@ -276,5 +309,11 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     width: "100%",
+  },
+  calendarModal: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 16,
+    marginHorizontal: 20,
   },
 });

@@ -5,6 +5,7 @@ import {
   Switch,
   Pressable,
   Alert,
+  SafeAreaView,
 } from "react-native";
 import { Link } from "expo-router";
 import { useState } from "react";
@@ -56,76 +57,80 @@ export default function AuthScreen() {
     }
   };
   return (
-    <View style={styles.container}>
-      <View style={styles.contentContainer}>
-        <Image
-          source={images.brand}
-          style={styles.image}
-          resizeMode="contain"
-        />
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Sign In</Text>
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
+    <SafeAreaView className="flex-1 bg-white">
+      <View style={styles.container}>
+        <View style={styles.contentContainer}>
+          <Image
+            source={images.brand}
+            style={styles.image}
+            resizeMode="contain"
           />
-          {errors?.email && (
-            <Text className="!text-red-500 mt-1 mb-2">{errors?.email}</Text>
-          )}
-          <Text style={styles.label} className="mt-4">
-            Password
-          </Text>
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-          {errors?.password && (
-            <Text className="!text-red-500 mt-1 mb-2">{errors?.password}</Text>
-          )}
-          <Link href="/auth" style={styles.forgotPassword}>
-            Forgot password?
-          </Link>
-
-          <View style={styles.toggleContainer}>
-            <Switch
-              value={rememberMe}
-              onValueChange={setRememberMe}
-              trackColor={{ false: "#888888", true: "#1E3A8A" }}
-            />
-            <Text style={styles.toggleLabel}>Remember me</Text>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Sign In</Text>
           </View>
-
-          <View style={styles.toggleContainer}>
-            <Switch
-              value={biometricLogin}
-              onValueChange={setBiometricLogin}
-              trackColor={{ false: "#888888", true: "#1E3A8A" }}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
             />
-            <Text style={styles.toggleLabel}>Enable biometric login</Text>
-          </View>
-        </View>
-        <View style={styles.bottomContainer}>
-          <Pressable style={styles.loginButton} onPress={handleSignIn}>
-            <Text style={styles.buttonText}>Login</Text>
-          </Pressable>
-
-          <View style={styles.signupContainer}>
-            <Text style={styles.signupText}>Don't have an account? </Text>
-            <Link href="/auth" style={styles.signupLink}>
-              Sign up
+            {errors?.email && (
+              <Text className="!text-red-500 mt-1 mb-2">{errors?.email}</Text>
+            )}
+            <Text style={styles.label} className="mt-4">
+              Password
+            </Text>
+            <TextInput
+              style={styles.input}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+            {errors?.password && (
+              <Text className="!text-red-500 mt-1 mb-2">
+                {errors?.password}
+              </Text>
+            )}
+            <Link href="/auth" style={styles.forgotPassword}>
+              Forgot password?
             </Link>
+
+            <View style={styles.toggleContainer}>
+              <Switch
+                value={rememberMe}
+                onValueChange={setRememberMe}
+                trackColor={{ false: "#888888", true: "#1E3A8A" }}
+              />
+              <Text style={styles.toggleLabel}>Remember me</Text>
+            </View>
+
+            <View style={styles.toggleContainer}>
+              <Switch
+                value={biometricLogin}
+                onValueChange={setBiometricLogin}
+                trackColor={{ false: "#888888", true: "#1E3A8A" }}
+              />
+              <Text style={styles.toggleLabel}>Enable biometric login</Text>
+            </View>
+          </View>
+          <View style={styles.bottomContainer}>
+            <Pressable style={styles.loginButton} onPress={handleSignIn}>
+              <Text style={styles.buttonText}>Login</Text>
+            </Pressable>
+
+            <View style={styles.signupContainer}>
+              <Text style={styles.signupText}>Don't have an account? </Text>
+              <Link href="/auth" style={styles.signupLink}>
+                Sign up
+              </Link>
+            </View>
           </View>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

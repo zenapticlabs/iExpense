@@ -33,7 +33,8 @@ export default function GeneralForm({
           if (
             field.type === "text" ||
             field.type === "email" ||
-            field.type === "number"
+            field.type === "number" ||
+            field.type === "password"
           ) {
             return (
               <TextInput
@@ -42,6 +43,7 @@ export default function GeneralForm({
                 onChangeText={onChange}
                 value={value}
                 keyboardType={field.type === "number" ? "numeric" : "default"}
+                secureTextEntry={field.type === "password"}
               />
             );
           }

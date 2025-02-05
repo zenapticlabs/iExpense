@@ -10,9 +10,11 @@ interface BottomNavBarProps {
 }
 
 export default function BottomNavBar({ onNewReport, page }: BottomNavBarProps) {
+  const router = useRouter();
+
   return (
     <View className="flex-row justify-around items-center border-t border-[#E2E8F0] pt-3 pb-6 bg-white">
-      <Link href="/reports" asChild>
+      <Pressable onPress={() => router.push("/reports")}>
         <View className="items-center">
           <Ionicons
             name="document-text-outline"
@@ -27,7 +29,7 @@ export default function BottomNavBar({ onNewReport, page }: BottomNavBarProps) {
             Reports
           </Text>
         </View>
-      </Link>
+      </Pressable>
       <View className="items-center">
         <Pressable
           className="bg-[#1e1e1e] w-[42px] h-[42px] rounded-full items-center justify-center mb-2"
@@ -36,7 +38,7 @@ export default function BottomNavBar({ onNewReport, page }: BottomNavBarProps) {
           <Ionicons name="add" size={24} color="white" />
         </Pressable>
       </View>
-      <Link href="/profile" asChild>
+      <Pressable onPress={() => router.push("/profile")}>
         <View className="items-center">
           <Ionicons
             name="person-outline"
@@ -51,7 +53,7 @@ export default function BottomNavBar({ onNewReport, page }: BottomNavBarProps) {
             My Profile
           </Text>
         </View>
-      </Link>
+      </Pressable>
     </View>
   );
 }

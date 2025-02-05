@@ -39,8 +39,10 @@ export default function EditExpenseDrawer({
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = useForm();
 
+  const formValues = watch();
   useEffect(() => {
     reset({
       ...selectedExpense,
@@ -186,6 +188,8 @@ export default function EditExpenseDrawer({
             render={({ field: { onChange, onBlur, value } }) => {
               return (
                 <GeneralUploadForm
+                  reportId={reportId}
+                  formValues={formValues}
                   required={isReceiptRequired}
                   onChange={onChange}
                   value={value}

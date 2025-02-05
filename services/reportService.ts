@@ -224,4 +224,17 @@ export const reportService = {
 
     return response.data;
   },
+  async downloadReceipt(reportId: string, itemId: string): Promise<any> {
+    const accessToken = await authService.getAccessToken();
+    const response = await axios.get(`${BASE_URL}/reports/${reportId}/items/${itemId}/download-receipt`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (response.status !== 200) {
+      throw new Error("Failed to submit report");
+    }
+
+    return response.data;
+  }
 };

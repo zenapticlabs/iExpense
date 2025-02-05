@@ -1,4 +1,4 @@
-import { Image, StyleSheet, ImageBackground } from "react-native";
+import { Image, StyleSheet, ImageBackground, SafeAreaView } from "react-native";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
@@ -9,7 +9,7 @@ export default function AuthScreen() {
     brand: require("@/assets/images/brand.png"),
   };
   return (
-    <View style={styles.mainContainer}>
+    <SafeAreaView style={styles.mainContainer}>
       <ImageBackground
         source={require("../../assets/images/Pattern.png")}
         style={styles.background}
@@ -27,15 +27,13 @@ export default function AuthScreen() {
           </View>
 
           <View style={styles.buttonContainer}>
-            <Link href="/auth/signin" asChild>
-              <View style={styles.loginButton} className="font-sfpro">
-                <Text style={styles.buttonText}>Login</Text>
-              </View>
+            <Link href="/auth/signin" style={styles.loginButton}>
+              <Text style={styles.buttonText}>Login</Text>
             </Link>
           </View>
         </View>
       </ImageBackground>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -83,6 +81,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#17317F", // Dark blue color
     padding: 16,
     borderRadius: 8,
+    textAlign: "center",
     alignItems: "center",
     height: 56,
     fontFamily: "SFProDisplay",
@@ -90,6 +89,5 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 17,
-    fontWeight: "600",
   },
 });
