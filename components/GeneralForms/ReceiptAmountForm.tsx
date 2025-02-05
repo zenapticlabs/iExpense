@@ -10,6 +10,7 @@ interface ReceiptAmountFormProps {
   errors: any;
   exchangeRates: any;
   defaultCurrency: string;
+  disabled?: boolean;
 }
 
 export default function ReceiptAmountForm({
@@ -17,6 +18,7 @@ export default function ReceiptAmountForm({
   errors,
   exchangeRates,
   defaultCurrency,
+  disabled,
 }: ReceiptAmountFormProps) {
   const [receiptCurrency, setReceiptCurrency] = useState("USD");
   const [receiptAmount, setReceiptAmount] = useState(0);
@@ -28,6 +30,7 @@ export default function ReceiptAmountForm({
   }, [defaultCurrency]);
 
   useEffect(() => {
+    console.log(receiptCurrency, receiptAmount, convertedCurrency);
     if (receiptCurrency && receiptAmount) {
       const convertedAmount =
         (exchangeRates[convertedCurrency] / exchangeRates[receiptCurrency]) *
@@ -63,7 +66,11 @@ export default function ReceiptAmountForm({
               onChange(value);
             };
             return (
-              <CurrencyDropdown value={value} onChange={handleCurrencyChange} />
+              <CurrencyDropdown
+                value={value}
+                onChange={handleCurrencyChange}
+                disabled={disabled}
+              />
             );
           }}
         />
@@ -80,17 +87,17 @@ export default function ReceiptAmountForm({
             },
           }}
           render={({ field: { onChange, onBlur, value } }) => {
-            const handleAmountChange = (value: string) => {
+            useEffect(() => {
               setReceiptAmount(parseFloat(value));
-              onChange(value);
-            };
+            }, [value]);
             return (
               <TextInput
                 style={[Styles.generalInput, { flex: 1, marginLeft: 16 }]}
                 placeholder="0.00"
                 keyboardType="decimal-pad"
                 value={value}
-                onChangeText={handleAmountChange}
+                editable={!disabled}
+                onChangeText={onChange}
               />
             );
           }}

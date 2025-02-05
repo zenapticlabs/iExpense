@@ -73,9 +73,7 @@ export default function ExpenseDetails() {
   };
 
   const handleExpensePress = (expense: IExpense) => {
-    if (report?.report_status === "Open") {
-      setSelectedExpense(expense);
-    }
+    setSelectedExpense(expense);
   };
 
   const handleReportDelete = async () => {
@@ -124,15 +122,17 @@ export default function ExpenseDetails() {
             headerRight: () => (
               <View style={styles.headerRight}>
                 {report?.report_status === "Open" && (
-                  <TouchableOpacity onPress={handleAddExpenseItemBtnClick}>
-                    <Ionicons name="add" size={36} color="#000" />
-                  </TouchableOpacity>
+                  <>
+                    <TouchableOpacity onPress={handleAddExpenseItemBtnClick}>
+                      <Ionicons name="add" size={36} color="#000" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setIsReportDeleteModalVisible(true)}
+                    >
+                      <Ionicons name="trash-outline" size={36} color="#000" />
+                    </TouchableOpacity>
+                  </>
                 )}
-                <TouchableOpacity
-                  onPress={() => setIsReportDeleteModalVisible(true)}
-                >
-                  <Ionicons name="trash-outline" size={36} color="#000" />
-                </TouchableOpacity>
               </View>
             ),
           }}
@@ -264,10 +264,12 @@ export default function ExpenseDetails() {
         <EditExpenseDrawer
           selectedExpense={selectedExpense}
           reportId={id as string}
+          reportStatus={report?.report_status as string}
           setSelectedExpense={setSelectedExpense}
           onDeleteExpense={handleDeleteExpense}
           onEditExpense={handleEditExpense}
           exchangeRates={exchangeRates}
+          defaultCurrency={user?.currency}
         />
 
         <DeleteReportDrawer

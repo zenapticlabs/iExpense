@@ -25,6 +25,8 @@ interface GeneralUploadFormProps {
   value: any;
   errors: any;
   required: boolean;
+  disabled?: boolean;
+  setValue?: any;
 }
 
 export default function GeneralUploadForm({
@@ -34,9 +36,12 @@ export default function GeneralUploadForm({
   value,
   errors,
   required,
+  disabled,
+  setValue,
 }: GeneralUploadFormProps) {
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
   const [uploadedFileUrl, setUploadedFileUrl] = useState("");
+
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
@@ -58,7 +63,8 @@ export default function GeneralUploadForm({
       return extension && imageExtensions.includes(extension);
     }
     if (typeof file === "string") {
-      const extension = file.toLowerCase().match(/\.[^.]*$/)?.[0];
+      const urlWithoutParams = file.split("?")?.[0] || file;
+      const extension = urlWithoutParams.toLowerCase().match(/\.[^.]*$/)?.[0];
       return extension && imageExtensions.includes(extension);
     }
     return false;
@@ -104,37 +110,24 @@ export default function GeneralUploadForm({
         reportId,
         formValues?.id
       );
+      console.log(response);
       setUploadedFileUrl(response.presigned_url);
     }
   };
+  const handleRemoveFile = () => {
+    onChange(null);
+    setValue("filename", null);
+    setValue("s3_path", null);
+    setValue("presigned_url", null);
+  };
+
   return (
     <View className="mb-4">
       <Text className="font-sfpro text-base font-medium text-[#1E1E1E] mb-1">
         Attached Receipt
         {required && <Text className="text-red-500">*</Text>}
       </Text>
-      {formValues?.filename && (
-        <Pressable
-          onPress={handlePreviewModal}
-          className="flex flex-row items-center p-3 bg-gray-100 rounded-lg mb-2 active:bg-gray-200"
-        >
-          <View className="w-10 h-10 rounded-lg bg-white justify-center items-center">
-            <Ionicons name="document-outline" size={24} color="#666" />
-          </View>
-          <View className="ml-3 flex-1">
-            <Text className="text-sm text-[#1e1e1e] font-medium">
-              {formValues?.filename}
-            </Text>
-          </View>
-          <Ionicons
-            name="close-circle-outline"
-            size={24}
-            color="#666"
-            onPress={() => onChange(null)}
-          />
-        </Pressable>
-      )}
-      {value && (
+      {value ? (
         <Pressable
           onPress={() => setIsPreviewModalVisible(true)}
           className="flex flex-row items-center p-3 bg-gray-100 rounded-lg mb-2 active:bg-gray-200"
@@ -150,24 +143,51 @@ export default function GeneralUploadForm({
               {formatFileSize(value.size)}
             </Text>
           </View>
-          <Ionicons
-            name="close-circle-outline"
-            size={24}
-            color="#666"
-            onPress={() => onChange(null)}
-          />
+          {!disabled && (
+            <Ionicons
+              name="close-circle-outline"
+              size={24}
+              color="#666"
+              onPress={() => onChange(null)}
+            />
+          )}
         </Pressable>
+      ) : formValues?.filename ? (
+        <Pressable
+          onPress={handlePreviewModal}
+          className="flex flex-row items-center p-3 bg-gray-100 rounded-lg mb-2 active:bg-gray-200"
+        >
+          <View className="w-10 h-10 rounded-lg bg-white justify-center items-center">
+            <Ionicons name="document-outline" size={24} color="#666" />
+          </View>
+          <View className="ml-3 flex-1">
+            <Text className="text-sm text-[#1e1e1e] font-medium">
+              {formValues?.filename}
+            </Text>
+          </View>
+          {!disabled && (
+            <Ionicons
+              name="close-circle-outline"
+              size={24}
+              color="#666"
+              onPress={handleRemoveFile}
+            />
+          )}
+        </Pressable>
+      ) : null}
+      {!disabled && (
+        <TouchableOpacity
+          className="flex p-6 items-center justify-center border border-[#ccc] rounded-lg border-dashed rounded-lg"
+          onPress={handleUpload}
+        >
+          <Ionicons name="cloud-upload-outline" size={24} color="#666" />
+          <Text className="text-base text-[#666] mt-2">Upload file</Text>
+        </TouchableOpacity>
       )}
-      <TouchableOpacity
-        className="flex p-6 items-center justify-center border border-[#ccc] rounded-lg border-dashed rounded-lg"
-        onPress={handleUpload}
-      >
-        <Ionicons name="cloud-upload-outline" size={24} color="#666" />
-        <Text className="text-base text-[#666] mt-2">Upload file</Text>
-      </TouchableOpacity>
       {errors.file && (
         <Text className="text-red-500">{errors.file?.message?.toString()}</Text>
       )}
+
       <Modal
         animationType="fade"
         transparent={true}

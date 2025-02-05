@@ -13,12 +13,14 @@ interface GeneralFormProps {
   field: any;
   control: any;
   errors: any;
+  disabled?: boolean;
 }
 
 export default function GeneralForm({
   field,
   control,
   errors,
+  disabled,
 }: GeneralFormProps) {
   return (
     <View key={field.name} style={{ marginBottom: 10 }}>
@@ -47,6 +49,7 @@ export default function GeneralForm({
                 className="border border-[#ccc] rounded-lg font-sfpro text-base text-[#1E1E1E] px-4 py-2.5"
                 onBlur={onBlur}
                 onChangeText={onChange}
+                editable={!disabled}
                 value={value}
                 keyboardType={field.type === "number" ? "numeric" : "default"}
                 secureTextEntry={field.type === "password"}
@@ -60,8 +63,10 @@ export default function GeneralForm({
                 value={value}
                 onChange={onChange}
                 defaultOptions={field?.options}
+                disabled={disabled}
               />
             );
+
           }
 
           if (field.type === "date") {
@@ -75,7 +80,9 @@ export default function GeneralForm({
                 <Pressable
                   className="border border-[#ccc] rounded-lg font-sfpro text-base text-[#1E1E1E] px-4 py-2.5"
                   onPress={() => {
-                    setShowDatePicker(true);
+                    if (!disabled) {
+                      setShowDatePicker(true);
+                    }
                   }}
                 >
                   <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">

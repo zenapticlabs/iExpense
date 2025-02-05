@@ -13,9 +13,11 @@ interface Option {
 const CurrencyDropdown = ({
   value,
   onChange,
+  disabled,
 }: {
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }) => {
   // Define the data for dropdown options
   const options: Option[] = [
@@ -61,6 +63,7 @@ const CurrencyDropdown = ({
         data={options}
         labelField="label"
         valueField="value"
+        disable={disabled}
         value={value}
         onChange={(item: Option) => {
           onChange(item.value);

@@ -12,6 +12,7 @@ interface GeneralDropdownProps {
   value: string;
   onChange: (value: string) => void;
   defaultOptions?: any[];
+  disabled?: boolean;
 }
 
 export default function GeneralDropdown({
@@ -19,6 +20,7 @@ export default function GeneralDropdown({
   value,
   onChange,
   defaultOptions,
+  disabled,
 }: GeneralDropdownProps) {
   const [options, setOptions] = useState<any[]>([]);
   useEffect(() => {
@@ -51,6 +53,7 @@ export default function GeneralDropdown({
   return (
     <Dropdown
       data={options}
+      disable={disabled}
       labelField="label"
       valueField="value"
       onChange={(item) => onChange(item.value)}
