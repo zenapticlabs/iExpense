@@ -8,7 +8,7 @@ interface ReportStepperProps {
   report: IReport;
 }
 
-type StepState = "Submitted" | "Approved" | "Paid";
+type StepState = "Submitted" | "Approved" | "Paid" | "Rejected";
 
 interface Step {
   number: number;
@@ -17,7 +17,7 @@ interface Step {
   getDate: (report: IReport) => string | null;
 }
 
-const STEPS: Step[] = [
+const DEFAULT_STEPS: Step[] = [
   {
     number: 1,
     label: "Submitted",
@@ -38,11 +38,33 @@ const STEPS: Step[] = [
   },
 ];
 
+const REJECT_STEPS: Step[] = [
+  {
+    number: 1,
+    label: "Submitted",
+    state: "Submitted",
+    getDate: (report) => report?.report_submit_date || null,
+  },
+  {
+    number: 2,
+    label: "Rejected",
+    state: "Rejected",
+    getDate: (report) => report?.integration_date || null,
+  },
+  {
+    number: 3,
+    label: "Paid",
+    state: "Paid",
+    getDate: (report) => report?.integration_date || null,
+  },
+];
+
 const ReportStepper = ({ report }: ReportStepperProps) => {
   if (report?.report_status === "Open") {
     return null;
   }
-
+  const STEPS =
+    report?.report_status === "Rejected" ? REJECT_STEPS : DEFAULT_STEPS;
   const [stepIndex, setStepIndex] = useState(0);
 
   useEffect(() => {
@@ -56,8 +78,26 @@ const ReportStepper = ({ report }: ReportStepperProps) => {
   const getStepIcon = (index: number) => {
     const isCompleted = index <= stepIndex - 1;
     return (
-      <View style={isCompleted ? styles.completedStep : styles.futureStep}>
-        {index + 1}
+      <View
+        className={`w-9 h-9 rounded-full items-center justify-center ${
+          STEPS[index].state === "Rejected"
+            ? "border border-[#E12020] bg-white"
+            : isCompleted
+            ? "bg-[#17317F]"
+            : "border border-[#DDDDDD] bg-white"
+        }`}
+      >
+        <Text
+          className={
+            STEPS[index].state === "Rejected"
+              ? "text-[#E12020]"
+              : isCompleted
+              ? "text-white"
+              : "text-[#1E1E1E]"
+          }
+        >
+          {index + 1}
+        </Text>
       </View>
     );
   };
@@ -71,32 +111,35 @@ const ReportStepper = ({ report }: ReportStepperProps) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-row mt-4 mb-4">
       {STEPS.map((step, index) => (
-        <View key={step.number} style={styles.stepContainer}>
-          <View style={styles.stepIconContainer}>
+        <View key={step.number} className="flex-1 relative items-center">
+          <View className="items-center">
             {getStepIcon(index)}
             <Text
-              style={[
-                styles.stepText,
-                index < stepIndex && styles.completedStepText,
-              ]}
-              className="font-sfpro"
+              className={`mt-2 text-sm font-sfpro ${
+                STEPS[index].state === "Rejected"
+                  ? "text-[#E12020]"
+                  : index < stepIndex
+                  ? "text-[#1E1E1E]"
+                  : "text-[#888888]"
+              }`}
             >
               {step.label}
             </Text>
-            <Text style={styles.stepDate} className="font-sfpro">
+            <Text className="mt-1 text-xs text-[#888888] font-sfpro">
               {getStepDate(step, index)}
             </Text>
           </View>
           {index < STEPS.length - 1 && (
             <View
-              style={[
-                styles.stepLine,
-                index < stepIndex
-                  ? styles.completedLine
-                  : styles.incompleteLine,
-              ]}
+              className={`h-0.5 mx-1 absolute top-[18px] -z-10 translate-x-1/2 -translate-y-1/2 w-full ${
+                STEPS[index].state === "Rejected"
+                  ? "bg-[#DDDDDD]"
+                  : index < stepIndex
+                  ? "bg-[#17317F]"
+                  : "bg-[#DDDDDD]"
+              }`}
             />
           )}
         </View>
@@ -104,93 +147,5 @@ const ReportStepper = ({ report }: ReportStepperProps) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    marginTop: 16,
-    marginBottom: 16,
-  },
-  stepContainer: {
-    flex: 1,
-    position: "relative",
-    alignItems: "center",
-  },
-  stepIconContainer: {
-    alignItems: "center",
-  },
-  completedStep: {
-    width: 36,
-    height: 36,
-    backgroundColor: "#17317F",
-    color: "white",
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  currentStep: {
-    width: 36,
-    height: 36,
-    borderWidth: 1,
-    borderColor: "#fa004f",
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  currentStepInner: {
-    width: 12,
-    height: 12,
-    backgroundColor: "#fa004f",
-    borderRadius: 6,
-  },
-  futureStep: {
-    width: 36,
-    height: 36,
-    borderWidth: 1,
-    borderColor: "#DDDDDD",
-    color: "#1E1E1E",
-    backgroundColor: "#fff",
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  stepLine: {
-    height: 2,
-    marginHorizontal: 4,
-    top: 18,
-    zIndex: -1,
-    transform: [{ translateX: "50%" }, { translateY: "-50%" }],
-    position: "absolute",
-    width: "100%",
-  },
-  completedLine: {
-    backgroundColor: "#17317F",
-  },
-  incompleteLine: {
-    backgroundColor: "#DDDDDD",
-  },
-  stepNumber: {
-    marginTop: 16,
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#ABB7C2",
-  },
-  activeStepNumber: {
-    color: "#fa004f",
-  },
-  stepText: {
-    marginTop: 8,
-    fontSize: 14,
-    color: "#888888",
-  },
-  stepDate: {
-    marginTop: 4,
-    fontSize: 12,
-    color: "#888888",
-  },
-  completedStepText: {
-    color: "#1E1E1E",
-  },
-});
 
 export default ReportStepper;
