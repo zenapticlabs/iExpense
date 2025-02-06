@@ -26,7 +26,7 @@ import SubmitConfirmDrawer from "@/components/report/details/SubmitConfirmDrawer
 import LoadingScreen from "@/components/LoadingScreen";
 import commonService from "@/services/commonService";
 import BottomNavBar from "@/components/BottomNavBar";
-
+import { authService } from "@/services/authService";
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
   const [report, setReport] = useState<IReport | null>(null);
@@ -38,6 +38,7 @@ export default function ExpenseDetails() {
   const [isSubmitModalVisible, setIsSubmitModalVisible] = useState(false);
   const [reportItems, setReportItems] = useState<any[]>([]);
   const [exchangeRates, setExchangeRates] = useState<any>({});
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     const fetchExchangeRates = async () => {
@@ -59,10 +60,15 @@ export default function ExpenseDetails() {
     const data = await reportService.getReportById(id as string);
     setReport(data);
   };
+  const fetchUserData = async () => {
+    const data = await authService.getMe();
+    setUser(data);
+  };
   const fetchData = async () => {
     setLoading(true);
     await fetchReportItems();
     await fetchReport();
+    await fetchUserData();
     setLoading(false);
   };
 
@@ -96,6 +102,11 @@ export default function ExpenseDetails() {
     );
   };
 
+  const handleAddExpenseItemBtnClick = () => {
+    if (report?.report_status === "Open") {
+      setIsModalVisible(true);
+    }
+  };
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View style={styles.container}>
@@ -110,14 +121,18 @@ export default function ExpenseDetails() {
             ),
             headerRight: () => (
               <View style={styles.headerRight}>
-                <TouchableOpacity onPress={() => setIsModalVisible(true)}>
-                  <Ionicons name="add" size={36} color="#000" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setIsReportDeleteModalVisible(true)}
-                >
-                  <Ionicons name="trash-outline" size={36} color="#000" />
-                </TouchableOpacity>
+                {report?.report_status === "Open" && (
+                  <>
+                    <TouchableOpacity onPress={handleAddExpenseItemBtnClick}>
+                      <Ionicons name="add" size={36} color="#000" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setIsReportDeleteModalVisible(true)}
+                    >
+                      <Ionicons name="trash-outline" size={36} color="#000" />
+                    </TouchableOpacity>
+                  </>
+                )}
               </View>
             ),
           }}
@@ -214,15 +229,20 @@ export default function ExpenseDetails() {
                   <View style={styles.emptyState}>
                     <Text style={styles.emptyIcon}>📝</Text>
                     <Text style={styles.emptyText}>No expenses</Text>
-                    <Text style={styles.emptySubtext}>
-                      Tap the "+" button and start adding expenses
-                    </Text>
-                    <TouchableOpacity
-                      style={styles.addButton}
-                      onPress={() => setIsModalVisible(true)}
-                    >
-                      <Text style={styles.addButtonText}>Add expense</Text>
-                    </TouchableOpacity>
+                    {report?.report_status === "Open" && (
+                      <>
+                        <Text style={styles.emptySubtext}>
+                          Tap the "+" button and start adding expenses
+                        </Text>
+
+                        <TouchableOpacity
+                          style={styles.addButton}
+                          onPress={() => setIsModalVisible(true)}
+                        >
+                          <Text style={styles.addButtonText}>Add expense</Text>
+                        </TouchableOpacity>
+                      </>
+                    )}
                   </View>
                 )}
               </ScrollView>
@@ -235,6 +255,7 @@ export default function ExpenseDetails() {
           reportId={id as string}
           onClose={() => setIsModalVisible(false)}
           exchangeRates={exchangeRates}
+          defaultCurrency={user?.currency}
           onAddExpense={(reportItem) =>
             setReportItems([...reportItems, reportItem])
           }
@@ -243,10 +264,12 @@ export default function ExpenseDetails() {
         <EditExpenseDrawer
           selectedExpense={selectedExpense}
           reportId={id as string}
+          reportStatus={report?.report_status as string}
           setSelectedExpense={setSelectedExpense}
           onDeleteExpense={handleDeleteExpense}
           onEditExpense={handleEditExpense}
           exchangeRates={exchangeRates}
+          defaultCurrency={user?.currency}
         />
 
         <DeleteReportDrawer

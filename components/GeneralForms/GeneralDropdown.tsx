@@ -11,38 +11,49 @@ interface GeneralDropdownProps {
   resource: string;
   value: string;
   onChange: (value: string) => void;
+  defaultOptions?: any[];
+  disabled?: boolean;
 }
 
 export default function GeneralDropdown({
   resource,
   value,
   onChange,
+  defaultOptions,
+  disabled,
 }: GeneralDropdownProps) {
   const [options, setOptions] = useState<any[]>([]);
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const accessToken = await authService.getAccessToken();
-        const response = await axios.get(`${BASE_URL}/common/${resource}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        setOptions(
-          response.data.map((item: any) => ({
-            label: item.value,
-            value: item.value,
-          }))
-        );
-      } catch (error) {
-        console.error("Failed to fetch airlines:", error);
-      }
-    };
-    fetchData();
+    if (defaultOptions) {
+      setOptions(defaultOptions);
+    } else {
+      const fetchData = async () => {
+        try {
+          const accessToken = await authService.getAccessToken();
+
+          const response = await axios.get(`${BASE_URL}/common/${resource}`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          setOptions(
+            response.data.map((item: any) => ({
+              label: item.value,
+              value: item.value,
+            }))
+          );
+        } catch (error) {
+          console.error("Failed to fetch airlines:", error);
+        }
+      };
+      fetchData();
+    }
   }, []);
+
   return (
     <Dropdown
       data={options}
+      disable={disabled}
       labelField="label"
       valueField="value"
       onChange={(item) => onChange(item.value)}

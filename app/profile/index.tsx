@@ -185,7 +185,7 @@ export default function ProfileScreen() {
               Default concurrency
             </Text>
             <CurrencyDropdown
-              value={user?.currency.toLowerCase()}
+              value={user?.currency}
               onChange={(currency) => handleChangeCurrency(currency)}
             />
           </View>

@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
@@ -16,23 +17,29 @@ import ReceiptAmountForm from "@/components/GeneralForms/ReceiptAmountForm";
 import { ExpenseDetailsInfos } from "@/utils/UtilData";
 import GeneralUploadForm from "@/components/GeneralForms/GeneralUploadPanel";
 import { FormData } from "../FormData";
+import { formatDate } from "@/utils/UtilFunctions";
+import { Calendar } from "react-native-calendars";
 
 interface EditExpenseDrawerProps {
   reportId: string;
   selectedExpense: any;
+  reportStatus: string;
   exchangeRates: any;
   setSelectedExpense: (expense: any) => void;
   onDeleteExpense: (expenseId: string) => void;
   onEditExpense: (expense: any) => void;
+  defaultCurrency: string;
 }
 
 export default function EditExpenseDrawer({
   reportId,
   selectedExpense,
   setSelectedExpense,
+  reportStatus,
   onDeleteExpense,
   onEditExpense,
   exchangeRates,
+  defaultCurrency,
 }: EditExpenseDrawerProps) {
   const {
     control,
@@ -40,15 +47,18 @@ export default function EditExpenseDrawer({
     formState: { errors },
     reset,
     watch,
+    setValue,
   } = useForm();
 
   const formValues = watch();
   useEffect(() => {
-    reset({
-      ...selectedExpense,
-      origin: selectedExpense?.origin_destination.split("_")[0],
-      destination: selectedExpense?.origin_destination.split("_")[1],
-    });
+    if (selectedExpense) {
+      reset({
+        ...selectedExpense,
+        origin: selectedExpense?.origin_destination.split("_")[0],
+        destination: selectedExpense?.origin_destination.split("_")[1],
+      });
+    }
   }, [selectedExpense]);
 
   const [newPayload, setNewPayload] = useState<any>();
@@ -72,16 +82,31 @@ export default function EditExpenseDrawer({
   };
 
   const onSubmit = async (data: any) => {
+    const { file, ...rest } = data;
     const payload = {
-      ...data,
+      ...rest,
       origin_destination: `${data?.origin}_${data?.destination}`,
     };
+    if (file) {
+      payload.filename = file?.name;
+    }
+    console.log(payload);
     try {
       const response = await reportService.updateReportItem(
         reportId,
         selectedExpense.id,
         payload
       );
+      if (response?.presigned_url && file) {
+        await fetch(response.presigned_url, {
+          method: "PUT",
+          body: file.file,
+          headers: {
+            "Content-Type": file.mimeType,
+          },
+        });
+      }
+
       onEditExpense(response);
       handleClose();
     } catch (error) {
@@ -112,11 +137,13 @@ export default function EditExpenseDrawer({
     ];
   };
 
+  const isDisabled = reportStatus !== "Open";
+
   return (
     <DefaultModal isVisible={selectedExpense !== null} onClose={handleClose}>
       <View className="flex-1 p-4 bg-white">
         <Text className="text-2xl font-semibold mb-5 font-sfpro">
-          Edit Expense
+          {reportStatus === "Open" ? "Edit Expense" : "View Receipt"}
         </Text>
 
         {ExpenseDetailsInfos?.[selectedExpense?.expense_type as string]
@@ -151,14 +178,48 @@ export default function EditExpenseDrawer({
               rules={{ required: "Date is required" }}
               defaultValue={new Date().toISOString().split("T")[0]}
               render={({ field: { onChange, onBlur, value } }) => {
+                const [showDatePicker, setShowDatePicker] = useState(false);
+                const handleDateSelect = (day: any) => {
+                  if (!isDisabled) {
+                    onChange(day.dateString);
+                  }
+                  setShowDatePicker(false);
+                };
                 return (
-                  <TextInput
-                    className="border border-[#ccc] rounded-lg font-sfpro text-base text-[#1E1E1E] px-4 py-2.5"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    editable={false}
-                  />
+                  <View>
+                    <Pressable
+                      className={`border border-[#ccc] rounded-lg font-sfpro text-base text-[#1E1E1E] px-4 py-2.5`}
+                      onPress={() => {
+                        if (!isDisabled) {
+                          setShowDatePicker(true);
+                        }
+                      }}
+                    >
+                      <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
+                        {formatDate(value)}
+                      </Text>
+                    </Pressable>
+                    <DefaultModal
+                      isVisible={showDatePicker}
+                      onClose={() => setShowDatePicker(false)}
+                    >
+                      <View className="bg-white rounded-lg p-4 mx-5">
+                        <Calendar
+                          onDayPress={handleDateSelect}
+                          markedDates={{
+                            [value]: {
+                              selected: true,
+                              selectedColor: "#1E3A8A",
+                            },
+                          }}
+                          theme={{
+                            todayTextColor: "#1E3A8A",
+                            selectedDayBackgroundColor: "#1E3A8A",
+                          }}
+                        />
+                      </View>
+                    </DefaultModal>
+                  </View>
                 );
               }}
             />
@@ -166,17 +227,29 @@ export default function EditExpenseDrawer({
           {FormData?.[
             selectedExpense?.expense_type as keyof typeof FormData
           ]?.fields.map((field) => (
-            <GeneralForm field={field} control={control} errors={errors} />
+            <GeneralForm
+              field={field}
+              control={control}
+              errors={errors}
+              disabled={isDisabled}
+            />
           ))}
           <ReceiptAmountForm
             control={control}
+            defaultCurrency={defaultCurrency}
             errors={errors}
             exchangeRates={exchangeRates}
+            disabled={isDisabled}
           />
           {selectedExpense?.expense_type &&
             getDefaultFormData(selectedExpense?.expense_type).map(
               (field: any) => (
-                <GeneralForm field={field} control={control} errors={errors} />
+                <GeneralForm
+                  field={field}
+                  control={control}
+                  errors={errors}
+                  disabled={isDisabled}
+                />
               )
             )}
           <Controller
@@ -189,33 +262,38 @@ export default function EditExpenseDrawer({
               return (
                 <GeneralUploadForm
                   reportId={reportId}
+                  setValue={setValue}
                   formValues={formValues}
                   required={isReceiptRequired}
                   onChange={onChange}
                   value={value}
                   errors={errors}
+                  disabled={isDisabled}
                 />
               );
             }}
           />
         </ScrollView>
-        <View className="flex-row justify-between mt-5">
-          <TouchableOpacity
-            className="p-4 rounded-lg items-center justify-center border border-red-500 w-14 h-14"
-            onPress={handleDeletePress}
-          >
-            <Ionicons name="trash-outline" size={24} color="red" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="flex-1 ml-3 p-4 rounded-lg items-center bg-blue-900"
-            onPress={handleSubmit(onSubmit)}
-          >
-            <Text className="text-white font-semibold font-sfpro">
-              Save Changes
-            </Text>
-          </TouchableOpacity>
-        </View>
+        {reportStatus === "Open" && (
+          <View className="flex-row justify-between mt-5">
+            <TouchableOpacity
+              className="p-4 rounded-lg items-center justify-center border border-red-500 w-14 h-14"
+              onPress={handleDeletePress}
+            >
+              <Ionicons name="trash-outline" size={24} color="red" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="flex-1 ml-3 p-4 rounded-lg items-center bg-blue-900"
+              onPress={handleSubmit(onSubmit)}
+            >
+              <Text className="text-white font-semibold font-sfpro">
+                Save Changes
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
+
       <DeleteExpenseItemDrawer
         isVisible={isDeleteModalVisible}
         onClose={() => setIsDeleteModalVisible(false)}

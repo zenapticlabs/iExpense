@@ -28,7 +28,9 @@ export default function SelectDataRangePicker({
     <View>
       <Pressable style={styles.filterButton} onPress={() => setIsVisible(true)}>
         <Ionicons name="calendar-clear-outline" size={20} color="#5B5B5B" />
-        <Text style={styles.filterText}>This month</Text>
+        <Text style={styles.filterText}>
+          {DATE_OPTIONS.find((option) => option.value === value)?.label}
+        </Text>
       </Pressable>
       <DefaultModal isVisible={isVisible} onClose={() => setIsVisible(false)}>
         <View style={styles.SelectDataRangePicker}>

@@ -13,40 +13,46 @@ interface Option {
 const CurrencyDropdown = ({
   value,
   onChange,
+  disabled,
 }: {
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }) => {
   // Define the data for dropdown options
   const options: Option[] = [
     {
       label: "USD $",
-      value: "usd",
+      value: "USD",
       countryCode: "US",
     },
     {
       label: "CAD $",
-      value: "cad",
+      value: "CAD",
       countryCode: "CA",
     },
+
     {
       label: "JPY ¥",
-      value: "jpy",
+      value: "JPY",
       countryCode: "JP",
     },
+
     {
       label: "EUR €",
-      value: "eur",
+      value: "EUR",
       countryCode: "EU",
     },
+
     {
       label: "GBP £",
-      value: "gbp",
+      value: "GBP",
       countryCode: "GB",
     },
+
     {
       label: "INR ₹",
-      value: "inr",
+      value: "INR",
       countryCode: "IN",
     },
   ];
@@ -57,6 +63,7 @@ const CurrencyDropdown = ({
         data={options}
         labelField="label"
         valueField="value"
+        disable={disabled}
         value={value}
         onChange={(item: Option) => {
           onChange(item.value);
