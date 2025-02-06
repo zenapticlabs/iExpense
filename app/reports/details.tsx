@@ -8,12 +8,14 @@ import {
   Modal,
   ScrollView,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import React from "react";
 import { Link, router, Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { IExpense, IReport } from "@/constants/types";
+
 import { reportService } from "@/services/reportService";
 import DeleteReportDrawer from "@/components/report/details/DeleteDrawer";
 import CreateNewExpenseDrawer from "@/components/report/details/CreateNewExpenseDrawer";
@@ -27,12 +29,14 @@ import LoadingScreen from "@/components/LoadingScreen";
 import commonService from "@/services/commonService";
 import BottomNavBar from "@/components/BottomNavBar";
 import { authService } from "@/services/authService";
+import PullToRefresh from "react-simple-pull-to-refresh";
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
   const [report, setReport] = useState<IReport | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<IExpense | null>(null);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [isReportDeleteModalVisible, setIsReportDeleteModalVisible] =
     useState(false);
   const [isSubmitModalVisible, setIsSubmitModalVisible] = useState(false);
@@ -108,6 +112,12 @@ export default function ExpenseDetails() {
     if (report?.report_status === "Open") {
       setIsModalVisible(true);
     }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchReportItems();
+    setRefreshing(false);
   };
 
   return (
@@ -198,56 +208,66 @@ export default function ExpenseDetails() {
               <Text style={styles.sectionTitle} className="font-sfpro">
                 Expense Items
               </Text>
-              <ScrollView>
-                {reportItems?.map((reportItem) => (
-                  <TouchableOpacity
-                    key={reportItem.id}
-                    style={styles.expenseItem}
-                    onPress={() => handleExpensePress(reportItem)}
-                  >
-                    <View>
-                      <Text
-                        style={styles.expenseItemTitle}
-                        className="font-sfpro"
+              <ScrollView style={{ flex: 1 }}>
+                <PullToRefresh onRefresh={handleRefresh}>
+                  <>
+                    {reportItems?.map((reportItem) => (
+                      <TouchableOpacity
+                        key={reportItem.id}
+                        style={styles.expenseItem}
+                        onPress={() => handleExpensePress(reportItem)}
                       >
-                        {reportItem.expense_type}
-                      </Text>
-                      <Text
-                        style={styles.expenseItemAmount}
-                        className="font-sfpro"
-                      >
-                        ${reportItem.receipt_amount}
-                      </Text>
-                      <Text
-                        style={styles.expenseItemDate}
-                        className="font-sfpro"
-                      >
-                        {formatDate(reportItem.expense_date) || ""}
-                      </Text>
-                    </View>
-                    <Ionicons name="chevron-forward" size={24} color="#666" />
-                  </TouchableOpacity>
-                ))}
-                {reportItems?.length === 0 && (
-                  <View style={styles.emptyState}>
-                    <Text style={styles.emptyIcon}>📝</Text>
-                    <Text style={styles.emptyText}>No expenses</Text>
-                    {report?.report_status === "Open" && (
-                      <>
-                        <Text style={styles.emptySubtext}>
-                          Tap the "+" button and start adding expenses
-                        </Text>
+                        <View>
+                          <Text
+                            style={styles.expenseItemTitle}
+                            className="font-sfpro"
+                          >
+                            {reportItem.expense_type}
+                          </Text>
+                          <Text
+                            style={styles.expenseItemAmount}
+                            className="font-sfpro"
+                          >
+                            ${reportItem.receipt_amount}
+                          </Text>
+                          <Text
+                            style={styles.expenseItemDate}
+                            className="font-sfpro"
+                          >
+                            {formatDate(reportItem.expense_date) || ""}
+                          </Text>
+                        </View>
+                        <Ionicons
+                          name="chevron-forward"
+                          size={24}
+                          color="#666"
+                        />
+                      </TouchableOpacity>
+                    ))}
+                    {reportItems?.length === 0 && (
+                      <View style={styles.emptyState}>
+                        <Text style={styles.emptyIcon}>📝</Text>
+                        <Text style={styles.emptyText}>No expenses</Text>
+                        {report?.report_status === "Open" && (
+                          <>
+                            <Text style={styles.emptySubtext}>
+                              Tap the "+" button and start adding expenses
+                            </Text>
 
-                        <TouchableOpacity
-                          style={styles.addButton}
-                          onPress={() => setIsModalVisible(true)}
-                        >
-                          <Text style={styles.addButtonText}>Add expense</Text>
-                        </TouchableOpacity>
-                      </>
+                            <TouchableOpacity
+                              style={styles.addButton}
+                              onPress={() => setIsModalVisible(true)}
+                            >
+                              <Text style={styles.addButtonText}>
+                                Add expense
+                              </Text>
+                            </TouchableOpacity>
+                          </>
+                        )}
+                      </View>
                     )}
-                  </View>
-                )}
+                  </>
+                </PullToRefresh>
               </ScrollView>
             </View>
           </>
@@ -649,6 +669,8 @@ export const styles = StyleSheet.create({
   },
   expenseSection: {
     flex: 1,
+    display: "flex",
+    flexDirection: "column",
     padding: 16,
     backgroundColor: "#f5f5f5",
     borderTopWidth: 1,

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   StyleSheet,
   Pressable,
@@ -22,6 +23,7 @@ import SelectDataRangePicker, {
 } from "@/components/report/SelectDataRangePicker";
 import BottomNavBar from "@/components/BottomNavBar";
 import { authService } from "@/services/authService";
+import PullToRefresh from "react-simple-pull-to-refresh";
 
 const ReportItem = ({ report }: { report: IReport }) => (
   <Link href={`/reports/details?id=${report.id}`} asChild>
@@ -72,13 +74,11 @@ export default function ReportsScreen() {
 
   const fetchReports = async () => {
     try {
-      setLoading(true);
       const data = await reportService.getReports();
       setReports(data);
     } catch (error) {
       console.error("Failed to fetch reports:", error);
     } finally {
-      setLoading(false);
     }
   };
 
@@ -89,8 +89,10 @@ export default function ReportsScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      setLoading(true);
       fetchReports();
       fetchUserData();
+      setLoading(false);
     }, [])
   );
 
@@ -107,8 +109,13 @@ export default function ReportsScreen() {
     setIsNewReportDrawerVisible(false);
   };
 
+  const handleRefresh = async () => {
+    await fetchReports();
+  };
+
   const filterByDateRange = (date: Date, selectedRange: string) => {
     const today = new Date();
+
     const targetDate = new Date(date);
 
     switch (selectedRange) {
@@ -167,11 +174,14 @@ export default function ReportsScreen() {
             style={styles.reportList}
             showsVerticalScrollIndicator={false}
           >
-            {filteredReports.map((report, index) => (
-              <ReportItem key={`${report.id}-${index}`} report={report} />
-            ))}
+            <PullToRefresh onRefresh={handleRefresh}>
+              <>
+                {filteredReports.map((report, index) => (
+                  <ReportItem key={`${report.id}-${index}`} report={report} />
+                ))}
+              </>
+            </PullToRefresh>
           </ScrollView>
-
         )}
         <BottomNavBar
           onNewReport={() => setIsNewReportDrawerVisible(true)}
