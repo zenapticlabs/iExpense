@@ -93,13 +93,15 @@ export default function ExpenseDetails() {
   };
 
   const handleDeleteExpense = (expenseId: string) => {
-    setReportItems(reportItems.filter((item) => item.id !== expenseId));
+    fetchData();
   };
 
   const handleEditExpense = (expense: any) => {
-    setReportItems(
-      reportItems.map((item) => (item.id === expense.id ? expense : item))
-    );
+    fetchData();
+  };
+
+  const handleAddExpense = (expense: any) => {
+    fetchData();
   };
 
   const handleAddExpenseItemBtnClick = () => {
@@ -107,6 +109,7 @@ export default function ExpenseDetails() {
       setIsModalVisible(true);
     }
   };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View style={styles.container}>
@@ -256,9 +259,7 @@ export default function ExpenseDetails() {
           onClose={() => setIsModalVisible(false)}
           exchangeRates={exchangeRates}
           defaultCurrency={user?.currency}
-          onAddExpense={(reportItem) =>
-            setReportItems([...reportItems, reportItem])
-          }
+          onAddExpense={handleAddExpense}
         />
 
         <EditExpenseDrawer
