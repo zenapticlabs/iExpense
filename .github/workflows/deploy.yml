@@ -18,8 +18,11 @@ jobs:
         with:
           node-version: 18
 
+      - name: Install lightningcss manually
+        run: npm install lightningcss --legacy-peer-deps
+
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
       
       - name: Create .env File
         run: |
