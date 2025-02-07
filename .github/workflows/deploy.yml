@@ -10,14 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Debug Secrets
-        run: |
-          echo "Checking secrets..."
-          if [[ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]]; then echo "❌ VERCEL_PROJECT_ID is MISSING"; else echo "✅ VERCEL_PROJECT_ID is SET"; fi
-          if [[ -z "${{ secrets.VERCEL_ORG_ID }}" ]]; then echo "❌ VERCEL_ORG_ID is MISSING"; else echo "✅ VERCEL_ORG_ID is SET"; fi
-          if [[ -z "${{ secrets.VERCEL_TOKEN }}" ]]; then echo "❌ VERCEL_TOKEN is MISSING"; else echo "✅ VERCEL_TOKEN is SET"; fi
-          if [[ -z "${{ secrets.EXPO_PUBLIC_API_URL }}" ]]; then echo "❌ EXPO_PUBLIC_API_URL is MISSING"; else echo "✅ VERCEL_TOKEN is SET"; fi
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
