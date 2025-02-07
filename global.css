@@ -6,3 +6,8 @@
   font-family: "SFProDisplay";
 }
 
+body, #root {
+  max-width: 432px;
+  margin: auto;
+  overflow-x: hidden;
+}
