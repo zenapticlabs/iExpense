@@ -10,7 +10,7 @@ interface DefaultModalProps {
 const DefaultModal = ({ isVisible, onClose, children }: DefaultModalProps) => {
   return (
     <Modal
-      animationType="fade" // Options: "slide", "fade", "none"
+      animationType="slide" // Options: "slide", "fade", "none"
       transparent={true} // Makes the background transparent
       visible={isVisible}
       onRequestClose={onClose} // Handles back button on Android
