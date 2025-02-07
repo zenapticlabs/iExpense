@@ -1,4 +1,3 @@
-import { Ionicons } from  "@expo/vector-icons";
 import {
   DarkTheme,
   DefaultTheme,
@@ -26,8 +25,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   let [fontsLoaded] = useFonts({
-    'SFProDisplay': require('../assets/fonts/sfprodisplay-regular.otf'),
-    "Ionicons": require("@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf"),
+    'SFProDisplay': require('../assets/fonts/sfprodisplay-regular.otf')
   });
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
 
