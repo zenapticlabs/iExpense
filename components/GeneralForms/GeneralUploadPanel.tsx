@@ -152,7 +152,7 @@ export default function GeneralUploadForm({
             />
           )}
         </Pressable>
-      ) : formValues?.filename ? (
+      ) : !value && formValues?.filename ? (
         <Pressable
           onPress={handlePreviewModal}
           className="flex flex-row items-center p-3 bg-gray-100 rounded-lg mb-2 active:bg-gray-200"
@@ -195,12 +195,12 @@ export default function GeneralUploadForm({
         onRequestClose={() => setIsPreviewModalVisible(!isPreviewModalVisible)}
       >
         <View className="flex-1 justify-center items-center bg-black/50 absolute h-full w-full z-50">
-          <View className="m-5 bg-white rounded-lg p-6 items-start shadow-lg w-[95%] z-50">
+          <View className="m-5 bg-white rounded-lg p-6 items-start shadow-lg w-[95%] z-50 h-5/6">
             <Text className="text-[22px] font-bold text-[#1e1e1e] leading-[26px] w-full font-['SFProDisplay'] pb-4">
               Uploaded receipt
             </Text>
             {value && (
-              <View className="min-h-[200px] w-full rounded-lg my-2.5 justify-center items-center">
+              <View className="min-h-[200px] w-full rounded-lg my-2.5 justify-center items-center h-5/6">
                 {isImageFile(value) ? (
                   <Image
                     source={{ uri: value.uri }}
@@ -227,7 +227,7 @@ export default function GeneralUploadForm({
               </View>
             )}
             {uploadedFileUrl && (
-              <View className="min-h-[200px] w-full rounded-lg my-2.5 justify-center items-center">
+              <View className="min-h-[200px] w-full rounded-lg my-2.5 justify-center items-center h-5/6">
                 {isImageFile(uploadedFileUrl) ? (
                   <Image
                     source={{ uri: uploadedFileUrl }}

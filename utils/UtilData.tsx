@@ -29,8 +29,7 @@ export const ReportTypes = [
 
 export const ReportPreferences = [
   { label: "Cash", value: "Cash" },
-  { label: "Credit Card", value: "Credit Card" },
-  { label: "Debit Card", value: "Debit Card" },
+  { label: "Credit Card", value: "Credit Card" }
 ];
 
 export enum ExpenseType {
@@ -48,7 +47,7 @@ export enum ExpenseType {
   entertainment = "Entertainment",
   entertainmentLevi = "Entertainment - Levi",
   fieldEngineerSupplies = "Field Engineer Supplies",
-  gas = "GAS",
+  gas = "Gas",
   hotel = "Hotel",
   internetHome = "Internet - Home",
   internetHotelAirplane = "Internet - Hotel/Airplane",

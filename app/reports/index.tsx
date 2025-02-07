@@ -72,6 +72,8 @@ export default function ReportsScreen() {
   const [isNewReportDrawerVisible, setIsNewReportDrawerVisible] =
     useState(false);
 
+  const router = useRouter();
+
   const fetchReports = async () => {
     try {
       const data = await reportService.getReports();
@@ -104,9 +106,14 @@ export default function ReportsScreen() {
   }, [dateRange, reports]);
 
   const handleCreateNewReport = async (report: ICreateReportPayload) => {
-    const newReport = await reportService.createReport(report);
-    setReports([...reports, newReport]);
-    setIsNewReportDrawerVisible(false);
+    try {
+      const newReport = await reportService.createReport(report);
+      setReports([...reports, newReport]);
+      setIsNewReportDrawerVisible(false);
+      router.push(`/reports/details?id=${newReport.id}`);
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   const handleRefresh = async () => {

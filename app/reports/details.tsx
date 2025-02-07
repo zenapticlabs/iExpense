@@ -185,25 +185,28 @@ export default function ExpenseDetails() {
                   </Text>
                 </View>
               </View>
-              <Text style={styles.amount}>${report?.report_amount}</Text>
-              <Text style={styles.dateLabel} className="font-sfpro">
-                Submission: {formatDate(report?.report_submit_date as string)}
-              </Text>
-              <Text style={styles.dateLabel} className="font-sfpro">
-                Approval: {formatDate(report?.integration_date as string)}
-              </Text>
+              <View className="p-2">
+                <Text style={styles.amount}>${report?.report_amount}</Text>
+                <Text style={styles.dateLabel} className="font-sfpro">
+                  Submission: {formatDate(report?.report_submit_date as string)}
+                </Text>
+                <Text style={styles.dateLabel} className="font-sfpro">
+                  Approval: {formatDate(report?.integration_date as string)}
+                </Text>
+              </View>
               <View style={styles.stepperContainer}>
                 <ReportStepper report={report as IReport} />
               </View>
             </View>
-            {report?.report_status === "Open" && (
-              <TouchableOpacity
-                style={styles.submitButton}
-                onPress={() => setIsSubmitModalVisible(true)}
-              >
-                <Text style={styles.submitButtonText}>Submit Report</Text>
-              </TouchableOpacity>
-            )}
+            {!["Submitted", "Approved", "Paid"].includes(report?.report_status as string) &&
+              Number(report?.report_amount) > 0 && (
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={() => setIsSubmitModalVisible(true)}
+                >
+                  <Text style={styles.submitButtonText}>Submit Report</Text>
+                </TouchableOpacity>
+              )}
             <View style={styles.expenseSection}>
               <Text style={styles.sectionTitle} className="font-sfpro">
                 Expense Items
