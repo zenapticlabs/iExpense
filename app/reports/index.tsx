@@ -99,9 +99,14 @@ export default function ReportsScreen() {
   );
 
   useEffect(() => {
-    const filteredReports = reports.filter((report) =>
-      filterByDateRange(new Date(report.created_at), dateRange)
-    );
+    const filteredReports = reports
+      .filter((report) =>
+        filterByDateRange(new Date(report.created_at), dateRange)
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
     setFilteredReports(filteredReports);
   }, [dateRange, reports]);
 
@@ -112,7 +117,7 @@ export default function ReportsScreen() {
       setIsNewReportDrawerVisible(false);
       router.push(`/reports/details?id=${newReport.id}`);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
