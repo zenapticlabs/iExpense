@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Button, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { Modal, Pressable, StyleSheet, View } from "react-native";
 
 interface DefaultModalProps {
   isVisible: boolean;
@@ -40,7 +39,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: "100%",
-    maxHeight: "80%",
+    maxHeight: "90%",
     backgroundColor: "white",
   },
 });

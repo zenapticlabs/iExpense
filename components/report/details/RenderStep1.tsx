@@ -70,7 +70,7 @@ export default function RenderStep1({
 
       <View className="flex-row justify-between mt-5">
         <TouchableOpacity
-          className="flex-1 mr-2 p-4 rounded-lg bg-gray-100"
+          className="flex-1 mr-2 p-2.5 rounded-lg bg-gray-100"
           onPress={handleClose}
         >
           <Text className="text-gray-600 text-lg text-center font-sfpro font-medium">
@@ -78,7 +78,7 @@ export default function RenderStep1({
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className={`flex-1 ml-2 p-4 rounded-lg ${
+          className={`flex-1 ml-2 p-2.5 rounded-lg ${
             !expenseType ? "bg-gray-400" : "bg-blue-900"
           }`}
           onPress={() => expenseType && handleNextStep()}

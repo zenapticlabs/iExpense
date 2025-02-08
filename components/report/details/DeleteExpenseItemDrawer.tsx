@@ -22,18 +22,6 @@ export default function DeleteReportDrawer({
   reportItem,
 }: DeleteReportDrawerProps) {
   return (
-    // <Modal
-    //   animationType="slide"
-    //   transparent={true}
-    //   visible={isVisible}
-    //   onRequestClose={onClose}
-    // >
-    //   <Pressable
-    //     style={styles.deleteModalOverlay}
-    //     onPress={onClose}
-    //   >
-    //   </Pressable>
-    // </Modal>
     <DefaultModal isVisible={isVisible} onClose={onClose}>
       <View style={styles.deleteModalContent}>
         <Text style={styles.deleteModalTitle} className="font-sfpro">

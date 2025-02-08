@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { StyleSheet, Pressable, Modal, View, Text } from "react-native";
+import { StyleSheet, Pressable, View, Text } from "react-native";
 import DefaultModal from "../DefaultModal";
+import SwipeToCloseDrawer from "../SwipeToCloseGesture";
 interface SelectDataRangePickerProps {
   onChange: (dateRange: string) => void;
   value: string;
@@ -33,26 +34,25 @@ export default function SelectDataRangePicker({
         </Text>
       </Pressable>
       <DefaultModal isVisible={isVisible} onClose={() => setIsVisible(false)}>
-        <View style={styles.SelectDataRangePicker}>
-          <View style={styles.drawerTopDivderContainer}>
-            <View style={styles.drawerTopDivder}></View>
+        <SwipeToCloseDrawer onClose={() => setIsVisible(false)}>
+          <View style={styles.SelectDataRangePicker}>
+            <Text style={styles.drawerTitle} className="font-sfpro">
+              Select Date Range
+            </Text>
+            {DATE_OPTIONS.map((option) => (
+              <Pressable
+                key={option.value}
+                style={[
+                  styles.dateOption,
+                  value === option.value && styles.selectedOption,
+                ]}
+                onPress={() => { onChange(option.value); setIsVisible(false); }}
+              >
+                <Text className="font-sfpro">{option.label}</Text>
+              </Pressable>
+            ))}
           </View>
-          <Text style={styles.drawerTitle} className="font-sfpro">
-            Select Date Range
-          </Text>
-          {DATE_OPTIONS.map((option) => (
-            <Pressable
-              key={option.value}
-              style={[
-                styles.dateOption,
-                value === option.value && styles.selectedOption,
-              ]}
-              onPress={() => onChange(option.value)}
-            >
-              <Text className="font-sfpro">{option.label}</Text>
-            </Pressable>
-          ))}
-        </View>
+        </SwipeToCloseDrawer>
       </DefaultModal>
     </View>
   );
