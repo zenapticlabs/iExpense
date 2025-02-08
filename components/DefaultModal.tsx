@@ -10,10 +10,10 @@ interface DefaultModalProps {
 const DefaultModal = ({ isVisible, onClose, children }: DefaultModalProps) => {
   return (
     <Modal
-      animationType="slide" // Options: "slide", "fade", "none"
-      transparent={true} // Makes the background transparent
+      animationType="slide"
+      transparent={true}
       visible={isVisible}
-      onRequestClose={onClose} // Handles back button on Android
+      onRequestClose={onClose}
     >
       <View style={styles.modalContainer}>
         <Pressable style={styles.modalOverlay} onPress={onClose}></Pressable>

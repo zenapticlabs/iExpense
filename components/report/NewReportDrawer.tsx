@@ -86,15 +86,16 @@ export default function NewReportDrawer({
 
   return (
     <DefaultModal isVisible={isVisible} onClose={onClose}>
-      <View className="flex-col bg-white px-5 pb-5">
+      <View className="flex-1 flex-col bg-white px-5 pb-5">
         <View className="flex-row justify-center items-center pt-4 px-4">
           <View className="h-1.5 w-8 bg-[#DDDDDD] rounded-md" />
         </View>
         <Text className="text-xl font-semibold mb-4">New Report</Text>
-        <ScrollView className="flex-1">
+        <ScrollView className="flex-grow min-h-[80vh]">
           {FormData.map((item) => (
             <GeneralForm field={item} control={control} errors={errors} />
           ))}
+
           <Controller
             control={control}
             name="report_currency"
@@ -103,29 +104,24 @@ export default function NewReportDrawer({
               required: true,
             }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <View className="">
+              <View>
                 <Text className="font-sfpro text-base font-medium text-[#1E1E1E] mb-1">
-                  Currency
-                  <Text className="text-red-500">*</Text>
+                  Currency <Text className="text-red-500">*</Text>
                 </Text>
                 <CurrencyDropdown value={value} onChange={onChange} />
               </View>
             )}
           />
         </ScrollView>
-        <View className="flex-row gap-3 mt-3">
-          <Pressable
-            className="flex-1 p-3 rounded-lg items-center bg-[#F1F5F9]"
-            onPress={onClose}
-          >
-            <Text className="text-[#1E293B] font-medium">Cancel</Text>
-          </Pressable>
-          <Pressable
-            className="flex-1 p-3 rounded-lg items-center bg-[#1E3A8A]"
-            onPress={handleSubmit(onSubmit)}
-          >
-            <Text className="text-white font-medium">Save</Text>
-          </Pressable>
+        <View className="absolute bottom-0 left-0 right-0 px-5 pb-5 bg-white">
+          <View className="flex-row gap-3 mt-3">
+            <Pressable className="flex-1 p-3 rounded-lg items-center bg-[#F1F5F9]" onPress={onClose}>
+              <Text className="text-[#1E293B] font-medium">Cancel</Text>
+            </Pressable>
+            <Pressable className="flex-1 p-3 rounded-lg items-center bg-[#1E3A8A]" onPress={handleSubmit(onSubmit)}>
+              <Text className="text-white font-medium">Save</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </DefaultModal>

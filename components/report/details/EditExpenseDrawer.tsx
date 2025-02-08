@@ -81,6 +81,11 @@ export default function EditExpenseDrawer({
     onEditExpense(newPayload);
   };
 
+  const getBlobFromUri = async (uri: string): Promise<Blob> => {
+    const response = await fetch(uri);
+    return await response.blob();
+  };  
+
   const onSubmit = async (data: any) => {
     const { file, ...rest } = data;
     const payload = {
@@ -98,13 +103,23 @@ export default function EditExpenseDrawer({
         payload
       );
       if (response?.presigned_url && file) {
-        await fetch(response.presigned_url, {
-          method: "PUT",
-          body: file.file,
-          headers: {
-            "Content-Type": file.mimeType,
-          },
-        });
+        let fileToUpload = file.file;
+
+        if (!fileToUpload && file.uri) {
+          fileToUpload = await getBlobFromUri(file.uri);
+        }
+  
+        if (fileToUpload) {
+          const mimeType = file.mimeType || "application/octet-stream";
+          await fetch(response.presigned_url, {
+            method: "PUT",
+            body: fileToUpload,
+            headers: {
+              "Content-Type": mimeType,
+            },
+          });
+        }
+
       }
 
       onEditExpense(response);

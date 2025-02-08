@@ -37,8 +37,17 @@ export default function GeneralUploadForm({
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
-  const isImageFile = (file: any) =>
-    file?.mimeType?.startsWith("image/") || file?.type?.startsWith("image/");
+  const isImageFile = (file: any) => {
+    const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"];
+
+    if (typeof file === "string") {
+      const urlWithoutParams = file.split("?")[0]; // Remove query params
+      const extension = urlWithoutParams.toLowerCase().match(/\.[^.]*$/)?.[0];
+      return extension && imageExtensions.includes(extension);
+    }
+
+    return file?.mimeType?.startsWith("image/") || file?.type?.startsWith("image/");
+  };
 
   const isPdfFile = (file: any) =>
     file?.mimeType === "application/pdf" || file?.type === "application/pdf";
@@ -48,6 +57,9 @@ export default function GeneralUploadForm({
     if (reportId) {
       const response = await reportService.downloadReceipt(reportId, formValues?.id);
       setUploadedFileUrl(response.presigned_url);
+      console.log(isImageFile(response.presigned_url))
+      console.log(isPdfFile(response.presigned_url))
+      console.log(value)
     }
   };
 
@@ -97,7 +109,7 @@ export default function GeneralUploadForm({
           <View className="m-5 bg-white rounded-lg p-6 items-start shadow-lg w-[95%] z-50 h-5/6">
             <Text className="text-[22px] font-bold text-[#1e1e1e] leading-[26px] w-full pb-4">Uploaded Receipt</Text>
 
-            {value && (
+            {value ? (
               <View className="min-h-[200px] w-full rounded-lg my-2.5 justify-center items-center h-5/6">
                 {isImageFile(value) ? (
                   <Image source={{ uri: value.uri }} className="w-full h-full rounded-lg" resizeMode="contain" />
@@ -105,17 +117,16 @@ export default function GeneralUploadForm({
                   <WebView source={{ uri: value.uri }} className="w-full h-[400px] rounded-lg" javaScriptEnabled={true} />
                 ) : null}
               </View>
-            )}
-
-            {uploadedFileUrl && (
+            ) : !value && uploadedFileUrl ? (
               <View className="min-h-[200px] w-full rounded-lg my-2.5 justify-center items-center h-5/6">
                 {isImageFile(uploadedFileUrl) ? (
-                  <Image source={{ uri: uploadedFileUrl }} className="w-full h-full rounded-lg" resizeMode="contain" />
+                  <Image source={{ uri: uploadedFileUrl }} className="w-full h-full rounded-lg" resizeMode="contain" onError={(error) => console.log("Image Load Error:", error.nativeEvent.error)}
+                  />
                 ) : isPdfFile(uploadedFileUrl) ? (
                   <WebView source={{ uri: uploadedFileUrl }} className="w-full h-[400px] rounded-lg" javaScriptEnabled={true} />
                 ) : null}
               </View>
-            )}
+            ) : null}
 
             <Pressable className="flex-1 rounded-lg py-5 bg-[#F5F5F5] justify-center w-full items-center mt-4" onPress={() => setIsPreviewModalVisible(false)}>
               <Text className="text-[#1E1E1E] font-medium text-center text-[17px]">Close</Text>
