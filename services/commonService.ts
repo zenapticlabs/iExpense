@@ -1,7 +1,6 @@
 import axios from "axios";
 import { authService } from "./authService";
-
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+import { BASE_URL } from "@/utils/UtilData";
 
 export interface CommonListItem {
   value: string;

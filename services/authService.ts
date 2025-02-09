@@ -1,4 +1,5 @@
 import { storage } from "@/utils/storage";
+import { BASE_URL } from "@/utils/UtilData";
 import axios from "axios";
 
 type AuthResponse = {
@@ -12,8 +13,6 @@ class AuthenticationError extends Error {
     this.name = "AuthenticationError";
   }
 }
-
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export const authService = {
   async getMe(): Promise<any> {

@@ -1,7 +1,7 @@
 import { ICreateReportPayload, IReport } from "@/constants/types";
 import { authService } from "./authService";
 import axios from "axios";
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+import { BASE_URL } from "@/utils/UtilData";
 
 interface UpdateReportPayload {
   expense_type: string;
