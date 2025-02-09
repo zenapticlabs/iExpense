@@ -182,7 +182,7 @@ export default function ProfileScreen() {
 
           <View className="my-5 px-5">
             <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
-              Default concurrency
+              Default Currency
             </Text>
             <CurrencyDropdown
               value={user?.currency}
