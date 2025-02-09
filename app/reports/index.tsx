@@ -7,6 +7,7 @@ import {
   TextInput,
   ScrollView,
   SafeAreaView,
+  RefreshControl,
 } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { Text, View } from "@/components/Themed";
@@ -23,7 +24,6 @@ import SelectDataRangePicker, {
 } from "@/components/report/SelectDataRangePicker";
 import BottomNavBar from "@/components/BottomNavBar";
 import { authService } from "@/services/authService";
-import PullToRefresh from "react-simple-pull-to-refresh";
 
 const ReportItem = ({ report }: { report: IReport }) => (
   <Link href={`/reports/details?id=${report.id}`} asChild>
@@ -69,6 +69,7 @@ export default function ReportsScreen() {
   const [loading, setLoading] = useState(true);
   const [dateRange, setDataRange] = useState(DATE_OPTIONS[0].value);
   const [user, setUser] = useState<any>(null);
+  const [refreshing, setRefreshing] = useState(false);
   const [isNewReportDrawerVisible, setIsNewReportDrawerVisible] =
     useState(false);
 
@@ -122,7 +123,12 @@ export default function ReportsScreen() {
   };
 
   const handleRefresh = async () => {
-    await fetchReports();
+    setRefreshing(true);
+    try {
+      await fetchReports();
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const filterByDateRange = (date: Date, selectedRange: string) => {
@@ -185,14 +191,16 @@ export default function ReportsScreen() {
           <ScrollView
             style={styles.reportList}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }
           >
-            <PullToRefresh onRefresh={handleRefresh}>
-              <>
-                {filteredReports.map((report, index) => (
-                  <ReportItem key={`${report.id}-${index}`} report={report} />
-                ))}
-              </>
-            </PullToRefresh>
+            {filteredReports.map((report, index) => (
+              <ReportItem key={`${report.id}-${index}`} report={report} />
+            ))}
           </ScrollView>
         )}
         <BottomNavBar
