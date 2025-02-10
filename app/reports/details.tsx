@@ -30,8 +30,10 @@ import LoadingScreen from "@/components/LoadingScreen";
 import commonService from "@/services/commonService";
 import BottomNavBar from "@/components/BottomNavBar";
 import { authService } from "@/services/authService";
+import { useAuth } from "@/context/AuthContext";
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
+  const { checkToken } = useAuth();
   const [report, setReport] = useState<IReport | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<IExpense | null>(null);
@@ -70,6 +72,7 @@ export default function ExpenseDetails() {
   };
   const fetchData = async () => {
     setLoading(true);
+    await checkToken();
     await fetchReportItems();
     await fetchReport();
     await fetchUserData();

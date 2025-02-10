@@ -24,6 +24,7 @@ import SelectDataRangePicker, {
 } from "@/components/report/SelectDataRangePicker";
 import BottomNavBar from "@/components/BottomNavBar";
 import { authService } from "@/services/authService";
+import { useAuth } from "@/context/AuthContext";
 
 const ReportItem = ({ report }: { report: IReport }) => (
   <Link href={`/reports/details?id=${report.id}`} asChild>
@@ -64,6 +65,7 @@ const ReportItem = ({ report }: { report: IReport }) => (
 );
 
 export default function ReportsScreen() {
+  const { checkToken } = useAuth();
   const [reports, setReports] = useState<IReport[]>([]);
   const [filteredReports, setFilteredReports] = useState<IReport[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,10 +94,7 @@ export default function ReportsScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      setLoading(true);
-      fetchReports();
-      fetchUserData();
-      setLoading(false);
+      fetchData();
     }, [])
   );
 
@@ -111,6 +110,13 @@ export default function ReportsScreen() {
     setFilteredReports(filteredReports);
   }, [dateRange, reports]);
 
+  const fetchData = async () => {
+    setLoading(true);
+    await checkToken();
+    await fetchReports();
+    await fetchUserData();
+    setLoading(false);
+  };
   const handleCreateNewReport = async (report: ICreateReportPayload) => {
     try {
       const newReport = await reportService.createReport(report);

@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { Link, router } from "expo-router";
 import { Text, View } from "@/components/Themed";
@@ -21,6 +22,7 @@ import { formatDate } from "@/utils/UtilFunctions";
 import { Calendar } from "react-native-calendars";
 import { useForm, Controller } from "react-hook-form";
 import ChangePasswordDrawer from "@/components/profile/ChangePasswordDrawer";
+import LoadingScreen from "@/components/LoadingScreen";
 
 export default function ProfileScreen() {
   const {
@@ -31,8 +33,9 @@ export default function ProfileScreen() {
   } = useForm();
   const [creditAddCardVisible, setCreditAddCardVisible] = useState(false);
   const [creditCard, setCreditCard] = useState<any>(null);
-  const { signOut } = useAuth();
+  const { signOut, checkToken } = useAuth();
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] =
     useState(false);
   const [changePasswordVisible, setChangePasswordVisible] = useState(false);
@@ -42,37 +45,64 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     fetchData();
-    fetchCreditCard();
   }, []);
 
-  const fetchCreditCard = async () => {
-    const data = await authService.getCreditCard();
-    setCreditCard(data);
+  const fetchData = async () => {
+    setLoading(true);
+    await checkToken();
+    await fetchCreditCard();
+    await fetchUserData();
+    setLoading(false);
   };
 
-  const fetchData = async () => {
-    const data = await authService.getMe();
-    setUser(data);
+  const fetchCreditCard = async () => {
+    try {
+      const data = await authService.getCreditCard();
+      setCreditCard(data);
+    } catch (error) {
+      console.error("Failed to fetch credit card:", error);
+    }
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const data = await authService.getMe();
+      setUser(data);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    }
   };
 
   const onSubmit = async (data: any) => {
-    const response = await authService.addCreditCard(
-      data.card_number,
-      data.expiration_date
-    );
-    setCreditCard(response.credit_card);
-    setCreditAddCardVisible(false);
+    try {
+      const response = await authService.addCreditCard(
+        data.card_number,
+        data.expiration_date
+      );
+      setCreditCard(response.credit_card);
+      setCreditAddCardVisible(false);
+    } catch (error) {
+      console.error("Failed to add credit card:", error);
+    }
   };
 
   const deleteCreditCard = async () => {
-    const response = await authService.deleteCreditCard();
-    setCreditCard(null);
-    setDeleteConfirmationVisible(false);
+    try {
+      const response = await authService.deleteCreditCard();
+      setCreditCard(null);
+      setDeleteConfirmationVisible(false);
+    } catch (error) {
+      console.error("Failed to delete credit card:", error);
+    }
   };
 
   const handleChangeCurrency = async (currency: string) => {
-    const response = await authService.changeCurrency(currency);
-    setUser(response);
+    try {
+      const response = await authService.changeCurrency(currency);
+      setUser(response);
+    } catch (error) {
+      console.error("Failed to change currency:", error);
+    }
   };
 
   return (
@@ -81,132 +111,137 @@ export default function ProfileScreen() {
         <Text className="text-xl font-semibold text-center mt-8 mb-6 font-sfpro">
           My Profile
         </Text>
-        <ScrollView>
-          <View className="my-5 px-5">
-            <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
-              User info
-            </Text>
-            <Text className="text-base font-medium text-[#1e1e1e] font-sfpro">
-              {user?.first_name} {user?.last_name}
-            </Text>
-            <Text className="text-base text-gray-500 mt-3 font-sfpro">
-              {user?.department}
-            </Text>
-          </View>
-
-          <Divider />
-
-          <View className="my-5 px-5">
-            <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
-              Contact details
-            </Text>
-            <View className="flex-row items-center mb-3">
-              <Ionicons
-                name="calendar-clear-outline"
-                size={20}
-                color="#64748B"
-              />
-              <Text className="ml-3 text-base text-[#1e1e1e] font-sfpro">
-                {user?.email}
+        {loading ? (
+          <LoadingScreen />
+        ) : (
+          <ScrollView>
+            <View className="my-5 px-5">
+              <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
+                User info
+              </Text>
+              <Text className="text-base font-medium text-[#1e1e1e] font-sfpro">
+                {user?.first_name} {user?.last_name}
+              </Text>
+              <Text className="text-base text-gray-500 mt-3 font-sfpro">
+                {user?.department}
               </Text>
             </View>
-            <View className="flex-row items-center mb-3">
-              <Ionicons name="call-outline" size={20} color="#64748B" />
-              <Text className="ml-3 text-base text-[#1e1e1e] font-sfpro">
-                {user?.phone_number}
+
+            <Divider />
+
+            <View className="my-5 px-5">
+              <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
+                Contact details
               </Text>
-            </View>
-          </View>
-
-          <Divider />
-
-          <View className="my-5 px-5">
-            <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
-              Saved credit card
-            </Text>
-            {creditCard?.card_number && (
-              <View className="flex-col gap-2 mb-4 mt-2">
-                <View className="flex-row gap-2 items-center justify-between">
-                  <View className="flex-row gap-2 items-center">
-                    <Ionicons name="card-outline" size={24} color="#5B5B5B" />
-                    <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
-                      Card Number
-                    </Text>
-                  </View>
-                  <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
-                    {creditCard?.card_number}
-                  </Text>
-                </View>
-                <View className="flex-row gap-2 items-center justify-between">
-                  <View className="flex-row gap-2 items-center">
-                    <Ionicons
-                      name="calendar-outline"
-                      size={24}
-                      color="#5B5B5B"
-                    />
-                    <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
-                      Expiration Date
-                    </Text>
-                  </View>
-                  <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
-                    {formatDate(creditCard?.expiration_date)}
-                  </Text>
-                </View>
+              <View className="flex-row items-center mb-3">
+                <Ionicons
+                  name="calendar-clear-outline"
+                  size={20}
+                  color="#64748B"
+                />
+                <Text className="ml-3 text-base text-[#1e1e1e] font-sfpro">
+                  {user?.email}
+                </Text>
               </View>
-            )}
-            {!creditCard && (
-              <Pressable
-                className="flex-row items-center justify-center border border-[#DDDDDD] rounded-lg p-3 h-12"
-                onPress={() => setCreditAddCardVisible(true)}
-              >
-                <Ionicons name="add" size={24} color="#5B5B5B" />
-                <Text className="ml-2 text-[#1e1e1e] font-bold text-lg font-sfpro">
-                  Add credit card
-                </Text>
-              </Pressable>
-            )}
-            {creditCard && (
-              <Pressable
-                className="flex-row items-center justify-center border border-[#DDDDDD] rounded-lg p-3 h-12"
-                onPress={() => setDeleteConfirmationVisible(true)}
-              >
-                <Ionicons name="trash-outline" size={24} color="#5B5B5B" />
-                <Text className="ml-2 text-[#1e1e1e] font-bold text-lg font-sfpro">
-                  Delete credit card
-                </Text>
-              </Pressable>
-            )}
-          </View>
+              {user?.phone_number && (
+                <View className="flex-row items-center mb-3">
+                  <Ionicons name="call-outline" size={20} color="#64748B" />
+                  <Text className="ml-3 text-base text-[#1e1e1e] font-sfpro">
+                    {user?.phone_number}
+                  </Text>
+                </View>
+              )}
+            </View>
 
-          <Divider />
+            <Divider />
 
-          <View className="my-5 px-5">
-            <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
-              Default Currency
-            </Text>
-            <CurrencyDropdown
-              value={user?.currency}
-              onChange={(currency) => handleChangeCurrency(currency)}
-            />
-          </View>
-
-          <Divider />
-
-          <View className="flex-1 items-center mt-5">
-            <Pressable
-              onPress={() => setChangePasswordVisible(true)}
-              className="text-[#5B5B5B] mb-4 underline text-lg font-sfpro"
-            >
-              Change password
-            </Pressable>
-
-            <Pressable onPress={handleLogout}>
-              <Text className="text-[#E12020] underline mt-4 mb-4 text-lg font-sfpro">
-                Logout
+            <View className="my-5 px-5">
+              <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
+                Saved credit card
               </Text>
-            </Pressable>
-          </View>
-        </ScrollView>
+              {creditCard?.card_number && (
+                <View className="flex-col gap-2 mb-4 mt-2">
+                  <View className="flex-row gap-2 items-center justify-between">
+                    <View className="flex-row gap-2 items-center">
+                      <Ionicons name="card-outline" size={24} color="#5B5B5B" />
+                      <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
+                        Card Number
+                      </Text>
+                    </View>
+                    <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
+                      {creditCard?.card_number}
+                    </Text>
+                  </View>
+                  <View className="flex-row gap-2 items-center justify-between">
+                    <View className="flex-row gap-2 items-center">
+                      <Ionicons
+                        name="calendar-outline"
+                        size={24}
+                        color="#5B5B5B"
+                      />
+                      <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
+                        Expiration Date
+                      </Text>
+                    </View>
+                    <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
+                      {formatDate(creditCard?.expiration_date)}
+                    </Text>
+                  </View>
+                </View>
+              )}
+              {!creditCard && (
+                <Pressable
+                  className="flex-row items-center justify-center border border-[#DDDDDD] rounded-lg p-3 h-12"
+                  onPress={() => setCreditAddCardVisible(true)}
+                >
+                  <Ionicons name="add" size={24} color="#5B5B5B" />
+                  <Text className="ml-2 text-[#1e1e1e] font-bold text-lg font-sfpro">
+                    Add credit card
+                  </Text>
+                </Pressable>
+              )}
+              {creditCard && (
+                <Pressable
+                  className="flex-row items-center justify-center border border-[#DDDDDD] rounded-lg p-3 h-12"
+                  onPress={() => setDeleteConfirmationVisible(true)}
+                >
+                  <Ionicons name="trash-outline" size={24} color="#5B5B5B" />
+                  <Text className="ml-2 text-[#1e1e1e] font-bold text-lg font-sfpro">
+                    Delete credit card
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+
+            <Divider />
+
+            <View className="my-5 px-5">
+              <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
+                Default Currency
+              </Text>
+              <CurrencyDropdown
+                value={user?.currency}
+                onChange={(currency) => handleChangeCurrency(currency)}
+              />
+            </View>
+
+            <Divider />
+
+            <View className="flex-1 items-center mt-5">
+              <Pressable onPress={() => setChangePasswordVisible(true)}>
+                <Text className="text-[#5B5B5B] mb-4 underline text-lg font-sfpro">
+                  Change password
+                </Text>
+              </Pressable>
+
+              <Pressable onPress={handleLogout}>
+                <Text className="text-[#E12020] underline mt-4 mb-4 text-lg font-sfpro">
+                  Logout
+                </Text>
+              </Pressable>
+            </View>
+          </ScrollView>
+        )}
         <BottomNavBar page="profile" />
       </View>
 

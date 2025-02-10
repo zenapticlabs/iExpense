@@ -7,11 +7,6 @@ import { useEffect } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
 export default function RootLayout() {
-  const { checkToken } = useAuth();
-  useEffect(() => {
-    checkToken();
-  }, []);
-
   return (
     <Stack>
       {/* Your routes will be rendered here */}
