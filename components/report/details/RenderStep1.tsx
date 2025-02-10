@@ -45,7 +45,7 @@ export default function RenderStep1({
         />
       </View>
 
-      <ScrollView className="flex gap-4">
+      <ScrollView className="flex gap-4 flex-1">
         {Object.values(ExpenseType)
           .filter((type) =>
             type.toLowerCase().includes(searchQuery.toLowerCase())
