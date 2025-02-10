@@ -6,6 +6,7 @@ import {
   Pressable,
   Alert,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import { Link } from "expo-router";
 import { useState } from "react";
@@ -117,8 +118,16 @@ export default function AuthScreen() {
             </View>
           </View>
           <View style={styles.bottomContainer}>
-            <Pressable style={styles.loginButton} onPress={handleSignIn}>
+            <Pressable
+              style={[
+                styles.loginButton,
+                { backgroundColor: isLoading ? "#8792B3" : "#17317F" },
+              ]}
+              onPress={handleSignIn}
+              className="flex-row gap-4 justify-center"
+            >
               <Text style={styles.buttonText}>Login</Text>
+              {isLoading && <ActivityIndicator color={"white"} />}
             </Pressable>
 
             <View style={styles.signupContainer}>
@@ -204,7 +213,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   loginButton: {
-    backgroundColor: "#17317F",
     padding: 16,
     borderRadius: 8,
     alignItems: "center",
