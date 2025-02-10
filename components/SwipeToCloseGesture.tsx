@@ -22,7 +22,7 @@ export default function SwipeToCloseGesture({
   ).current;
 
   return (
-    <View {...panResponder.panHandlers} style={styles.container}>
+    <View {...panResponder.panHandlers} className="flex flex-col flex-1">
       <View className="flex-row justify-center items-center pt-4 px-4">
         <View className="h-1.5 w-8 bg-[#DDDDDD] rounded-md" />
       </View>
@@ -30,9 +30,3 @@ export default function SwipeToCloseGesture({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

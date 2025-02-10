@@ -90,7 +90,7 @@ export default function NewReportDrawer({
       <SwipeToCloseDrawer onClose={onClose}>
         <View className="flex-1 flex-col bg-white px-5 pb-5">
           <Text className="text-xl font-semibold mb-4">New Report</Text>
-          <ScrollView className="flex-grow min-h-[80vh]">
+          <ScrollView className="flex-grow">
             {FormData.map((item) => (
               <GeneralForm field={item} control={control} errors={errors} />
             ))}
@@ -112,15 +112,19 @@ export default function NewReportDrawer({
               )}
             />
           </ScrollView>
-          <View className="absolute bottom-0 left-0 right-0 px-5 pb-5 bg-white">
-            <View className="flex-row gap-3 mt-3">
-              <Pressable className="flex-1 p-3 rounded-lg items-center bg-[#F1F5F9]" onPress={onClose}>
-                <Text className="text-[#1E293B] font-medium">Cancel</Text>
-              </Pressable>
-              <Pressable className="flex-1 p-3 rounded-lg items-center bg-[#1E3A8A]" onPress={handleSubmit(onSubmit)}>
-                <Text className="text-white font-medium">Save</Text>
-              </Pressable>
-            </View>
+          <View className="flex-row gap-3 mt-3">
+            <Pressable
+              className="flex-1 p-3 rounded-lg items-center bg-[#F1F5F9]"
+              onPress={onClose}
+            >
+              <Text className="text-[#1E293B] font-medium">Cancel</Text>
+            </Pressable>
+            <Pressable
+              className="flex-1 p-3 rounded-lg items-center bg-[#1E3A8A]"
+              onPress={handleSubmit(onSubmit)}
+            >
+              <Text className="text-white font-medium">Save</Text>
+            </Pressable>
           </View>
         </View>
       </SwipeToCloseDrawer>
