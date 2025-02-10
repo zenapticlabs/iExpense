@@ -33,27 +33,25 @@ const DefaultModal = ({ isVisible, onClose, children }: DefaultModalProps) => {
       visible={isVisible}
       onRequestClose={onClose}
     >
-      <View style={styles.modalContainer}>
-        {/* Dimmed overlay with controlled opacity */}
-        {dimOverlay && (
-          <Animated.View style={[styles.modalOverlay, { opacity: opacityAnim }]} />
-        )}
+      {/* Dimmed overlay with controlled opacity */}
+      {dimOverlay && (
+        <Animated.View
+          style={[styles.modalOverlay, { opacity: opacityAnim }]}
+        />
+      )}
 
-        {/* Dismissable pressable area */}
-        <Pressable style={styles.modalDismissArea} onPress={onClose} />
+      {/* Dismissable pressable area */}
+      <Pressable className="flex-1 z-10" onPress={onClose} />
 
-        {/* Modal content */}
-        <View style={styles.modalContent}>{children}</View>
+      {/* Modal content */}
+      <View className="bg-white absolute z-20 bottom-0 left-0 right-0 max-h-[80vh] rounded-t-xl">
+        {children}
       </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
   modalOverlay: {
     position: "absolute",
     top: 0,
@@ -66,14 +64,6 @@ const styles = StyleSheet.create({
   modalDismissArea: {
     flex: 1,
     zIndex: 1,
-  },
-  modalContent: {
-    width: "100%",
-    maxHeight: "90%",
-    backgroundColor: "white",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    zIndex: 2,
   },
 });
 

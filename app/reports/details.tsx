@@ -9,6 +9,7 @@ import {
   ScrollView,
   SafeAreaView,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import React from "react";
 import { Link, router, Stack, useLocalSearchParams } from "expo-router";
@@ -29,9 +30,10 @@ import LoadingScreen from "@/components/LoadingScreen";
 import commonService from "@/services/commonService";
 import BottomNavBar from "@/components/BottomNavBar";
 import { authService } from "@/services/authService";
-import PullToRefresh from "react-simple-pull-to-refresh";
+import { useAuth } from "@/context/AuthContext";
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
+  const { checkToken } = useAuth();
   const [report, setReport] = useState<IReport | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<IExpense | null>(null);
@@ -70,6 +72,7 @@ export default function ExpenseDetails() {
   };
   const fetchData = async () => {
     setLoading(true);
+    await checkToken();
     await fetchReportItems();
     await fetchReport();
     await fetchUserData();
@@ -116,8 +119,11 @@ export default function ExpenseDetails() {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await fetchReportItems();
-    setRefreshing(false);
+    try {
+      await fetchReportItems();
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   return (
@@ -198,7 +204,9 @@ export default function ExpenseDetails() {
                 <ReportStepper report={report as IReport} />
               </View>
             </View>
-            {!["Submitted", "Approved", "Paid"].includes(report?.report_status as string) &&
+            {!["Submitted", "Approved", "Paid"].includes(
+              report?.report_status as string
+            ) &&
               Number(report?.report_amount) > 0 && (
                 <TouchableOpacity
                   style={styles.submitButton}
@@ -211,66 +219,64 @@ export default function ExpenseDetails() {
               <Text style={styles.sectionTitle} className="font-sfpro">
                 Expense Items
               </Text>
-              <ScrollView style={{ flex: 1 }}>
-                <PullToRefresh onRefresh={handleRefresh}>
-                  <>
-                    {reportItems?.map((reportItem) => (
-                      <TouchableOpacity
-                        key={reportItem.id}
-                        style={styles.expenseItem}
-                        onPress={() => handleExpensePress(reportItem)}
+              <ScrollView
+                style={{ flex: 1 }}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={handleRefresh}
+                  />
+                }
+              >
+                {reportItems?.map((reportItem) => (
+                  <TouchableOpacity
+                    key={reportItem.id}
+                    style={styles.expenseItem}
+                    onPress={() => handleExpensePress(reportItem)}
+                  >
+                    <View>
+                      <Text
+                        style={styles.expenseItemTitle}
+                        className="font-sfpro"
                       >
-                        <View>
-                          <Text
-                            style={styles.expenseItemTitle}
-                            className="font-sfpro"
-                          >
-                            {reportItem.expense_type}
-                          </Text>
-                          <Text
-                            style={styles.expenseItemAmount}
-                            className="font-sfpro"
-                          >
-                            ${reportItem.receipt_amount}
-                          </Text>
-                          <Text
-                            style={styles.expenseItemDate}
-                            className="font-sfpro"
-                          >
-                            {formatDate(reportItem.expense_date) || ""}
-                          </Text>
-                        </View>
-                        <Ionicons
-                          name="chevron-forward"
-                          size={24}
-                          color="#666"
-                        />
-                      </TouchableOpacity>
-                    ))}
-                    {reportItems?.length === 0 && (
-                      <View style={styles.emptyState}>
-                        <Text style={styles.emptyIcon}>📝</Text>
-                        <Text style={styles.emptyText}>No expenses</Text>
-                        {report?.report_status === "Open" && (
-                          <>
-                            <Text style={styles.emptySubtext}>
-                              Tap the "+" button and start adding expenses
-                            </Text>
+                        {reportItem.expense_type}
+                      </Text>
+                      <Text
+                        style={styles.expenseItemAmount}
+                        className="font-sfpro"
+                      >
+                        ${reportItem.receipt_amount}
+                      </Text>
+                      <Text
+                        style={styles.expenseItemDate}
+                        className="font-sfpro"
+                      >
+                        {formatDate(reportItem.expense_date) || ""}
+                      </Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={24} color="#666" />
+                  </TouchableOpacity>
+                ))}
+                {reportItems?.length === 0 && (
+                  <View style={styles.emptyState}>
+                    <Text style={styles.emptyIcon}>📝</Text>
+                    <Text style={styles.emptyText}>No expenses</Text>
+                    {report?.report_status === "Open" && (
+                      <>
+                        <Text style={styles.emptySubtext}>
+                          Tap the "+" button and start adding expenses
+                        </Text>
 
-                            <TouchableOpacity
-                              style={styles.addButton}
-                              onPress={() => setIsModalVisible(true)}
-                            >
-                              <Text style={styles.addButtonText}>
-                                Add expense
-                              </Text>
-                            </TouchableOpacity>
-                          </>
-                        )}
-                      </View>
+                        <TouchableOpacity
+                          style={styles.addButton}
+                          onPress={() => setIsModalVisible(true)}
+                        >
+                          <Text style={styles.addButtonText}>Add expense</Text>
+                        </TouchableOpacity>
+                      </>
                     )}
-                  </>
-                </PullToRefresh>
+                  </View>
+                )}
               </ScrollView>
             </View>
           </>
