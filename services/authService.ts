@@ -147,6 +147,7 @@ export const authService = {
   },
   async forgotPassword(email: string): Promise<any> {
     const secretKey = process.env.EXPO_PUBLIC_SECRET_KEY || "";
+    console.log(secretKey);
     try {
       const now = Math.floor(Date.now() / 1000);
       const exp = now + 10 * 60;
