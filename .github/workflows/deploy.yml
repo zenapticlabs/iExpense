@@ -23,12 +23,11 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
-      
-      - name: Create .env File
-        run: |
-          echo "EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL }}" > .env
 
       - name: Build Expo Web
+        env:
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
+          EXPO_PUBLIC_SECRET_KEY: ${{ secrets.EXPO_PUBLIC_SECRET_KEY }}
         run: npm run build:web
 
       - name: Deploy to Vercel

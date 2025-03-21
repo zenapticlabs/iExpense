@@ -21,12 +21,29 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.loi.go1220.pfuapp"
+      "package": "com.pfu.us.ricoh.expense.app"
     },
+    "assetBundlePatterns": [
+      "assets/images/*"
+    ],
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "scopePath": "/",
+      "favicon": "./assets/images/brand.png",
+      "manifest": {
+        "display": "standalone",
+        "start_url": "/index.html",
+        "scope": "/",
+        "icons": [
+          {
+            "src": "./assets/images/icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+          }
+        ]
+      }
     },
     "plugins": [
       "expo-router"

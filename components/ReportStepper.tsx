@@ -105,13 +105,13 @@ const ReportStepper = ({ report }: ReportStepperProps) => {
   const getStepDate = (step: Step, index: number) => {
     if (index < stepIndex) {
       const date = step.getDate(report);
-      return date ? formatDate(date, true) : null;
+      return date ? formatDate(date) : null;
     }
     return null;
   };
 
   return (
-    <View className="flex-row mt-4 mb-4">
+    <View className="flex-row mb-2">
       {STEPS.map((step, index) => (
         <View key={step.number} className="flex-1 relative items-center">
           <View className="items-center">

@@ -2,12 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-.font-sfpro {
+/* .font-sfpro {
   font-family: "SFProDisplay";
-}
+} */
 
 body, #root {
   max-width: 432px;
   margin: auto;
   overflow-x: hidden;
 }
+
+/* .datePicker {
+  width: 100%;
+} */

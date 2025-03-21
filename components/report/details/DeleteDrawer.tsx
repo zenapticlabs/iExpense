@@ -31,6 +31,9 @@ export default function DeleteReportDrawer({
 
         <View style={styles.deleteModalDetails}>
           <Text style={styles.deleteModalText} className="font-sfpro">
+            {report?.report_number}
+          </Text>
+          <Text style={styles.deleteModalText} className="font-sfpro">
             {report?.purpose}
           </Text>
           <Text style={styles.deleteModalText} className="font-sfpro">

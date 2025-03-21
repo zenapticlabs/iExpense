@@ -21,7 +21,7 @@ import { reportService } from "@/services/reportService";
 import DeleteReportDrawer from "@/components/report/details/DeleteDrawer";
 import CreateNewExpenseDrawer from "@/components/report/details/CreateNewExpenseDrawer";
 import EditExpenseDrawer from "@/components/report/details/EditExpenseDrawer";
-import { formatDate } from "@/utils/UtilFunctions";
+import { formatAmount, formatDate, getCurrencySymbol, getCurrencyValue } from "@/utils/UtilFunctions";
 import { ReportStatusTextColor } from "@/utils/UtilData";
 import { ReportStatusBgColor } from "@/utils/UtilData";
 import ReportStepper from "@/components/ReportStepper";
@@ -31,6 +31,7 @@ import commonService from "@/services/commonService";
 import BottomNavBar from "@/components/BottomNavBar";
 import { authService } from "@/services/authService";
 import { useAuth } from "@/context/AuthContext";
+
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
   const { checkToken } = useAuth();
@@ -79,6 +80,8 @@ export default function ExpenseDetails() {
     setLoading(false);
   };
 
+  const isDisabled = !(report?.report_status === "Open" || report?.report_status === "Rejected");
+
   const handleExpensePress = (expense: IExpense) => {
     setSelectedExpense(expense);
   };
@@ -99,22 +102,20 @@ export default function ExpenseDetails() {
     }
   };
 
-  const handleDeleteExpense = (expenseId: string) => {
-    fetchData();
+  const handleDeleteExpense = async (expenseId: string) => {
+    await fetchData();
   };
 
-  const handleEditExpense = (expense: any) => {
-    fetchData();
+  const handleEditExpense = async (expense: any) => {
+    await fetchData();
   };
 
-  const handleAddExpense = (expense: any) => {
-    fetchData();
+  const handleAddExpense = async (expense: any) => {
+    await fetchData();
   };
 
   const handleAddExpenseItemBtnClick = () => {
-    if (report?.report_status === "Open") {
       setIsModalVisible(true);
-    }
   };
 
   const handleRefresh = async () => {
@@ -140,7 +141,7 @@ export default function ExpenseDetails() {
             ),
             headerRight: () => (
               <View style={styles.headerRight}>
-                {report?.report_status === "Open" && (
+                {!isDisabled && (
                   <>
                     <TouchableOpacity onPress={handleAddExpenseItemBtnClick}>
                       <Ionicons name="add" size={36} color="#000" />
@@ -192,12 +193,24 @@ export default function ExpenseDetails() {
                 </View>
               </View>
               <View className="p-2">
-                <Text style={styles.amount}>${report?.report_amount}</Text>
+                <Text style={styles.amount}>{formatAmount(report?.report_currency, report?.report_amount)}</Text>
                 <Text style={styles.dateLabel} className="font-sfpro">
-                  Submission: {formatDate(report?.report_submit_date as string)}
+                  User: {user?.first_name} {user?.last_name}
                 </Text>
                 <Text style={styles.dateLabel} className="font-sfpro">
-                  Approval: {formatDate(report?.integration_date as string)}
+                  Submission Date: {formatDate(report?.report_submit_date as string)}
+                </Text>
+                <Text style={styles.dateLabel} className="font-sfpro">
+                  Approval Date: {formatDate(report?.integration_date as string)}
+                </Text>
+                <Text style={styles.dateLabel} className="font-sfpro">
+                  iExp Report Status: {report?.iexp_report_status as string || "N/A"}
+                </Text>
+                <Text style={styles.dateLabel} className="font-sfpro">
+                  iExp Report Number: {report?.iexp_report_number as string || "N/A"}
+                </Text>
+                <Text style={styles.dateLabel} className="font-sfpro">
+                  Paid Amount: {report?.paid_amount as string || "N/A"}
                 </Text>
               </View>
               <View style={styles.stepperContainer}>
@@ -245,7 +258,7 @@ export default function ExpenseDetails() {
                         style={styles.expenseItemAmount}
                         className="font-sfpro"
                       >
-                        ${reportItem.receipt_amount}
+                        {formatAmount(reportItem.receipt_currency, reportItem.receipt_amount)}
                       </Text>
                       <Text
                         style={styles.expenseItemDate}
@@ -261,10 +274,10 @@ export default function ExpenseDetails() {
                   <View style={styles.emptyState}>
                     <Text style={styles.emptyIcon}>📝</Text>
                     <Text style={styles.emptyText}>No expenses</Text>
-                    {report?.report_status === "Open" && (
+                    {!isDisabled && (
                       <>
                         <Text style={styles.emptySubtext}>
-                          Tap the "+" button and start adding expenses
+                          Tap the "+" button on the top menu bar and start adding expenses
                         </Text>
 
                         <TouchableOpacity
@@ -281,14 +294,18 @@ export default function ExpenseDetails() {
             </View>
           </>
         )}
-        <BottomNavBar page="reports" />
+        <BottomNavBar page="reports" hideButton={true} />
         <CreateNewExpenseDrawer
           isVisible={isModalVisible}
           reportId={id as string}
+          reportType={report?.expense_type as string}
           onClose={() => setIsModalVisible(false)}
           exchangeRates={exchangeRates}
           defaultCurrency={user?.currency}
+          defaultPayment={report?.payment_method as string}
           onAddExpense={handleAddExpense}
+          orgId={user?.org_id}
+          user={user}
         />
 
         <EditExpenseDrawer
@@ -300,6 +317,7 @@ export default function ExpenseDetails() {
           onEditExpense={handleEditExpense}
           exchangeRates={exchangeRates}
           defaultCurrency={user?.currency}
+          user={user}
         />
 
         <DeleteReportDrawer
@@ -335,7 +353,7 @@ export const styles = StyleSheet.create({
     margin: 20,
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 16,
+    padding: 8,
     alignItems: "flex-start",
     shadowColor: "#000",
     width: "95%",
@@ -414,7 +432,7 @@ export const styles = StyleSheet.create({
     marginLeft: 8,
   },
   header: {
-    padding: 16,
+    padding: 8,
     paddingBottom: 0,
   },
   titleContainer: {
@@ -433,7 +451,7 @@ export const styles = StyleSheet.create({
     fontFamily: "SFProDisplay",
   },
   amount: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: "400",
     marginVertical: 8,
     fontFamily: "SFProDisplay",
@@ -446,7 +464,7 @@ export const styles = StyleSheet.create({
   submitButton: {
     backgroundColor: "#1a237e",
     margin: 16,
-    padding: 16,
+    padding: 12,
     borderRadius: 8,
     alignItems: "center",
   },
@@ -567,7 +585,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 16,
+    padding: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
   },
@@ -583,7 +601,7 @@ export const styles = StyleSheet.create({
     marginTop: 20,
   },
   cancelButton: {
-    padding: 16,
+    padding: 8,
     flex: 1,
     marginRight: 8,
     borderRadius: 8,
@@ -591,7 +609,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   nextButton: {
-    padding: 16,
+    padding: 8,
     flex: 1,
     marginLeft: 8,
     borderRadius: 8,
@@ -610,7 +628,7 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
   },
   selectedTypeContainer: {
-    padding: 16,
+    padding: 8,
     backgroundColor: "#f5f5f5",
     borderRadius: 8,
     marginBottom: 16,
@@ -619,17 +637,17 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 16,
+    padding: 8,
     backgroundColor: "#f5f5f5",
     borderRadius: 8,
-    marginBottom: 16,
+    marginBottom: 8,
   },
   currencyInputContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#f5f5f5",
     borderRadius: 8,
-    marginBottom: 16,
+    marginBottom: 8,
   },
   currencyPrefix: {
     flexDirection: "row",
@@ -647,7 +665,7 @@ export const styles = StyleSheet.create({
   },
   currencyInput: {
     flex: 1,
-    padding: 16,
+    padding: 8,
   },
   justificationInput: {
     backgroundColor: "#f5f5f5",
@@ -694,7 +712,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 16,
+    padding: 8,
     backgroundColor: "white",
     borderRadius: 8,
     marginBottom: 12,

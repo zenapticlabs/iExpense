@@ -1,15 +1,15 @@
 import { View, Text } from "@/components/Themed";
 import { Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Link, usePathname, useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useRouter } from "expo-router";
 
 interface BottomNavBarProps {
   onNewReport?: () => void;
   page: "reports" | "profile";
+  hideButton?: boolean
 }
 
-export default function BottomNavBar({ onNewReport, page }: BottomNavBarProps) {
+export default function BottomNavBar({ onNewReport, page, hideButton }: BottomNavBarProps) {
   const router = useRouter();
 
   return (
@@ -33,6 +33,7 @@ export default function BottomNavBar({ onNewReport, page }: BottomNavBarProps) {
       <View className="items-center">
         <Pressable
           className="bg-[#1e1e1e] w-[42px] h-[42px] rounded-full items-center justify-center mb-2"
+          style={{opacity: hideButton ? 0 : 100}}
           onPress={onNewReport}
         >
           <Ionicons name="add" size={24} color="white" />

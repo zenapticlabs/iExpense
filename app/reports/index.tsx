@@ -8,10 +8,11 @@ import {
   ScrollView,
   SafeAreaView,
   RefreshControl,
+  TouchableOpacity,
+  useWindowDimensions,
 } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { Text, View } from "@/components/Themed";
-import { Ionicons } from "@expo/vector-icons";
 import { useState, useCallback, useEffect } from "react";
 import { ReportStatusBgColor, ReportStatusTextColor } from "@/utils/UtilData";
 import { ICreateReportPayload, IReport } from "@/constants/types";
@@ -25,24 +26,17 @@ import SelectDataRangePicker, {
 import BottomNavBar from "@/components/BottomNavBar";
 import { authService } from "@/services/authService";
 import { useAuth } from "@/context/AuthContext";
+import { formatAmount, formatDate } from "@/utils/UtilFunctions";
 
-const ReportItem = ({ report }: { report: IReport }) => (
+const ReportItem = ({ report, user }: { report: IReport, user: any }) => (
   <Link href={`/reports/details?id=${report.id}`} asChild>
     <Pressable style={styles.reportItem}>
-      <View>
-        <View style={styles.titleRow}>
-          <Text style={styles.reportTitle}>{report.purpose}</Text>
-          <Text style={styles.reportId}>{report.report_number}</Text>
-        </View>
-        <Text style={styles.reportAmount}>${report.report_amount}</Text>
-        <View style={styles.reportDetails}>
-          <Text style={styles.detailText}>
-            Submission: {report.report_submit_date || "N/A"}
-          </Text>
-          <Text style={styles.detailText}>
-            Approval: {report.integration_date || "N/A"}
-          </Text>
-        </View>
+      <View style={styles.reportContainer}>
+        <Text style={styles.reportId} className={"mr-2 mb-2"}>{report.report_number} - {report.expense_type}</Text>
+        <Text style={styles.reportTitle}>{report.purpose}</Text>
+        <Text style={styles.reportId} className={"mb-2"}>{user?.first_name} {user?.last_name}</Text>
+        <Text style={styles.reportId} className={"mb-2"}>{formatDate(report.report_date)}</Text>
+        <Text style={styles.reportAmount}>{formatAmount(report.report_currency, report.report_amount)}</Text>
       </View>
       <View
         style={[
@@ -76,6 +70,8 @@ export default function ReportsScreen() {
     useState(false);
 
   const router = useRouter();
+
+  const { height } = useWindowDimensions();
 
   const fetchReports = async () => {
     try {
@@ -175,10 +171,12 @@ export default function ReportsScreen() {
     <SafeAreaView className="flex-1 bg-white">
       <View style={styles.container}>
         <View style={styles.header}>
-          <Image
-            source={require("@/assets/images/brand.png")}
-            style={styles.logo}
-          />
+          <View>
+            <Image
+              source={require("@/assets/images/brand.png")}
+              style={styles.logo}
+            />
+          </View>
           <Text style={styles.userName}>
             {user?.first_name} {user?.last_name}
           </Text>
@@ -205,8 +203,24 @@ export default function ReportsScreen() {
             }
           >
             {filteredReports.map((report, index) => (
-              <ReportItem key={`${report.id}-${index}`} report={report} />
+              <ReportItem key={`${report.id}-${index}`} report={report} user={user} />
             ))}
+            {filteredReports?.length === 0 && (
+              <View style={{ ...styles.emptyState, paddingTop: height * 0.2 }}>
+                <Text style={styles.emptyIcon}>📝</Text>
+                <Text style={styles.emptyText}>No Reports</Text>
+                <Text style={styles.emptySubtext}>
+                  Tap the "+" button and start adding expenses
+                </Text>
+
+                <TouchableOpacity
+                  style={styles.addEmptyButton}
+                  onPress={() => setIsNewReportDrawerVisible(true)}
+                >
+                  <Text style={styles.addButtonText}>Add report</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </ScrollView>
         )}
         <BottomNavBar
@@ -217,7 +231,8 @@ export default function ReportsScreen() {
           isVisible={isNewReportDrawerVisible}
           onClose={() => setIsNewReportDrawerVisible(false)}
           onSave={handleCreateNewReport}
-          haveCreditCard={user?.cc_card}
+          defaultCurrency={user?.currency}
+          haveCreditCard={!!user?.em_cc_card_id}
         />
       </View>
     </SafeAreaView>
@@ -234,17 +249,23 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 24,
-    marginBottom: 24,
+    marginTop: 12,
+    marginBottom: 12,
     height: 60,
     paddingHorizontal: 20,
   },
+  reportContainer: {
+    backgroundColor: "transparent",
+    borderWidth: 0,
+    shadowColor: "transparent",
+    elevation: 0,
+  },
   logo: {
-    height: 48,
+    height: 96,
     width: 96,
   },
   userName: {
-    fontSize: 20,
+    fontSize: 18,
     color: "#1E1E1E",
     fontFamily: "SFProDisplay",
   },
@@ -253,10 +274,10 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
   },
   title: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "600",
     color: "#1E1E1E",
     fontFamily: "SFProDisplay",
@@ -266,12 +287,12 @@ export const styles = StyleSheet.create({
     gap: 16,
     flex: 1,
     flexDirection: "column",
-    paddingHorizontal: 20,
+    paddingHorizontal: 8,
   },
   reportItem: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 16,
+    padding: 8,
     borderRadius: 8,
     marginBottom: 12,
     boxShadow: "0px 2px 15px 0px rgba(0, 0, 0, 0.07)",
@@ -282,19 +303,21 @@ export const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 3, // This is for Android shadow
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
   },
   reportTitle: {
     fontSize: 17,
     fontWeight: "600",
-    marginBottom: 4,
+    marginBottom: 8,
     color: "#1e1e1e",
     fontFamily: "SFProDisplay",
   },
   reportAmount: {
     fontSize: 15,
     fontWeight: "600",
-    marginBottom: 8,
+    // marginBottom: 8,
     color: "#1e1e1e",
     fontFamily: "SFProDisplay",
   },
@@ -328,7 +351,7 @@ export const styles = StyleSheet.create({
   reportId: {
     fontSize: 13,
     color: "#5B5B5B",
-    marginBottom: 4,
+    // marginBottom: 2,
     fontFamily: "SFProDisplay",
   },
   statussubmitted: {
@@ -497,5 +520,37 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  emptyState: {
+    alignItems: "center",
+    padding: 32,
+  },
+  emptyIcon: {
+    fontSize: 32,
+    marginBottom: 16,
+  },
+  emptyText: {
+    fontSize: 17,
+    color: "#888888",
+    marginBottom: 4,
+  },
+  emptySubtext: {
+    fontSize: 15,
+    color: "#888888",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  addButtonText: {
+    fontSize: 17,
+    color: "#1E1E1E",
+    fontFamily: "SFProDisplay",
+  },
+  addEmptyButton: {
+    borderWidth: 1,
+    borderColor: "#888888",
+    padding: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    fontWeight: "600",
   },
 });

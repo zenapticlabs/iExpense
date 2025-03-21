@@ -1,6 +1,9 @@
 import axios from "axios";
 import { authService } from "./authService";
 import { BASE_URL } from "@/utils/UtilData";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const CACHE_EXPIRATION_HOURS = 24;
 
 export interface CommonListItem {
   value: string;
@@ -20,11 +23,12 @@ export interface HotelDailyBaseRate {
   amount: string;
   currency: string;
   id: number;
+  value: string;
 }
 
 export interface MileageRate {
   rate: string;
-  title: string;
+  value: string;
   id: number;
 }
 
@@ -37,74 +41,118 @@ class CommonService {
   }
 
   async getAirlines(): Promise<CommonListItem[]> {
-    const response = await axios.get(`${BASE_URL}/common/airlines`, {
-      headers: await this.getHeaders(),
-    });
-    return response.data;
+    return this.fetchData("airlines");
   }
 
   async getCarTypes(): Promise<CommonListItem[]> {
-    const response = await axios.get(`${BASE_URL}/common/car-types`, {
-      headers: await this.getHeaders(),
-    });
-    return response.data;
+    return this.fetchData("car-types");
   }
 
   async getCities(): Promise<CommonListItem[]> {
-    const response = await axios.get(`${BASE_URL}/common/cities`, {
-      headers: await this.getHeaders(),
-    });
-    return response.data;
+    return this.fetchData("cities");
   }
 
   async getExchangeRates(): Promise<ExchangeRate[]> {
-    const response = await axios.get(`${BASE_URL}/common/exchange-rates`, {
-      headers: await this.getHeaders(),
-    });
-    return response.data;
+    return this.fetchData("exchange-rates");
   }
 
   async getHotelDailyBaseRates(): Promise<HotelDailyBaseRate[]> {
-    const response = await axios.get(
-      `${BASE_URL}/common/hotel-daily-base-rates`,
-      {
-        headers: await this.getHeaders(),
+    const baseRates = await this.fetchData("hotel-daily-base-rates");
+    console.log(baseRates);
+    const realRates = baseRates.map((value) => {
+      if (value?.city === "Yokohama, Tokyo") {
+        return {
+          ...value,
+          amount: "16000.00",
+          currency: "JPY"
+        }
+      } else {
+        return value
       }
-    );
-    return response.data;
+    })
+    console.log(realRates);
+    return realRates;
   }
 
   async getMealCategories(): Promise<CommonListItem[]> {
-    const response = await axios.get(`${BASE_URL}/common/meal-categories`, {
-      headers: await this.getHeaders(),
-    });
-    return response.data;
+    return this.fetchData("meal-categories");
   }
 
   async getMileageRates(): Promise<MileageRate[]> {
-    const response = await axios.get(`${BASE_URL}/common/mileage-rates`, {
-      headers: await this.getHeaders(),
-    });
-    return response.data;
+    return this.fetchData("mileage-rates");
   }
 
   async getRelationshipsToPai(): Promise<CommonListItem[]> {
-    const response = await axios.get(
-      `${BASE_URL}/common/relationships-to-pai`,
-      {
-        headers: await this.getHeaders(),
-      }
-    );
-    return response.data;
+    return this.fetchData("relationships-to-pai");
   }
 
   async getRentalAgencies(): Promise<CommonListItem[]> {
-    const response = await axios.get(`${BASE_URL}/common/rental-agencies`, {
-      headers: await this.getHeaders(),
-    });
-    return response.data;
+    return this.fetchData("rental-agencies");
+  }
+
+  async fetchResource(resource: string): Promise<any[]> {
+    const resourceMap: Record<string, () => Promise<any[]>> = {
+      "airlines": () => this.getAirlines(),
+      "car-types": () => this.getCarTypes(),
+      "cities": () => this.getCities(),
+      "exchange-rates": () => this.getExchangeRates(),
+      "hotel-daily-base-rates": () => this.getHotelDailyBaseRates(),
+      "meal-categories": () => this.getMealCategories(),
+      "mileage-rates": () => this.getMileageRates(),
+      "relationships-to-pai": () => this.getRelationshipsToPai(),
+      "rental-agencies": () => this.getRentalAgencies(),
+    };
+
+    const fetchFunction = resourceMap[resource];
+
+    if (!fetchFunction) {
+      return [];
+    }
+
+    let response = [];
+
+    try {
+      response = await fetchFunction();
+    } catch (error) {
+      console.log(error);
+    }
+
+    return response;
+  }
+
+  private async fetchData(endpoint: string): Promise<any[]> {
+    const cacheKey = `common_${endpoint}`;
+    
+    try {
+      const cachedData = await AsyncStorage.getItem(cacheKey);
+      if (cachedData) {
+        const { timestamp, data } = JSON.parse(cachedData);
+
+        const now = new Date().getTime();
+        const ageInHours = (now - timestamp) / (1000 * 60 * 60);
+        
+        if (ageInHours < CACHE_EXPIRATION_HOURS) {
+          return data;
+        }
+      }
+
+      const response = await axios.get(`${BASE_URL}/common/${endpoint}`, {
+        headers: await this.getHeaders(),
+      });
+
+      const freshData = response?.data;
+
+      await AsyncStorage.setItem(
+        cacheKey,
+        JSON.stringify({ timestamp: new Date().getTime(), data: freshData })
+      );
+
+      return freshData;
+    } catch (error) {
+      return [];
+    }
   }
 }
 
-export const commonService = new CommonService();
+const commonService = new CommonService();
 export default commonService;

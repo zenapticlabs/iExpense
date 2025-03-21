@@ -33,7 +33,7 @@ export const ReportPreferences = [
 ];
 
 export enum ExpenseType {
-  airFare = "AirFare",
+  airFare = "Airfare",
   airlineClubMembershipDues = "Airline Club Membership Dues",
   airlineFees = "Airline Fees",
   autoRental = "Auto Rental",
@@ -43,6 +43,7 @@ export enum ExpenseType {
   companySponsorVPDF = "Company Sponsor - VPDF",
   customerGifts = "Customer Gifts",
   dataProcessingDisksManual = "Data Processing-Disks, Manual",
+  distributorCoopFunds = "Distributor Co-Op Funds",
   duesSubscriptions = "Dues & Subscriptions",
   entertainment = "Entertainment",
   entertainmentLevi = "Entertainment - Levi",
@@ -55,19 +56,134 @@ export enum ExpenseType {
   mileage = "Mileage",
   officeSupplies = "Office Supplies",
   otherMarketingExpenses = "Other Marketing Expenses",
-  otherTaxiTrainLimoToll = "Other-TaxiTrainLimoToll",
+  otherTransportTaxiTrainLimousine = "Other Transport - Taxi, Train, Limousine",
+  otherTransportTaxiTrainLimoToll = "Other Transport -Taxi,Train,Limo,Toll",
   parkingAndToll = "Parking and Toll",
   otherEmployeeExpenses = "Other Employee Expenses",
   postageShippingCharges = "Postage/Shipping Charges",
-  prepaidExpenseFutureMonths = "Prepaid Expense Future Months",
+  prepaidExpenseFutureMonths = "Prepaid Expenses-Future Months",
   seminarsTraining = "Seminars & Training",
   telephoneCell = "Telephone - Cell",
   telephoneHome = "Telephone - Home",
   telephoneSupplies = "Telephone - Supplies",
   tips = "Tips",
   travelAgentFee = "Travel Agent Fee",
-  marketingDevelopment = "Marketing Development",
+  marketingDevelopmentFund = "Marketing Development Fund"
 }
+
+export const ExpenseTypes: Record<number, Record<string, string[]>> = {
+  101: {
+    Domestic: [
+      "Airfare",
+      "Airline Club Membership Dues",
+      "Airline Fees",
+      "Auto Rental",
+      "Automobile",
+      "Business Meals",
+      "Company Sponsor - CDFO",
+      "Company Sponsor - VPDF",
+      "Customer Gifts",
+      "Data Processing-Disks, Manual",
+      "Distributor Co-Op Funds",
+      "Dues & Subscriptions",
+      "Entertainment",
+      "Entertainment - Levi",
+      "Field Engineer Supplies",
+      "Gas",
+      "Hotel",
+      "Internet - Home",
+      "Internet - Hotel/Airplane",
+      "Laundry",
+      "Marketing Development Fund",
+      "Mileage",
+      "Office Supplies",
+      "Other Employee Expenses",
+      "Other Marketing Expenses",
+      "Other Transport - Taxi, Train, Limousine",
+      "Parking and Toll",
+      "Postage/Shipping Charges",
+      "Prepaid Expenses-Future Months",
+      "Seminars & Training",
+      "Telephone - Cell",
+      "Telephone - Home",
+      "Telephone - Supplies",
+      "Tips",
+      "Travel Agent Fee"
+    ],
+    International: [
+      "Airfare",
+      "Airline Club Membership Dues",
+      "Airline Fees",
+      "Auto Rental",
+      "Business Meals",
+      "Company Sponsor - CDFO",
+      "Company Sponsor - VPDF",
+      "Customer Gifts",
+      "Entertainment",
+      "Gas",
+      "Hotel",
+      "Internet - Home",
+      "Internet - Hotel/Airplane",
+      "Laundry",
+      "Mileage",
+      "Office Supplies",
+      "Other Employee Expenses",
+      "Other Transport -Taxi,Train,Limo,Toll",
+      "Parking",
+      "Postage/Shipping Charges",
+      "Telephone - Cell",
+      "Telephone - Home",
+      "Telephone - Supplies",
+      "Tips",
+      "Travel Agent Fee"
+    ]
+  },
+  141: {
+    Domestic: [
+      "Airfare",
+      "Airline Club Membership Dues",
+      "Airline Fees",
+      "Auto Rental",
+      "Business Meals",
+      "Customer Gifts",
+      "Entertainment",
+      "Entertainment - Levi",
+      "Gas",
+      "Hotel",
+      "Laundry",
+      "Mileage",
+      "Other Employee Expenses",
+      "Other Transport - Taxi, Train, Limousine",
+      "Parking",
+      "Telephone - Cell",
+      "Tips",
+      "Travel Agent Fee"
+    ],
+    International: [
+      "Airfare",
+      "Airline Club Membership Dues",
+      "Airline Fees",
+      "Auto Rental",
+      "Business Meals",
+      "Customer Gifts",
+      "Gas",
+      "Hotel",
+      "Laundry",
+      "Mileage",
+      "Office Supplies",
+      "Other Employee Expenses",
+      "Other Transport -Taxi,Train,Limo,Toll",
+      "Parking",
+      "Telephone - Cell",
+      "Tips",
+      "Travel Agent Fee"
+    ]
+  }
+};
+
+export const getAllowedExpenseTypes = (orgId: number, reportType: string) => {
+  return ExpenseTypes[orgId]?.[reportType] || [];
+};
 
 export const WarningMessages = {
   approvedRequisition:
@@ -76,6 +192,8 @@ export const WarningMessages = {
   mustPurchase: "Must include approved Purchase Requisition number",
   mustETA:
     "Must include approved ETA number. Enter ETA number in Justification field",
+  notesRequired: "Must include Notes",
+  justficiationRequired: "Justification is required"
 };
 
 export const WarningMessagesByType: any = {
@@ -90,11 +208,11 @@ export const WarningMessagesByType: any = {
   [ExpenseType.otherMarketingExpenses]: WarningMessages.approvedRequisition,
   [ExpenseType.seminarsTraining]: WarningMessages.mustETA,
   [ExpenseType.prepaidExpenseFutureMonths]: WarningMessages.preApproval,
-  [ExpenseType.marketingDevelopment]: WarningMessages.approvedRequisition,
+  [ExpenseType.marketingDevelopmentFund]: WarningMessages.approvedRequisition,
 };
 
 export const ExpenseDetailsInfos: any = {
-  [ExpenseType.airlineClubMembershipDues]: {
+  [ExpenseType.airlineFees]: {
     justificationRequired: true,
     receiptRequired: false,
     errorMessage: WarningMessages.approvedRequisition,
@@ -102,6 +220,11 @@ export const ExpenseDetailsInfos: any = {
   [ExpenseType.automobile]: {
     justificationRequired: true,
     receiptRequired: false,
+    errorMessage: WarningMessages.preApproval,
+  },
+  [ExpenseType.companySponsorCDFO]: {
+    justificationRequired: false,
+    receiptRequired: true,
     errorMessage: WarningMessages.preApproval,
   },
   [ExpenseType.companySponsorVPDF]: {
@@ -115,13 +238,13 @@ export const ExpenseDetailsInfos: any = {
     errorMessage: WarningMessages.preApproval,
   },
   [ExpenseType.dataProcessingDisksManual]: {
-    justificationRequired: false,
+    justificationRequired: true,
     receiptRequired: true,
     errorMessage: WarningMessages.preApproval,
   },
-  [ExpenseType.entertainment]: {
+  [ExpenseType.duesSubscriptions]: {
     justificationRequired: true,
-    receiptRequired: false,
+    receiptRequired: true,
     errorMessage: WarningMessages.approvedRequisition,
   },
   [ExpenseType.fieldEngineerSupplies]: {
@@ -129,29 +252,50 @@ export const ExpenseDetailsInfos: any = {
     receiptRequired: false,
     errorMessage: WarningMessages.approvedRequisition,
   },
+  [ExpenseType.gas]: {
+    justificationRequired: true,
+    receiptRequired: false,
+  },
   [ExpenseType.officeSupplies]: {
-    justificationRequired: false,
+    justificationRequired: true,
     receiptRequired: false,
     errorMessage: WarningMessages.mustPurchase,
+  },
+  [ExpenseType.otherEmployeeExpenses]: {
+    justificationRequired: true,
+    receiptRequired: false,
   },
   [ExpenseType.otherMarketingExpenses]: {
     justificationRequired: true,
     receiptRequired: false,
     errorMessage: WarningMessages.approvedRequisition,
   },
+  [ExpenseType.postageShippingCharges]: {
+    justificationRequired: true,
+    receiptRequired: false,
+  },
+  [ExpenseType.prepaidExpenseFutureMonths]: {
+    justificationRequired: true,
+    receiptRequired: false,
+    errorMessage: WarningMessages.approvedRequisition
+  },
   [ExpenseType.seminarsTraining]: {
     justificationRequired: true,
     receiptRequired: false,
     errorMessage: WarningMessages.mustETA,
   },
-  [ExpenseType.prepaidExpenseFutureMonths]: {
+  [ExpenseType.marketingDevelopmentFund]: {
     justificationRequired: true,
     receiptRequired: false,
-    errorMessage: WarningMessages.preApproval,
   },
-  [ExpenseType.marketingDevelopment]: {
+  [ExpenseType.distributorCoopFunds]: {
     justificationRequired: true,
     receiptRequired: false,
-    errorMessage: WarningMessages.approvedRequisition,
+    errorMessage: WarningMessages.notesRequired
   },
+  [ExpenseType.airlineClubMembershipDues]: {
+    justificationRequired: false,
+    receiptRequired: false,
+    errorMessage: WarningMessages.notesRequired
+  }
 };

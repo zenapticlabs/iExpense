@@ -2,9 +2,7 @@ import {
   Image,
   StyleSheet,
   TextInput,
-  Switch,
   Pressable,
-  Alert,
   SafeAreaView,
   ActivityIndicator,
 } from "react-native";
@@ -18,8 +16,6 @@ export default function AuthScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const [biometricLogin, setBiometricLogin] = useState(false);
   const [errors, setErrors] = useState<any>();
 
   const images = {
@@ -95,27 +91,9 @@ export default function AuthScreen() {
                 {errors?.password}
               </Text>
             )}
-            <Link href="/auth" style={styles.forgotPassword}>
+            <Link href="/auth/reset" style={styles.forgotPassword}>
               Forgot password?
             </Link>
-
-            <View style={styles.toggleContainer}>
-              <Switch
-                value={rememberMe}
-                onValueChange={setRememberMe}
-                trackColor={{ false: "#888888", true: "#1E3A8A" }}
-              />
-              <Text style={styles.toggleLabel}>Remember me</Text>
-            </View>
-
-            <View style={styles.toggleContainer}>
-              <Switch
-                value={biometricLogin}
-                onValueChange={setBiometricLogin}
-                trackColor={{ false: "#888888", true: "#1E3A8A" }}
-              />
-              <Text style={styles.toggleLabel}>Enable biometric login</Text>
-            </View>
           </View>
           <View style={styles.bottomContainer}>
             <Pressable
@@ -129,13 +107,6 @@ export default function AuthScreen() {
               <Text style={styles.buttonText}>Login</Text>
               {isLoading && <ActivityIndicator color={"white"} />}
             </Pressable>
-
-            <View style={styles.signupContainer}>
-              <Text style={styles.signupText}>Don't have an account? </Text>
-              <Link href="/auth" style={styles.signupLink}>
-                Sign up
-              </Link>
-            </View>
           </View>
         </View>
       </View>
@@ -155,13 +126,13 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
   image: {
-    width: 138,
-    height: 80,
+    width: 160,
+    height: 120,
   },
   title: {
     fontSize: 28,
     fontWeight: "600",
-    marginTop: 20,
+    marginTop: 8,
     marginBottom: 30,
     color: "#1E1E1E",
     fontFamily: "SFProDisplay",
@@ -171,12 +142,12 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     width: "100%",
-    marginTop: 40,
+    marginTop: 4,
   },
   label: {
     fontSize: 15,
     color: "#000",
-    marginBottom: 8,
+    marginBottom: 4,
     fontFamily: "SFProDisplay",
   },
   input: {
@@ -185,15 +156,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#DDDDDD",
     borderRadius: 8,
-    padding: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     backgroundColor: "white",
   },
   forgotPassword: {
     alignSelf: "flex-end",
     color: "#5B5B5B",
     fontSize: 15,
-    marginTop: 8,
-    marginBottom: 16,
+    marginTop: 4,
+    marginBottom: 4,
     textDecorationLine: "underline",
     fontFamily: "SFProDisplay",
   },
@@ -216,8 +188,8 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     alignItems: "center",
-    marginBottom: 20,
-    marginTop: 30,
+    marginBottom: 8,
+    marginTop: 8,
     height: 56,
   },
   buttonText: {

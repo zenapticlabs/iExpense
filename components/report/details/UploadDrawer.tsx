@@ -5,7 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 
 // Define a type for the file object
-interface FileAsset {
+export interface FileAsset {
   uri: string;
   name?: string;
   size?: number;
@@ -38,7 +38,7 @@ export default function UploadComponent({ onChange, enableUpload }: UploadCompon
     }
 
     const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: 'images',
       allowsEditing: true,
       quality: 1,
     });
@@ -46,7 +46,7 @@ export default function UploadComponent({ onChange, enableUpload }: UploadCompon
     if (!result.canceled && result.assets.length > 0) {
       const file: FileAsset = {
         uri: result.assets[0].uri,
-        name: result.assets[0].fileName || "captured-image.jpg",
+        name: `${result.assets[0].fileName}_${Math.random().toString(36).substring(2, 6)}.jpg`,
         size: result.assets[0].fileSize || 0,
         type: result.assets[0].mimeType || "image/jpeg",
       };
@@ -60,7 +60,7 @@ export default function UploadComponent({ onChange, enableUpload }: UploadCompon
 
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: ["image/*", "application/pdf"],
+        type: ["image/*"],
         multiple: false,
       });
 

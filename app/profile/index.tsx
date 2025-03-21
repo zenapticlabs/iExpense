@@ -58,7 +58,9 @@ export default function ProfileScreen() {
   const fetchCreditCard = async () => {
     try {
       const data = await authService.getCreditCard();
-      setCreditCard(data);
+      if (data.card_number && data.expiration_date) {
+        setCreditCard(data);
+      }
     } catch (error) {
       console.error("Failed to fetch credit card:", error);
     }
@@ -109,7 +111,7 @@ export default function ProfileScreen() {
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 bg-white">
         <Text className="text-xl font-semibold text-center mt-8 mb-6 font-sfpro">
-          My Profile
+          Profile
         </Text>
         {loading ? (
           <LoadingScreen />
@@ -123,7 +125,7 @@ export default function ProfileScreen() {
                 {user?.first_name} {user?.last_name}
               </Text>
               <Text className="text-base text-gray-500 mt-3 font-sfpro">
-                {user?.department}
+                Organization: {user?.company_code}
               </Text>
             </View>
 
@@ -135,7 +137,7 @@ export default function ProfileScreen() {
               </Text>
               <View className="flex-row items-center mb-3">
                 <Ionicons
-                  name="calendar-clear-outline"
+                  name="mail-outline"
                   size={20}
                   color="#64748B"
                 />
@@ -157,60 +159,13 @@ export default function ProfileScreen() {
 
             <View className="my-5 px-5">
               <Text className="text-lg text-[#1e1e1e] font-bold mb-3 font-sfpro">
-                Saved credit card
+                Registered credit cards
               </Text>
-              {creditCard?.card_number && (
-                <View className="flex-col gap-2 mb-4 mt-2">
-                  <View className="flex-row gap-2 items-center justify-between">
-                    <View className="flex-row gap-2 items-center">
-                      <Ionicons name="card-outline" size={24} color="#5B5B5B" />
-                      <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
-                        Card Number
-                      </Text>
-                    </View>
-                    <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
-                      {creditCard?.card_number}
-                    </Text>
-                  </View>
-                  <View className="flex-row gap-2 items-center justify-between">
-                    <View className="flex-row gap-2 items-center">
-                      <Ionicons
-                        name="calendar-outline"
-                        size={24}
-                        color="#5B5B5B"
-                      />
-                      <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
-                        Expiration Date
-                      </Text>
-                    </View>
-                    <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
-                      {formatDate(creditCard?.expiration_date)}
-                    </Text>
-                  </View>
-                </View>
-              )}
-              {!creditCard && (
-                <Pressable
-                  className="flex-row items-center justify-center border border-[#DDDDDD] rounded-lg p-3 h-12"
-                  onPress={() => setCreditAddCardVisible(true)}
-                >
-                  <Ionicons name="add" size={24} color="#5B5B5B" />
-                  <Text className="ml-2 text-[#1e1e1e] font-bold text-lg font-sfpro">
-                    Add credit card
-                  </Text>
-                </Pressable>
-              )}
-              {creditCard && (
-                <Pressable
-                  className="flex-row items-center justify-center border border-[#DDDDDD] rounded-lg p-3 h-12"
-                  onPress={() => setDeleteConfirmationVisible(true)}
-                >
-                  <Ionicons name="trash-outline" size={24} color="#5B5B5B" />
-                  <Text className="ml-2 text-[#1e1e1e] font-bold text-lg font-sfpro">
-                    Delete credit card
-                  </Text>
-                </Pressable>
-              )}
+              {
+                (user?.em_cc_card_id as string)?.split(",").map((cc_id) => <Text className="text-base text-gray-500 mt-3 font-sfpro">
+                  {cc_id}
+                </Text>)
+              }
             </View>
 
             <Divider />
@@ -222,6 +177,7 @@ export default function ProfileScreen() {
               <CurrencyDropdown
                 value={user?.currency}
                 onChange={(currency) => handleChangeCurrency(currency)}
+                disabled={true}
               />
             </View>
 

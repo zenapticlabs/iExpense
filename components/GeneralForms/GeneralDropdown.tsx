@@ -1,14 +1,10 @@
-import { authService } from "@/services/authService";
-import { commonService } from "@/services/commonService";
-import { Styles } from "@/Styles";
-import { BASE_URL } from "@/utils/UtilData";
-import axios from "axios";
+import  commonService  from "@/services/commonService";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View, TextInput } from "react-native";
+import { StyleSheet } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 
 interface GeneralDropdownProps {
-  resource: string;
+  resource?: string;
   value: string;
   onChange: (value: string) => void;
   defaultOptions?: any[];
@@ -26,24 +22,18 @@ export default function GeneralDropdown({
   useEffect(() => {
     if (defaultOptions) {
       setOptions(defaultOptions);
-    } else {
+    } else if (resource) {
       const fetchData = async () => {
         try {
-          const accessToken = await authService.getAccessToken();
-
-          const response = await axios.get(`${BASE_URL}/common/${resource}`, {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          });
+          const response = await commonService.fetchResource(resource);
           setOptions(
-            response.data.map((item: any) => ({
-              label: item.value,
-              value: item.value,
+            response.map((item: any) => ({
+              label: item.value || item.rate,
+              value: item.value || item.rate,
             }))
           );
         } catch (error) {
-          console.error("Failed to fetch airlines:", error);
+          console.error(`Failed to fetch resource ${resource}:`, error);
         }
       };
       fetchData();
@@ -52,7 +42,7 @@ export default function GeneralDropdown({
 
   return (
     <Dropdown
-      data={options}
+      data={[...options]?.sort((a, b) => a?.label?.localeCompare(b?.label))}
       disable={disabled}
       labelField="label"
       valueField="value"
@@ -62,6 +52,7 @@ export default function GeneralDropdown({
       containerStyle={styles.dropdownContainer}
       selectedTextStyle={styles.selectedTextStyle}
       itemTextStyle={styles.itemTextStyle}
+      flatListProps={{ keyboardShouldPersistTaps: "handled" }}
     />
   );
 }

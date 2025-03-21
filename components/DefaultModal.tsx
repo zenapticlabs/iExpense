@@ -1,4 +1,4 @@
-import { Modal, Pressable, StyleSheet, View, Animated } from "react-native";
+import { Modal, Pressable, StyleSheet, View, Animated, KeyboardAvoidingView, Platform } from "react-native";
 import { useState, useEffect, useRef } from "react";
 
 interface DefaultModalProps {
@@ -44,7 +44,7 @@ const DefaultModal = ({ isVisible, onClose, children }: DefaultModalProps) => {
       <Pressable className="flex-1 z-10" onPress={onClose} />
 
       {/* Modal content */}
-      <View className="bg-white absolute z-20 bottom-0 left-0 right-0 max-h-[80vh] rounded-t-xl">
+      <View className="bg-white absolute z-20 bottom-0 left-0 right-0 max-h-[80vh] rounded-t-xl pb-8">
         {children}
       </View>
     </Modal>
@@ -52,6 +52,9 @@ const DefaultModal = ({ isVisible, onClose, children }: DefaultModalProps) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   modalOverlay: {
     position: "absolute",
     top: 0,

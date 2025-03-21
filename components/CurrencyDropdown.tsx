@@ -2,13 +2,36 @@ import React, { useState } from "react";
 import { View, Text } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import CountryFlag from "react-native-country-flag";
+import { Ionicons } from "@expo/vector-icons";
 
 // Define the type for each dropdown item
 interface Option {
   label: string;
   value: string;
   countryCode: string;
+  symbol: string;
 }
+
+export const options: Option[] = [
+  {
+    label: "USD $",
+    value: "USD",
+    countryCode: "US",
+    symbol: "$"
+  },
+  {
+    label: "CAD $",
+    value: "CAD",
+    countryCode: "CA",
+    symbol: "$"
+  },
+  {
+    label: "JPY ¥",
+    value: "JPY",
+    countryCode: "JP",
+    symbol: "¥"
+  },
+];
 
 const CurrencyDropdown = ({
   value,
@@ -19,44 +42,6 @@ const CurrencyDropdown = ({
   onChange: (value: string) => void;
   disabled?: boolean;
 }) => {
-  // Define the data for dropdown options
-  const options: Option[] = [
-    {
-      label: "USD $",
-      value: "USD",
-      countryCode: "US",
-    },
-    {
-      label: "CAD $",
-      value: "CAD",
-      countryCode: "CA",
-    },
-
-    {
-      label: "JPY ¥",
-      value: "JPY",
-      countryCode: "JP",
-    },
-
-    {
-      label: "EUR €",
-      value: "EUR",
-      countryCode: "EU",
-    },
-
-    {
-      label: "GBP £",
-      value: "GBP",
-      countryCode: "GB",
-    },
-
-    {
-      label: "INR ₹",
-      value: "INR",
-      countryCode: "IN",
-    },
-  ];
-
   return (
     <View style={{ flex: 1, width: "100%" }}>
       <Dropdown
@@ -76,7 +61,7 @@ const CurrencyDropdown = ({
           borderWidth: 1,
           borderRadius: 8,
           paddingHorizontal: 16,
-          paddingVertical: 16,
+          paddingVertical: 14,
           width: "100%",
         }}
         selectedTextStyle={{ fontFamily: "SFProDisplay", fontSize: 15 }}
@@ -88,6 +73,7 @@ const CurrencyDropdown = ({
             </Text>
           ) : null;
         }}
+        renderRightIcon={() => (disabled ? null : <Ionicons name="chevron-down" size={16} color="gray" />)}
         renderItem={(item: Option) => (
           <View
             style={{ padding: 10, flexDirection: "row", alignItems: "center" }}

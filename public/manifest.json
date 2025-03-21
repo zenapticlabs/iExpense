@@ -1,0 +1,22 @@
+{
+    "short_name": "PFU Expense",
+    "name": "PFU Expense",
+    "icons": [
+      {
+        "src": "assets/assets/images/brand.png",
+        "sizes": "64x64 32x32 24x24 16x16",
+        "type": "image/x-icon"
+      },
+      {
+        "src": "assets/assets/images/icon.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "theme_color": "#000000",
+    "background_color": "#ffffff"
+  }
+  

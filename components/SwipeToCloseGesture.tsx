@@ -23,7 +23,7 @@ export default function SwipeToCloseGesture({
 
   return (
     <View {...panResponder.panHandlers} className="flex flex-col flex-1">
-      <View className="flex-row justify-center items-center pt-4 px-4">
+      <View className="flex-row justify-center items-center pt-2 px-4 w-full">
         <View className="h-1.5 w-8 bg-[#DDDDDD] rounded-md" />
       </View>
       {children}

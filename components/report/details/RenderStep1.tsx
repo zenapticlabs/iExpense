@@ -1,4 +1,4 @@
-import { ExpenseType } from "@/utils/UtilData";
+import { ExpenseType, getAllowedExpenseTypes } from "@/utils/UtilData";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
@@ -11,6 +11,8 @@ import {
 
 interface RenderStep1Props {
   expenseType: string | null;
+  orgId?: number;
+  reportType?: string;
   setExpenseType: (value: string | null) => void;
   handleClose: () => void;
   handleNextStep: () => void;
@@ -18,11 +20,14 @@ interface RenderStep1Props {
 
 export default function RenderStep1({
   expenseType,
+  orgId = 101,
+  reportType = "Domestic",
   setExpenseType,
   handleClose,
   handleNextStep,
 }: RenderStep1Props) {
   const [searchQuery, setSearchQuery] = useState("");
+  const allowedExpenseTypes = getAllowedExpenseTypes(orgId, reportType);
   return (
     <View className="flex-1 p-5">
       <Text className="text-2xl font-semibold font-sfpro mb-4">
@@ -46,7 +51,7 @@ export default function RenderStep1({
       </View>
 
       <ScrollView className="flex gap-4 flex-1">
-        {Object.values(ExpenseType)
+        {allowedExpenseTypes
           .filter((type) =>
             type.toLowerCase().includes(searchQuery.toLowerCase())
           )

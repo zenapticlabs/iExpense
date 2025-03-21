@@ -12,6 +12,9 @@ export interface IReport {
   purpose: string;
   payment_method: string;
   report_currency: string;
+  iexp_report_status?: string;
+  iexp_report_number?: string;
+  paid_amount?: string;
   error: boolean;
   created_at: string;
   updated_at: string;

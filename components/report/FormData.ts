@@ -52,12 +52,33 @@ export const FormData = {
         required: true,
       },
       {
+        name: "total_employees",
+        label: "Total Employees",
+        type: "number",
+        required: true,
+      },
+      {
         name: "employee_names",
         label: "Employee Names",
         type: "text",
+        required: true
+      },
+      {
+        name: "employee_names2",
+        label: "Additional Employee Names",
+        type: "text"
+      }
+    ],
+  },
+  [ExpenseType.customerGifts]: {
+    fields: [
+      {
+        name: "company_customer_name_title",
+        label: "Company, Customer Name, Title",
+        type: "text",
         required: true,
       },
-    ],
+    ]
   },
   [ExpenseType.entertainment]: {
     fields: [
@@ -70,18 +91,13 @@ export const FormData = {
       {
         name: "city",
         label: "City",
-        type: "text",
+        type: "dropdown",
+        resource: "cities",
         required: true,
       },
       {
         name: "business_topic",
         label: "Business Topic",
-        type: "text",
-        required: true,
-      },
-      {
-        name: "total_attendees",
-        label: "Total Attendees",
         type: "text",
         required: true,
       },
@@ -92,6 +108,19 @@ export const FormData = {
         resource: "relationships-to-pai",
         required: true,
       },
+      {
+        name: "total_attendees",
+        label: "Total Attendees",
+        type: "number",
+        required: true,
+      },
+      ...Array.from({ length: 10 }, (_, index) => ({
+        name: `attendee${index + 1}`,
+        label: `Attendee ${index + 1}`,
+        type: "text",
+        required: true,
+        defaultValue: `Attendee ${index + 1}`,
+      })),
     ],
   },
   [ExpenseType.entertainmentLevi]: {
@@ -105,7 +134,8 @@ export const FormData = {
       {
         name: "city",
         label: "City",
-        type: "text",
+        type: "dropdown",
+        resource: "cities",
         required: true,
       },
       {
@@ -120,12 +150,13 @@ export const FormData = {
         type: "text",
         required: true,
       },
-      {
-        name: "attendees",
-        label: "Attendees",
+      ...Array.from({ length: 10 }, (_, index) => ({
+        name: `attendee${index + 1}`,
+        label: `Attendee ${index + 1}`,
         type: "text",
         required: true,
-      },
+        defaultValue: `Attendee ${index + 1}`,
+      })),
     ],
   },
   [ExpenseType.hotel]: {
@@ -164,17 +195,40 @@ export const FormData = {
         label: "Distance",
         type: "text",
         required: true,
-      },
+      }
+    ],
+  },
+  [ExpenseType.telephoneCell]: {
+    fields: [
       {
-        name: "mileage_rate",
-        label: "Mileage Rate",
-        type: "dropdown",
-        resource: "mileage-rates",
+        name: "carrier",
+        label: "Carrier",
+        type: "text",
         required: true,
       },
     ],
   },
-  [ExpenseType.telephoneCell]: {
+  [ExpenseType.telephoneHome]: {
+    fields: [
+      {
+        name: "carrier",
+        label: "Carrier",
+        type: "text",
+        required: true,
+      },
+    ],
+  },
+  [ExpenseType.internetHome]: {
+    fields: [
+      {
+        name: "carrier",
+        label: "Carrier",
+        type: "text",
+        required: true,
+      },
+    ],
+  },
+  [ExpenseType.internetHotelAirplane]: {
     fields: [
       {
         name: "carrier",

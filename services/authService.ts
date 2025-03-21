@@ -1,6 +1,7 @@
 import { storage } from "@/utils/storage";
 import { BASE_URL } from "@/utils/UtilData";
 import axios from "axios";
+import encode from "expo-jwt";
 
 type AuthResponse = {
   access: string;
@@ -139,6 +140,61 @@ export const authService = {
           },
         }
       );
+      return response.data;
+    } catch (error: any) {
+      throw error;
+    }
+  },
+  async forgotPassword(email: string): Promise<any> {
+    const secretKey = process.env.EXPO_PUBLIC_SECRET_KEY || "";
+    try {
+      const now = Math.floor(Date.now() / 1000);
+      const exp = now + 10 * 60;
+      const jti = `reset-${now}-${Math.random().toString(36).substring(2, 15)}`;
+      const payload = {
+        sub: email,
+        email: email,
+        user_id: email,
+        scope: "password_reset_request",
+        token_type: "access",
+        exp: exp,
+        iat: now,
+        jti: jti,
+      };  
+      const token = encode.encode(payload, secretKey); 
+      const response = await axios.post(
+        `${BASE_URL}/auth/forgot-password`,
+
+        {
+          email: email,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      throw error;
+    }
+  },
+  async resetPassword(token: string, newPassword: string): Promise<any> {
+    try {
+      if (!token) {
+        throw new Error("Missing reset token.");
+      }
+
+      const response = await axios.post(
+        `${BASE_URL}/auth/password-reset`,
+        { new_password: newPassword },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       return response.data;
     } catch (error: any) {
       throw error;

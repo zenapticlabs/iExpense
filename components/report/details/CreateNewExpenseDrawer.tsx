@@ -1,25 +1,22 @@
 import {
-  Pressable,
-  Modal,
   View,
   Text,
   TouchableOpacity,
-  TextInput,
   ScrollView,
 } from "react-native";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DefaultModal from "@/components/DefaultModal";
 import RenderStep1 from "./RenderStep1";
 import { useForm, Controller } from "react-hook-form";
 import GeneralForm from "../../GeneralForms/GeneralForm";
 import { FormData } from "../FormData";
-import ReceiptAmountForm from "../../GeneralForms/ReceiptAmountForm";
-import { ExpenseDetailsInfos, WarningMessages } from "@/utils/UtilData";
+import ReceiptAmountForm, { getMaxHotelRate } from "../../GeneralForms/ReceiptAmountForm";
+import { ExpenseDetailsInfos } from "@/utils/UtilData";
 import GeneralUploadForm from "../../GeneralForms/GeneralUploadPanel";
 import { reportService } from "@/services/reportService";
-import { formatDate } from "@/utils/UtilFunctions";
-import { Calendar } from "react-native-calendars";
 import SwipeToCloseDrawer from "../../SwipeToCloseGesture";
+import { ReportPreferences } from "@/utils/UtilData";
+import commonService, { MileageRate } from "@/services/commonService";
 
 interface CreateNewExpenseDrawerProps {
   isVisible: boolean;
@@ -28,19 +25,32 @@ interface CreateNewExpenseDrawerProps {
   onClose: () => void;
   onAddExpense: (reportItem: any) => void;
   defaultCurrency: string;
+  defaultPayment: string;
+  reportType: string;
+  orgId: number;
+  user: any;
 }
 
 const getDefaultFormData = (expenseType: string) => {
+  const formInfo = ExpenseDetailsInfos?.[expenseType as keyof typeof ExpenseDetailsInfos];
+  const justificationRequired = formInfo?.justificationRequired || false;
+  const noteRequired = formInfo?.errorMessage || false;
+
   return [
     {
       name: "justification",
       label: "Justification",
       type: "text",
-      required:
-        ExpenseDetailsInfos?.[expenseType as keyof typeof ExpenseDetailsInfos]
-          ?.justificationRequired || false,
+      required: justificationRequired
     },
-    { name: "note", label: "Note", type: "text" },
+    {
+      name: "note",
+      label: "Note",
+      type: "text",
+      required: noteRequired,
+      defaultValue: formInfo?.errorMessage,
+      multiline: true
+    },
   ];
 };
 
@@ -49,18 +59,30 @@ export default function CreateNewExpenseDrawer({
   onClose,
   onAddExpense,
   reportId,
+  orgId,
+  reportType,
   exchangeRates,
   defaultCurrency,
+  defaultPayment,
+  user,
 }: CreateNewExpenseDrawerProps) {
+  console.log(defaultPayment)
+  const [currentStep, setCurrentStep] = useState(1);
+  const [expenseType, setExpenseType] = useState<string | null>(null);
+
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm();
+    trigger,
+  } = useForm({
+    mode: "onChange",
+  });
 
-  const [currentStep, setCurrentStep] = useState(1);
-  const [expenseType, setExpenseType] = useState<string | null>(null);
+  const isReceiptRequired =
+    ExpenseDetailsInfos?.[expenseType as keyof typeof ExpenseDetailsInfos]
+      ?.receiptRequired || false;
 
   const handleClose = () => {
     setCurrentStep(1);
@@ -70,30 +92,95 @@ export default function CreateNewExpenseDrawer({
   };
 
   const handleNextStep = () => setCurrentStep(2);
-  const handleBack = () => setCurrentStep(1);
+  const handleBack = () => {
+    reset();
+    setCurrentStep(1)
+  };
 
-  const isReceiptRequired =
-    ExpenseDetailsInfos?.[expenseType as keyof typeof ExpenseDetailsInfos]
-      ?.receiptRequired;
+  const getBlobFromUri = async (uri: string): Promise<Blob> => {
+    const response = await fetch(uri);
+    return await response.blob();
+  };
 
   const onSubmit = async (data: any) => {
-    const { file, ...rest } = data;
+    const { files, ...rest } = data;
+
+    let mileage_rate = null;
+    if (data.mileage_rate) {
+      const mileageRates = await commonService.getMileageRates();
+      mileage_rate = mileageRates.find((rate: MileageRate) => rate.rate === data.mileage_rate)?.id;
+    }
+
+    let hotel_daily_base_rate = null;
+    if (expenseType === "Hotel") {
+      const hotelRates = await commonService.getHotelDailyBaseRates();
+      hotel_daily_base_rate = getMaxHotelRate(data?.city, hotelRates, defaultCurrency);
+      hotel_daily_base_rate = hotel_daily_base_rate?.id
+    }
+
+    const receipts = files?.map((file: any) => ({
+      upload_filename: file.name
+    }))
+
     const payload = {
       ...rest,
-      filename: file?.name,
       expense_type: expenseType,
+      hotel_daily_base_rate,
+      mileage_rate,
       origin_destination: `${data?.origin}_${data?.destination}`,
+      receipts,
     };
+    console.log(payload)
     try {
       const response = await reportService.createReportItem(payload, reportId);
-      if (response?.presigned_url && file) {
-        await fetch(response.presigned_url, {
-          method: "PUT",
-          body: file.file,
-          headers: {
-            "Content-Type": file.mimeType,
-          },
-        });
+      if (response?.receipts && files) {
+        const filenameRegex = /^(\d+)_(.+)$/;
+        const responseFileMap = response.receipts.reduce((acc: any, receipt: any) => {
+          const match = receipt.filename.match(filenameRegex);
+          if (match) {
+            const originalFilename = match[2];
+            acc[originalFilename] = receipt.presigned_url;
+          }
+          return acc;
+        }, {});
+
+        console.log(responseFileMap)
+
+        await Promise.all(
+          files.map(async (file: any) => {
+            const presignedUrl = responseFileMap[file.name];
+      
+            if (presignedUrl) {
+              let fileToUpload = file.file;
+      
+              if (!fileToUpload && file.uri) {
+                fileToUpload = await getBlobFromUri(file.uri);
+              }
+      
+              if (fileToUpload) {
+                const mimeType = file.mimeType || "application/octet-stream";
+      
+                try {
+                  const uploadResponse = await fetch(presignedUrl, {
+                    method: "PUT",
+                    body: fileToUpload,
+                    headers: {
+                      "Content-Type": mimeType,
+                    },
+                  });
+      
+                  if (!uploadResponse.ok) {
+                    console.error(`Upload failed for ${file.name}:`, uploadResponse.statusText);
+                  } else {
+                    console.log(`Successfully uploaded ${file.name}`);
+                  }
+                } catch (error) {
+                  console.error(`Error uploading ${file.name}:`, error);
+                }
+              }
+            }
+          })
+        );
       }
       onAddExpense(response);
       handleClose();
@@ -111,6 +198,8 @@ export default function CreateNewExpenseDrawer({
             setExpenseType={setExpenseType}
             handleClose={handleClose}
             handleNextStep={handleNextStep}
+            orgId={orgId}
+            reportType={reportType}
           />
         ) : (
           <View className="flex-1 p-5">
@@ -125,78 +214,52 @@ export default function CreateNewExpenseDrawer({
               </View>
             )}
             <ScrollView className="flex-1">
-              <View className="mb-4">
-                <Text className="font-sfpro text-base font-medium text-[#1E1E1E] mb-1">
+              <View className="mb-1">
+                <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
                   Expense type
                 </Text>
-                <View className="border border-[#ccc] rounded-lg font-sfpro text-base text-[#1E1E1E] px-4 py-2.5">
-                  {expenseType}
+                <View className="py-3 min-h-2">
+                  <Text className="font-sfpro text-base font-normal text-[#1E1E1E]">{expenseType}</Text>
+                </View>
+              </View>
+              <View className="mb-1">
+                <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
+                  User
+                </Text>
+                <View className="py-3 min-h-2">
+                  <Text className="font-sfpro text-base font-normal text-[#1E1E1E]">{user?.first_name} {user?.last_name}</Text>
                 </View>
               </View>
               <View style={{ marginBottom: 10 }}>
-                <Text className="font-sfpro text-base font-medium text-[#1E1E1E] mb-1">
-                  Date
-                  <Text className="text-red-500">*</Text>
-                </Text>
-                <Controller
-                  control={control}
-                  name="expense_date"
-                  rules={{ required: "Date is required" }}
-                  defaultValue={new Date().toISOString().split("T")[0]}
-                  render={({ field: { onChange, onBlur, value } }) => {
-                    const [showDatePicker, setShowDatePicker] = useState(false);
-                    const handleDateSelect = (day: any) => {
-                      onChange(day.dateString);
-                      setShowDatePicker(false);
-                    };
-                    return (
-                      <View>
-                        <Pressable
-                          className="border border-[#ccc] rounded-lg font-sfpro text-base text-[#1E1E1E] px-4 py-2.5"
-                          onPress={() => {
-                            setShowDatePicker(true);
-                          }}
-                        >
-                          <Text className="font-sfpro text-base font-medium text-[#1E1E1E]">
-                            {formatDate(value)}
-                          </Text>
-                        </Pressable>
-                        <DefaultModal
-                          isVisible={showDatePicker}
-                          onClose={() => setShowDatePicker(false)}
-                        >
-                          <View className="bg-white rounded-lg p-4 mx-5">
-                            <Calendar
-                              onDayPress={handleDateSelect}
-                              markedDates={{
-                                [value]: {
-                                  selected: true,
-                                  selectedColor: "#1E3A8A",
-                                },
-                              }}
-                              theme={{
-                                todayTextColor: "#1E3A8A",
-                                selectedDayBackgroundColor: "#1E3A8A",
-                              }}
-                            />
-                          </View>
-                        </DefaultModal>
-                      </View>
-                    );
-                  }}
-                />
+                <GeneralForm field={{
+                  name: "expense_date",
+                  label: "Date",
+                  type: "date",
+                  required: true,
+                }} control={control} errors={errors} />
               </View>
-              {FormData?.[expenseType as keyof typeof FormData]?.fields.map(
-                (field) => (
-                  <GeneralForm field={field} control={control} errors={errors} />
-                )
-              )}
               <ReceiptAmountForm
                 control={control}
                 errors={errors}
                 exchangeRates={exchangeRates}
                 defaultCurrency={defaultCurrency}
+                expenseType={expenseType}
+                orgId={orgId}
+                trigger={trigger}
               />
+              <GeneralForm field={{
+                name: "payment_method",
+                label: "Payment Method",
+                type: "dropdown",
+                options: ReportPreferences,
+                defaultValue: defaultPayment,
+                required: true,
+              }} control={control} errors={errors} />
+              {FormData?.[expenseType as keyof typeof FormData]?.fields.map(
+                (field, index) => (
+                  <GeneralForm key={`${index}_${field.name}`} field={field} control={control} errors={errors} />
+                )
+              )}
 
               {expenseType &&
                 getDefaultFormData(expenseType).map((field: any) => (
@@ -204,9 +267,9 @@ export default function CreateNewExpenseDrawer({
                 ))}
               <Controller
                 control={control}
-                name="file"
+                name="files"
                 rules={{
-                  required: isReceiptRequired ? "Please upload file" : false,
+                  required: isReceiptRequired ? "Please upload receipts" : false,
                 }}
                 render={({ field: { onChange, onBlur, value } }) => {
                   return (

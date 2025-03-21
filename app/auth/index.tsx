@@ -1,6 +1,5 @@
 import { Image, StyleSheet, ImageBackground, SafeAreaView } from "react-native";
 
-import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
 import { Link } from "expo-router";
 
@@ -21,9 +20,6 @@ export default function AuthScreen() {
               style={styles.image}
               resizeMode="contain"
             />
-            <Text style={styles.title} className="font-sfpro">
-              PAI Capture Expense
-            </Text>
           </View>
 
           <View style={styles.buttonContainer}>
@@ -62,8 +58,8 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   image: {
-    width: 138,
-    height: 80,
+    width: 256,
+    height: 256,
   },
   title: {
     fontSize: 28,
