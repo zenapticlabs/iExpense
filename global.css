@@ -12,6 +12,10 @@ body, #root {
   overflow-x: hidden;
 }
 
+.fontFamily-sf{
+  font-family: "SFProDisplay";
+}
+
 /* .datePicker {
   width: 100%;
 } */
