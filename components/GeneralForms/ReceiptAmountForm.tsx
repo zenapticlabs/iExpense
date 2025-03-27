@@ -113,10 +113,10 @@ export default function ReceiptAmountForm({
   return (
     <View className="mb-4 border border-gray-300 rounded-lg p-4">
       <Text className="font-sfpro text-base font-medium text-[#1E1E1E] mb-1">
-        Receipt currency
+       Receipt amount
         <Text className="text-red-500">*</Text>
       </Text>
-      <View className="flex-row items-center mb-4">
+      <View className="flex-row items-center mb-1">
         <Controller
           control={control}
           name="receipt_currency"
@@ -195,10 +195,10 @@ export default function ReceiptAmountForm({
         />
       </View>
       {errors.receipt_amount && (
-        <Text className="text-red-500">{errors.receipt_amount.message}</Text>
+        <Text className="text-red-500 mb-2">{errors.receipt_amount.message}</Text>
       )}
       <Text className="font-sfpro text-base font-medium text-[#1E1E1E] mb-1">
-        Converted amount
+       Converted report amount
       </Text>
       <View className="flex-row items-center">
         <CurrencyDropdown

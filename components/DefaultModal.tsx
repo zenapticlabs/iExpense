@@ -44,7 +44,7 @@ const DefaultModal = ({ isVisible, onClose, children }: DefaultModalProps) => {
       <Pressable className="flex-1 z-10" onPress={onClose} />
 
       {/* Modal content */}
-      <View className="bg-white absolute z-20 bottom-0 left-0 right-0 max-h-[80vh] rounded-t-xl pb-8">
+      <View className="bg-white absolute z-20 bottom-0 left-0 right-0 max-h-[90vh] rounded-t-xl pb-8">
         {children}
       </View>
     </Modal>
