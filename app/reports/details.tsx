@@ -31,12 +31,14 @@ import commonService from "@/services/commonService";
 import BottomNavBar from "@/components/BottomNavBar";
 import { authService } from "@/services/authService";
 import { useAuth } from "@/context/AuthContext";
+import ReceiptPreviewDrawer from "@/components/report/ReceiptPreview";
 
 export default function ExpenseDetails() {
   const { id } = useLocalSearchParams();
   const { checkToken } = useAuth();
   const [report, setReport] = useState<IReport | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<IExpense | null>(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -306,6 +308,12 @@ export default function ExpenseDetails() {
           onAddExpense={handleAddExpense}
           orgId={user?.org_id}
           user={user}
+          handleAnalysePreview={()=> setIsPreviewModalVisible(true)}
+        />
+
+        <ReceiptPreviewDrawer
+          isVisible={isPreviewModalVisible}
+          onClose={() => setIsPreviewModalVisible(false)}
         />
 
         <EditExpenseDrawer
